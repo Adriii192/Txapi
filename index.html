@@ -766,7 +766,23 @@ function pickVoice(){
   }catch(e){}
 }
 try{pickVoice();speechSynthesis.onvoiceschanged=function(){pickVoice();if(V.tab==="me"&&!$("#home").hidden)render()}}catch(e){}
-function say(t,slow){
+/* ---------- voz nativa: archivos de audio generados (carpeta audio/) ---------- */
+function hz(t){var b=new TextEncoder().encode(String(t).replace(/[?!¿¡]/g,"").replace(/\s+/g," ").trim().toLowerCase()),h=0x811c9dc5;for(var i=0;i<b.length;i++){h^=b[i];h=Math.imul(h,0x01000193)>>>0}return("00000000"+h.toString(16)).slice(-8)}
+var AUD={set:null,el:null};
+try{fetch("audio/index.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(j){
+  if(!j)return;AUD.set={};for(var v in j){AUD.set[v]={};j[v].forEach(function(h){AUD.set[v][h]=1})}
+  if(typeof V!=="undefined"&&V.tab==="me")render()}).catch(function(){})}catch(e){}
+function playFile(t,slow,onFail){
+  var v=S.voice||"maider";if(v==="device"||!AUD.set||!AUD.set[v])return false;
+  var h=hz(t);if(!AUD.set[v][h])return false;
+  try{if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}
+  if(!AUD.el)AUD.el=new Audio();var a=AUD.el,r=slow?0.7:1;
+  a.pause();a.src="audio/"+v+"/"+h+".mp3";a.defaultPlaybackRate=r;a.playbackRate=r;try{a.preservesPitch=true}catch(e){}
+  var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(onFail)onFail()});
+  return true;
+}
+function say(t,slow){if(!playFile(t,slow,function(){sayDevice(t,slow)}))sayDevice(t,slow)}
+function sayDevice(t,slow){
   if(!VZ.ok){toast("Este navegador no tiene voz. Prueba en Chrome.");return}
   try{
     if(!VZ.list.length)pickVoice();
@@ -947,6 +963,11 @@ function startGrammar(id){
 }
 function audioCard(){
   var h='<div class="card"><h3 style="margin-bottom:6px">Audio y voz</h3>';
+  if(AUD.set){
+    var cv=S.voice||"maider";
+    h+='<p class="hint">Voz nativa vasca. Elige una:</p><div class="seg">'+[["maider","Maider"],["antton","Antton"],["device","Mi móvil"]].map(function(x){return '<button class="sg" data-act="voice" data-v="'+x[0]+'" aria-pressed="'+(cv===x[0])+'">'+x[1]+'</button>'}).join("")+'</div>';
+    if(cv!=="device")return h+'<p class="hint" style="margin-bottom:10px">Maider es voz de chica y Antton de chico. Si una frase no tiene audio, se usa la voz del móvil.</p><div class="row2"><button class="btn sec sm" data-act="vtest">Probar voz</button><button class="btn sec sm" data-act="vtest2">Probar lento</button></div><p class="hint" style="margin-top:10px">Voces: Maider y Antton, de HiTZ Zentroa y Aholab (UPV/EHU), licencia CC BY 4.0. Modelo StyleTTS2 para euskera de HiTZ, licencia Apache 2.0.</p></div>';
+  }
   if(!VZ.ok)return h+'<p class="hint">Este navegador no permite voz sintetizada. Prueba a abrir la app en Chrome.</p></div>';
   var eu=VZ.list.filter(function(x){return /^eu/i.test(x.lang)}),es=VZ.list.filter(function(x){return /^es/i.test(x.lang)}),info;
   if(!VZ.list.length)info="No se detectan voces todavía. Pulsa «Probar voz»; si no suena nada, tu móvil no tiene un motor de voz activo.";
@@ -1728,6 +1749,7 @@ document.addEventListener("click",function(ev){
     else if(act==="sound"){S.sound=!S.sound;save();render()}
     else if(act==="gopen"){startGrammar(a.getAttribute("data-id"))}
     else if(act==="daily"){var t0=dayKey(new Date());startRun({q:dailyQueue(),title:"¡Repaso del día hecho!",xpPer:8,bonus:(S.daily===t0?0:15),onDone:function(){S.daily=t0;save()}})}
+    else if(act==="voice"){S.voice=a.getAttribute("data-v");save();render();say("Kaixo!")}
     else if(act==="vtest"){say("Kaixo! Zer moduz? Euskara ikasten ari naiz.")}
     else if(act==="vtest2"){say("Kaixo! Zer moduz? Euskara ikasten ari naiz.",true)}
     else if(act==="lv"){V.lv=+a.getAttribute("data-n");render()}
