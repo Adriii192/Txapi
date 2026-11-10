@@ -46,6 +46,7 @@ jobs:
           function scan(html){ var re=/data-say="([^"]*)"/g, m; while((m=re.exec(html))) add(m[1].replace(/&quot;/g,'"').replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&")); }
           add("Kaixo!"); add("Kaixo! Zer moduz? Euskara ikasten ari naiz.");
           WORDS.forEach(function(w){ add(w.eu); });
+          DICT.forEach(function(d){ add(d.eu); add(ART(d.eu)); });
           PHR.forEach(function(p){ add(p.eu); });
           scan(vlist());
           STORY.forEach(function(s){ add(s.eu); (s.o||[]).forEach(function(o){ add(o.eu); }); });
