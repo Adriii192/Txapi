@@ -194,6 +194,8 @@ jobs:
               "epoch_2nd_00030.pth": M + "epoch_2nd_00030.pth",
               "epoch_00200.pth": "tts/Utils/ASR_basque/epoch_00200.pth",
               "step_4000000.t7": "tts/Utils/PLBERT_phoneme/step_4000000.t7",
+              "sample_maider.wav": "tts/Demo/ref_maider.wav",
+              "sample_antton.wav": "tts/Demo/ref_antton.wav",
           }
           for name, dst in FILES.items():
               os.makedirs(os.path.dirname(dst), exist_ok=True)
