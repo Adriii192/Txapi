@@ -342,6 +342,15 @@ main.anim>*:nth-child(2){animation-delay:.05s}main.anim>*:nth-child(3){animation
 .ach.lk{opacity:.8}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:380px){.wr{grid-template-columns:repeat(5,46px)}.wc{height:46px}}
+.hang{display:block;margin:4px auto;color:var(--ink)}
+.hw{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 14px}
+.hl{min-width:26px;text-align:center;font:700 30px var(--display);border-bottom:3px solid var(--ink);line-height:1.25}
+.hl.miss{color:var(--red);border-color:var(--red)}
+.hkb{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.hk{width:38px;height:44px;border:2px solid var(--line);border-bottom-width:4px;border-radius:10px;background:var(--surface);color:var(--ink);font:700 18px var(--body);text-transform:uppercase}
+.hk.ok{border-color:var(--ok);background:var(--ok-t)}
+.hk.bad{border-color:var(--red);background:var(--red-t);opacity:.55}
+.hk:disabled{opacity:.6}
 </style>
 </head>
 <body>
@@ -366,9 +375,9 @@ var UNITS=[
  {id:"l1",t:"Saludos",x:"En euskera se saluda según la hora: <b>egun on</b> por la mañana, <b>arratsalde on</b> por la tarde y <b>gabon</b> por la noche. <b>Agur</b> sirve para despedirse.",
   w:[["kaixo","hola"],["egun on","buenos días"],["arratsalde on","buenas tardes"],["gabon","buenas noches"],["agur","adiós"],["eskerrik asko","muchas gracias"],["mesedez","por favor"],["barkatu","perdón"],["bai","sí"],["ez","no"]],
   p:[["Kaixo, egun on","Hola, buenos días"],["Eskerrik asko, Ane","Muchas gracias, Ane"],["Bai, mesedez","Sí, por favor"]]},
- {id:"l2",t:"Presentarse",x:"<b>Izan</b> significa «ser». <b>Ni Ane naiz</b> es «yo soy Ane». Fíjate: el verbo va al final de la frase.",
+ {id:"l2",t:"Presentarse",x:"<b>Izan</b> significa «ser». <b>Ni Ane naiz</b> es «yo soy Ane». Fíjate: el verbo va al final de la frase. Ojo: para «estoy bien» no se usa izan sino <b>egon</b>: <b>Ni ondo nago</b>. Lo verás con calma en «Estar: egon».",
   w:[["ni","yo"],["zu","tú"],["izena","el nombre"],["zer moduz?","¿qué tal?"],["ondo","bien"],["oso ondo","muy bien"],["txarto","mal"],["eta zu?","¿y tú?"]],
-  p:[["Ni Ane naiz","Yo soy Ane"],["Oso ondo, eskerrik asko","Muy bien, muchas gracias"],["Ni ondo naiz","Yo estoy bien"],["Eta zu?","¿Y tú?"]]},
+  p:[["Ni Ane naiz","Yo soy Ane"],["Oso ondo, eskerrik asko","Muy bien, muchas gracias"],["Ni ondo nago","Yo estoy bien"],["Eta zu?","¿Y tú?"]]},
  {id:"l2b",t:"Sonidos: tx, ts, tz",x:"Tres sonidos que confunden. <b>tx</b> suena «ch» (<b>txapela</b>). <b>ts</b> y <b>tz</b> suenan como «ts»: <b>ts</b> es más fuerte (como la s) y <b>tz</b> más suave (como la z vasca, que no es la z de España). Y <b>x</b> suena «sh». Más detalle en Gramática → «tx, ts, tz».",
   w:[["txapela","la txapela (boina)"],["txokoa","el rincón"],["gutxi","poco"],["itsasoa","el mar"],["atsegin","agradable"],["hitza","la palabra"],["atzo","ayer"],["utzi","dejar"],["hotz","frío"],["hots","ruido, sonido"]],
   p:[["Txapela gorria da","La txapela es roja"],["Itsasoa handia da","El mar es grande"],["Gaur hotz dago","Hoy hace frío"]]},
@@ -402,12 +411,16 @@ var UNITS=[
   p:[["Non dago geltokia?","¿Dónde está la estación?"],["Zuzen eta ezkerrera","Recto y a la izquierda"],["Hondartza urrun dago","La playa está lejos"]]}
 ]},
 {id:"u4",t:"Gramática útil",d:"Ser, estar, casos y plurales",c:"red",L:[
- {id:"l11",t:"Ser: izan",x:"<b>Izan</b> («ser») cambia según quién es: <b>naiz</b> (yo), <b>zara</b> (tú), <b>da</b> (él/ella), <b>gara</b> (nosotros), <b>zarete</b> (vosotros), <b>dira</b> (ellos).",
+ {id:"l11",t:"Ser: izan",x:"<b>Izan</b> («ser») cambia según quién es: <b>naiz</b> (yo), <b>zara</b> (tú), <b>da</b> (él/ella), <b>gara</b> (nosotros), <b>zarete</b> (vosotros), <b>dira</b> (ellos). Sirve para identidad, profesión y cualidades: <b>Ikaslea naiz</b>. Para cómo estás o dónde estás se usa <b>egon</b>.",
   w:[["ni naiz","yo soy"],["zu zara","tú eres"],["hura da","él / ella es"],["gu gara","nosotros somos"],["zuek zarete","vosotros sois"],["haiek dira","ellos son"],["ikaslea","el estudiante"],["irakaslea","el profesor"]],
   p:[["Ni ikaslea naiz","Yo soy estudiante"],["Zu irakaslea zara","Tú eres profesor"],["Hura nire laguna da","Él es mi amigo"],["Gu lagunak gara","Nosotros somos amigos"]]},
- {id:"l12",t:"Estar: egon",x:"<b>Egon</b> («estar») se usa para lugares y estados. Y la terminación <b>-n</b> significa «en»: <b>etxean</b> es «en casa».",
-  w:[["ni nago","yo estoy"],["zu zaude","tú estás"],["hura dago","él / ella está"],["gu gaude","nosotros estamos"],["zuek zaudete","vosotros estáis"],["haiek daude","ellos están"]],
-  p:[["Ni etxean nago","Yo estoy en casa"],["Ama sukaldean dago","Mamá está en la cocina"],["Non zaude?","¿Dónde estás?"],["Gu hirian gaude","Nosotros estamos en la ciudad"]]},
+ {id:"l12",t:"Estar: egon",x:"<b>Egon</b> («estar») se usa para lugares y estados: <b>nago</b> (yo), <b>zaude</b> (tú), <b>dago</b> (él/ella), <b>gaude</b> (nosotros), <b>zaudete</b> (vosotros), <b>daude</b> (ellos). Por eso «yo estoy bien» es <b>Ni ondo nago</b> y no «naiz». La terminación <b>-n</b> significa «en»: <b>etxean</b> es «en casa».",
+  w:[["ni nago","yo estoy"],["zu zaude","tú estás"],["hura dago","él / ella está"],["gu gaude","nosotros estamos"],["zuek zaudete","vosotros estáis"],["haiek daude","ellos están"],["ondo nago","estoy bien"],["gaixo nago","estoy enfermo"],["nekatuta nago","estoy cansado"]],
+  p:[["Ni etxean nago","Yo estoy en casa"],["Ama sukaldean dago","Mamá está en la cocina"],["Non zaude?","¿Dónde estás?"],["Gu hirian gaude","Nosotros estamos en la ciudad"],["Ni ondo nago","Yo estoy bien"],["Zu nekatuta zaude","Tú estás cansado"]],
+  f:[{s:"Ni ondo ___",es:"Yo estoy bien",o:["naiz","nago","dut"],a:["nago"],w:"Cómo estás es un estado: se usa egon, nago."},
+     {s:"Zu etxean ___",es:"Tú estás en casa",o:["zara","zaude","zaudete"],a:["zaude"],w:"Lugar y tú: egon, zaude."}],
+  d:[{bot:"Zer moduz zaude?",es:"¿Cómo estás?",re:"nago$",ok:["Ondo nago","Ni ondo nago","Oso ondo nago"],model:"Ondo nago."}],
+  tw:[{es:"Yo estoy bien",ok:["Ni ondo nago","Ondo nago"]},{es:"Tú estás en casa",ok:["Zu etxean zaude","Etxean zaude"]}]},
  {id:"l13",t:"Casos",x:"Las terminaciones hacen de preposiciones: <b>-n</b> en, <b>-ra</b> a, <b>-rekin</b> con, <b>-(r)en</b> de. Así, <b>etxera</b> es «a casa» y <b>amarekin</b> es «con mamá».",
   w:[["etxean","en casa"],["etxera","a casa"],["hirian","en la ciudad"],["hirira","a la ciudad"],["amarekin","con mamá"],["aitarekin","con papá"],["amaren etxea","la casa de mamá"],["hondartzara","a la playa"],["noa","voy"]],
   p:[["Ni hondartzara noa","Yo voy a la playa"],["Ni amarekin nago","Yo estoy con mamá"],["Amaren etxea handia da","La casa de mamá es grande"]]},
@@ -444,6 +457,31 @@ var UNITS2=[
  {id:"l22",t:"Verbos básicos",x:"Los verbos se citan con su forma básica: <b>egin</b>, <b>joan</b>, <b>ikusi</b>. Para el presente habitual se añade <b>-ten/-tzen</b> y el auxiliar: <b>irakurri</b> → <b>irakurtzen dut</b> (leo), <b>entzun</b> → <b>entzuten dut</b> (escucho).",
   w:[["egin","hacer"],["joan","ir"],["etorri","venir"],["ikusi","ver"],["esan","decir"],["jakin","saber"],["irakurri","leer"],["idatzi","escribir"],["entzun","oír, escuchar"],["ikasi","estudiar, aprender"],["lan egin","trabajar"],["lo egin","dormir"]],
   p:[["Liburua irakurtzen dut","Leo el libro"],["Musika entzuten dugu","Escuchamos música"],["Telebista ikusten dut","Veo la tele"],["Lan egiten dut","Trabajo"]]}
+]},
+{id:"u6c",t:"Preguntas y verbos clave",d:"Preguntar, tener, querer y poder",c:"red",lv:1,L:[
+ {id:"e1",t:"Preguntas básicas",x:"Las palabras para preguntar van <b>al principio</b> y el verbo va <b>justo detrás</b>: <b>zer</b> (qué), <b>nor</b> (quién), <b>non</b> (dónde), <b>noiz</b> (cuándo), <b>nola</b> (cómo), <b>zergatik</b> (por qué), <b>zenbat</b> (cuánto), <b>zein</b> (cuál). Ejemplo: <b>Zer da hau?</b> (¿qué es esto?).",
+  w:[["zer","qué"],["nor","quién"],["non","dónde"],["noiz","cuándo"],["nola","cómo"],["zergatik","por qué"],["zenbat","cuánto"],["zein","cuál"],["hau","esto"],["hori","eso"]],
+  p:[["Zer da hau?","¿Qué es esto?"],["Nor da hori?","¿Quién es ese?"],["Non bizi zara?","¿Dónde vives?"],["Noiz etorriko zara?","¿Cuándo vendrás?"],["Nola zaude?","¿Cómo estás?"],["Zenbat urte dituzu?","¿Cuántos años tienes?"]]},
+ {id:"e2",t:"Tener: ukan",x:"<b>Ukan</b> («tener») : <b>dut</b> (yo tengo), <b>duzu</b> (tú), <b>du</b> (él/ella), <b>dugu</b> (nosotros), <b>duzue</b> (vosotros), <b>dute</b> (ellos). Si lo que tienes es plural: <b>ditut, dituzu, ditu, ditugu, dituzue, dituzte</b>. <b>Bi txakur ditut</b> es «tengo dos perros». Recuerda que el sujeto lleva <b>-k</b>: <b>Anek txakur bat du</b>.",
+  w:[["dut","yo tengo"],["duzu","tú tienes"],["du","él / ella tiene"],["dugu","nosotros tenemos"],["duzue","vosotros tenéis"],["dute","ellos tienen"],["ditut","yo tengo (varios)"],["dituzu","tú tienes (varios)"],["bi","dos"],["asko","mucho"]],
+  p:[["Etxe bat dut","Tengo una casa"],["Zuk liburu bat duzu","Tú tienes un libro"],["Anek txakur bat du","Ane tiene un perro"],["Guk kotxe berria dugu","Nosotros tenemos un coche nuevo"],["Bi txakur ditut","Tengo dos perros"]]},
+ {id:"e3",t:"Querer, necesitar y no poder",x:"<b>Nahi dut</b> es «quiero» y <b>behar dut</b> es «necesito, tengo que»: <b>Lan egin behar dut</b> (tengo que trabajar). <b>Ezin</b> es «no poder»: con verbos de movimiento va con <b>naiz</b> (<b>Ezin naiz etorri</b>, no puedo venir) y con los demás con <b>dut</b> (<b>Ezin dut ulertu</b>, no puedo entender).",
+  w:[["nahi dut","quiero"],["behar dut","necesito, tengo que"],["ezin dut","no puedo (hacer algo)"],["ezin naiz","no puedo (ir, venir)"],["lan egin","trabajar"],["ikasi","estudiar"],["hitz egin","hablar"],["ulertu","entender"],["orain","ahora"],["gero","luego"]],
+  p:[["Kafea nahi dut","Quiero un café"],["Lan egin behar dut","Tengo que trabajar"],["Etxera joan behar dut","Tengo que ir a casa"],["Ezin naiz etorri","No puedo venir"],["Ezin dut ulertu","No puedo entender"],["Euskaraz hitz egin nahi dut","Quiero hablar en euskera"]]}
+]},
+{id:"u6d",t:"Más vocabulario",d:"Frutas, transporte, la casa y opuestos",c:"sun",lv:1,L:[
+ {id:"e4",t:"Frutas y verduras",x:"Con la terminación <b>-a</b> se dice «el/la»: <b>sagarra</b> (la manzana). Para pedir: <b>Sagar bat nahi dut</b> (quiero una manzana). Para el plural: <b>sagarrak</b>.",
+  w:[["sagarra","la manzana"],["udarea","la pera"],["platanoa","el plátano"],["laranja","la naranja"],["gerezia","la cereza"],["mahatsa","la uva"],["marrubia","la fresa"],["limoia","el limón"],["tomatea","el tomate"],["patata","la patata"],["azenarioa","la zanahoria"],["tipula","la cebolla"]],
+  p:[["Sagarra gorria da","La manzana es roja"],["Tomate bat nahi dut","Quiero un tomate"],["Laranja bat jan nahi dut","Quiero comer una naranja"],["Azenarioak laranjak dira","Las zanahorias son naranjas"]]},
+ {id:"e5",t:"Transporte",x:"Para decir «en autobús» se añade <b>-z</b>: <b>autobusez</b>. Así: <b>Autobusez joaten naiz lanera</b> (voy al trabajo en autobús). <b>Trenez</b> (en tren), <b>bizikletaz</b> (en bici), <b>hegazkinez</b> (en avión).",
+  w:[["kotxea","el coche"],["autobusa","el autobús"],["trena","el tren"],["bizikleta","la bicicleta"],["hegazkina","el avión"],["itsasontzia","el barco"],["geltokia","la estación"],["aireportua","el aeropuerto"],["bidea","el camino"],["bidaia","el viaje"]],
+  p:[["Autobusez joaten naiz lanera","Voy al trabajo en autobús"],["Trenez etorri naiz","He venido en tren"],["Hegazkinez joango gara","Iremos en avión"],["Bizikletaz joaten da eskolara","Va a la escuela en bicicleta"]]},
+ {id:"e6",t:"La casa por dentro",x:"Las habitaciones y los muebles llevan <b>-a</b>: <b>sukaldea</b> (la cocina). Para decir dónde están, <b>-n</b>: <b>sukaldean</b> (en la cocina). <b>Ohea logelan dago</b> es «la cama está en la habitación».",
+  w:[["sukaldea","la cocina"],["logela","la habitación"],["komuna","el baño"],["egongela","el salón"],["lorategia","el jardín"],["mahaia","la mesa"],["aulkia","la silla"],["ohea","la cama"],["leihoa","la ventana"],["atea","la puerta"]],
+  p:[["Sukaldean nago","Estoy en la cocina"],["Ohea logelan dago","La cama está en la habitación"],["Mahaia egongelan dago","La mesa está en el salón"],["Lorategi handia dugu","Tenemos un jardín grande"]]},
+ {id:"e7",t:"Opuestos",x:"Los adjetivos van <b>detrás</b> del nombre y llevan <b>-a</b>: <b>etxe berria</b> (la casa nueva). Aprende los opuestos por parejas: <b>handia / txikia</b>, <b>berria / zaharra</b>, <b>garestia / merkea</b>, <b>erraza / zaila</b>.",
+  w:[["handia","grande"],["txikia","pequeño"],["luzea","largo"],["laburra","corto"],["berria","nuevo"],["zaharra","viejo"],["ona","bueno"],["txarra","malo"],["garestia","caro"],["merkea","barato"],["erraza","fácil"],["zaila","difícil"]],
+  p:[["Etxe berria handia da","La casa nueva es grande"],["Kotxe hori garestia da","Ese coche es caro"],["Euskara ez da erraza","El euskera no es fácil"],["Liburu hau ona da","Este libro es bueno"]]}
 ]}
 ];
 var UNITS3=[
@@ -471,6 +509,14 @@ var UNITS3=[
      {s:"Ni txikia ___",es:"Yo era pequeño",o:["naiz","nintzen","nago"],a:["nintzen"],w:"Cualidad en pasado: izan, nintzen."}],
   d:[{bot:"Non zeunden atzo?",es:"¿Dónde estabas ayer?",re:"nengoen$",ok:["Atzo etxean nengoen","Etxean nengoen"],model:"Atzo etxean nengoen."}],
   tw:[{es:"Yo era estudiante",ok:["Ni ikaslea nintzen","Ikaslea nintzen"]},{es:"La casa estaba en la ciudad",ok:["Etxea hirian zegoen"]}]},
+ {id:"n1b",t:"Presente, pasado y futuro",x:"Ser y estar en los tres tiempos. <b>Izan</b>: <b>naiz</b> (soy), <b>nintzen</b> (era), <b>izango naiz</b> (seré). <b>Egon</b>: <b>nago</b> (estoy), <b>nengoen</b> (estaba), <b>egongo naiz</b> (estaré). El futuro se hace con el infinitivo + <b>-ko/-go</b> y <b>naiz, zara, da, gara, zarete, dira</b>: <b>izango zara</b> (serás), <b>egongo gara</b> (estaremos).",
+  w:[["orain","ahora"],["gaur","hoy"],["atzo","ayer"],["bihar","mañana"],["izango naiz","seré"],["egongo naiz","estaré"],["izango da","será"],["egongo da","estará"],["nengoen","yo estaba"]],
+  p:[["Gaur etxean nago","Hoy estoy en casa"],["Atzo etxean nengoen","Ayer estaba en casa"],["Bihar etxean egongo naiz","Mañana estaré en casa"],["Ni medikua izango naiz","Yo seré médico"],["Atzo gaixo nengoen","Ayer estaba enfermo"],["Bihar ondo egongo naiz","Mañana estaré bien"]],
+  f:[{s:"Gaur ni ondo ___",es:"Hoy yo estoy bien",o:["naiz","nago","nengoen"],a:["nago"],w:"Estado en presente: nago."},
+     {s:"Atzo ni ondo ___",es:"Ayer yo estaba bien",o:["nago","nengoen","nintzen"],a:["nengoen"],w:"Estado en pasado: nengoen."},
+     {s:"Bihar etxean ___ naiz",es:"Mañana estaré en casa",o:["nago","egongo","egon"],a:["egongo"],w:"Futuro de egon: egongo naiz."}],
+  d:[{bot:"Non egongo zara bihar?",es:"¿Dónde estarás mañana?",re:"egongo naiz$",ok:["Bihar etxean egongo naiz","Etxean egongo naiz"],model:"Etxean egongo naiz."}],
+  tw:[{es:"Mañana estaré en casa",ok:["Bihar etxean egongo naiz","Etxean egongo naiz bihar"]},{es:"Ayer estaba bien",ok:["Atzo ondo nengoen","Ni atzo ondo nengoen"]}]},
  {id:"n2",t:"Pasado: jan nuen",x:"Para el pasado de verbos con objeto se usa el <b>participio</b> y el auxiliar en pasado: <b>jan nuen</b> (comí), <b>edan zenuen</b> (bebiste), <b>ikusi zuen</b> (vio). Auxiliar: <b>nuen, zenuen, zuen, genuen, zenuten, zuten</b>. Para «he comido» se usa <b>jan dut</b>.",
   w:[["jan","comer (participio)"],["edan","beber (participio)"],["erosi","comprar"],["ikusi","ver"],["irakurri","leer"],["ikasi","estudiar"],["idatzi","escribir"],["bart","anoche"],["joan den astean","la semana pasada"]],
   p:[["Atzo ogia jan nuen","Ayer comí pan"],["Bart telebista ikusi genuen","Anoche vimos la tele"],["Zer erosi zenuen?","¿Qué compraste?"],["Liburua irakurri dut","He leído el libro"]],
@@ -485,6 +531,31 @@ var UNITS3=[
      {s:"Gero kafea ___ dugu",es:"Luego tomaremos café",o:["edan","edango","edaten"],a:["edango"],w:"Futuro: edan + -go."}],
   d:[{bot:"Zer egingo duzu bihar?",es:"¿Qué harás mañana?",re:"(ko|go) (dut|naiz)$",ok:["Bihar lan egingo dut","Etxera joango naiz"],model:"Bihar lan egingo dut."}],
   tw:[{es:"Mañana iré a casa",ok:["Bihar etxera joango naiz","Etxera joango naiz bihar"]},{es:"Luego compraré pan",ok:["Gero ogia erosiko dut","Ogia erosiko dut gero"]}]}
+]},
+{id:"u7b",t:"Casos",d:"En, a, desde, con, de y para",c:"green",lv:2,L:[
+ {id:"c1",t:"Casos: en, a, desde",x:"El euskera no usa preposiciones: añade terminaciones al final de la palabra. <b>-n</b> es «en» (<b>etxean</b>, en casa), <b>-ra</b> es «a» (<b>etxera</b>, a casa) y <b>-tik</b> es «desde, de» (<b>etxetik</b>, desde casa). Preguntas: <b>Non?</b> (¿dónde?), <b>Nora?</b> (¿adónde?), <b>Nondik?</b> (¿de dónde?). Con <b>-ko</b> se dice de dónde es algo: <b>Donostiakoa naiz</b> (soy de San Sebastián). Si la palabra acaba en consonante se añade una vocal: <b>hotel</b> → <b>hotelean</b>, <b>hotelera</b>.",
+  w:[["etxean","en casa"],["etxera","a casa"],["etxetik","desde casa"],["hirian","en la ciudad"],["hirira","a la ciudad"],["hiritik","desde la ciudad"],["eskolan","en la escuela"],["eskolara","a la escuela"],["Donostian","en San Sebastián"],["Donostiara","a San Sebastián"],["Non?","¿dónde?"],["Nora?","¿adónde?"],["Nondik?","¿de dónde?"]],
+  p:[["Ni etxean nago","Yo estoy en casa"],["Ni etxera noa","Yo voy a casa"],["Ni etxetik nator","Yo vengo de casa"],["Non zaude?","¿Dónde estás?"],["Nora zoaz?","¿Adónde vas?"],["Nondik zatoz?","¿De dónde vienes?"],["Nongoa zara?","¿De dónde eres?"],["Donostiakoa naiz","Soy de San Sebastián"]],
+  f:[{s:"Ni etxe___ nago",es:"Estoy en casa",o:["an","ra","tik"],a:["an"],w:"Estar en un lugar: -n (etxean)."},
+     {s:"Ni etxe___ noa",es:"Voy a casa",o:["an","ra","tik"],a:["ra"],w:"Ir hacia un lugar: -ra (etxera)."},
+     {s:"Ni hiri___ nator",es:"Vengo de la ciudad",o:["an","ra","tik"],a:["tik"],w:"Origen: -tik (hiritik)."}],
+  d:[{bot:"Non zaude?",es:"¿Dónde estás?",re:"nago$",ok:["Etxean nago","Hirian nago","Eskolan nago"],model:"Etxean nago."},{bot:"Nora zoaz?",es:"¿Adónde vas?",re:"noa$",ok:["Etxera noa","Eskolara noa","Hirira noa"],model:"Etxera noa."}],
+  tw:[{es:"Voy a la escuela",ok:["Eskolara noa","Ni eskolara noa"]},{es:"Estoy en la ciudad",ok:["Hirian nago","Ni hirian nago"]}]},
+ {id:"c2",t:"Casos: con, de, para",x:"<b>-rekin</b> es «con»: <b>amarekin</b> (con mamá). <b>-ren</b> es «de» (posesión): <b>amaren etxea</b> (la casa de mamá). <b>-rentzat</b> es «para»: <b>amarentzat</b> (para mamá). <b>-ri</b> es «a» una persona: <b>amari</b> (a mamá). Tras vocal se añade <b>r</b>; tras consonante no: <b>Jonekin</b>, <b>Jonen</b>, <b>Jonentzat</b>. Con pronombres: <b>nirekin</b> (conmigo), <b>zurekin</b> (contigo), <b>harekin</b> (con él/ella), <b>niretzat</b> (para mí), <b>zuretzat</b> (para ti).",
+  w:[["amarekin","con mamá"],["aitarekin","con papá"],["amaren etxea","la casa de mamá"],["amarentzat","para mamá"],["amari","a mamá"],["nirekin","conmigo"],["zurekin","contigo"],["harekin","con él / ella"],["gurekin","con nosotros"],["niretzat","para mí"],["zuretzat","para ti"],["Norekin?","¿con quién?"],["Norentzat?","¿para quién?"]],
+  p:[["Ni amarekin nago","Yo estoy con mamá"],["Zurekin joango naiz","Iré contigo"],["Hau zuretzat da","Esto es para ti"],["Hau amarentzat da","Esto es para mamá"],["Amaren etxea handia da","La casa de mamá es grande"],["Amari liburua eman diot","Le he dado el libro a mamá"],["Norekin zaude?","¿Con quién estás?"]],
+  f:[{s:"Ni ama___ nago",es:"Estoy con mamá",o:["rekin","ren","rentzat"],a:["rekin"],w:"-rekin es «con»."},
+     {s:"Ama___ etxea handia da",es:"La casa de mamá es grande",o:["rekin","ren","ri"],a:["ren"],w:"-ren indica posesión: «de mamá»."},
+     {s:"Hau zu___ da",es:"Esto es para ti",o:["rekin","retzat","ren"],a:["retzat"],w:"Para ti: zuretzat."}],
+  d:[{bot:"Norekin zaude?",es:"¿Con quién estás?",re:"nago$",ok:["Amarekin nago","Aitarekin nago","Lagunekin nago"],model:"Amarekin nago."}],
+  tw:[{es:"Voy contigo",ok:["Zurekin noa"]},{es:"Esto es para mamá",ok:["Hau amarentzat da"]},{es:"La casa de papá",ok:["Aitaren etxea"]}]},
+ {id:"c3",t:"Casos con personas y plural",x:"Para ir hacia una persona se usa <b>-rengana</b>, y para venir de ella <b>-rengandik</b>: <b>Amarengana noa</b> (voy a donde mamá), <b>Amarengandik nator</b> (vengo de donde mamá). En plural los casos usan <b>-etan</b> (en), <b>-etara</b> (a) y <b>-etatik</b> (desde): <b>etxeetan</b> (en las casas), <b>etxeetara</b> (a las casas). Otras terminaciones útiles: <b>-z</b> (en/por medio de: <b>euskaraz</b>, en euskera), <b>-gatik</b> (por: <b>zuregatik</b>, por ti), <b>-raino</b> (hasta: <b>etxeraino</b>).",
+  w:[["amarengana","a donde mamá"],["amarengandik","de parte de mamá"],["medikuarengana","al médico"],["etxeetan","en las casas"],["etxeetara","a las casas"],["euskaraz","en euskera"],["zuregatik","por ti"],["etxeraino","hasta casa"]],
+  p:[["Amarengana noa","Voy a donde mamá"],["Medikuarengana noa","Voy al médico"],["Amarengandik nator","Vengo de donde mamá"],["Euskaraz hitz egiten dut","Hablo en euskera"],["Zuregatik etorri naiz","He venido por ti"],["Etxeetan jende asko bizi da","En las casas vive mucha gente"]],
+  f:[{s:"Ni medikuaren___ noa",es:"Voy al médico",o:["gana","tik","rekin"],a:["gana"],w:"Ir hacia una persona: -rengana."},
+     {s:"Euskara___ hitz egiten dut",es:"Hablo en euskera",o:["z","n","ra"],a:["z"],w:"Idioma: -z (euskaraz)."}],
+  d:[{bot:"Nora zoaz?",es:"¿Adónde vas?",re:"noa$",ok:["Medikuarengana noa","Amarengana noa"],model:"Medikuarengana noa."}],
+  tw:[{es:"Voy al médico",ok:["Medikuarengana noa","Ni medikuarengana noa"]},{es:"He venido por ti",ok:["Zuregatik etorri naiz"]}]}
 ]},
 {id:"u8",t:"Día a día",d:"Rutina, la hora y el trabajo",c:"sun",lv:2,L:[
  {id:"n4",t:"Rutina diaria",x:"Para la rutina se usa el presente habitual: participio con <b>-ten/-tzen</b> + auxiliar: <b>jaikitzen naiz</b> (me levanto), <b>gosaltzen dut</b> (desayuno). Las formas son irregulares: apréndelas en bloque. «A las siete» es <b>zazpietan</b>.",
@@ -542,6 +613,56 @@ var UNITS3=[
      {s:"Niri sagarrak gustatzen ___",es:"Me gustan las manzanas",o:["zait","zaizkit","zaizu"],a:["zaizkit"],w:"Cosas plurales: zaizkit."}],
   d:[{bot:"Zer gustatzen zaizu?",es:"¿Qué te gusta?",re:"gustatzen (zait|zaizkit)$",ok:["Niri musika gustatzen zait","Niri kafea gustatzen zait"],model:"Niri musika gustatzen zait."}],
   tw:[{es:"Me gusta el café",ok:["Niri kafea gustatzen zait","Kafea gustatzen zait"]},{es:"Me gustan las manzanas",ok:["Niri sagarrak gustatzen zaizkit","Sagarrak gustatzen zaizkit"]}]}
+]},
+{id:"u8b",t:"Comparar y mandar",d:"Más que, tan como y órdenes",c:"blue",lv:2,L:[
+ {id:"m1",t:"Comparar",x:"Para comparar se añade <b>-ago</b>: <b>handia</b> → <b>handiagoa</b> (más grande). «Que» es <b>baino</b>: <b>Ni zu baino altuagoa naiz</b> (soy más alto que tú). «Tan... como» es <b>bezain</b>: <b>Hau hori bezain polita da</b>. El superlativo lleva <b>-en</b>: <b>handiena</b> (el más grande).",
+  w:[["handiago","más grande"],["txikiago","más pequeño"],["altuago","más alto"],["hobea","mejor"],["baino","que (al comparar)"],["bezain","tan... como"],["handiena","el más grande"],["altuena","el más alto"],["gehiago","más"],["gutxiago","menos"]],
+  p:[["Etxe hau handiagoa da","Esta casa es más grande"],["Ni zu baino altuagoa naiz","Yo soy más alto que tú"],["Hau hori bezain polita da","Esto es tan bonito como eso"],["Donostia Bilbo baino txikiagoa da","San Sebastián es más pequeña que Bilbao"],["Hau handiena da","Este es el más grande"]],
+  f:[{s:"Ni zu ___ altuagoa naiz",es:"Soy más alto que tú",o:["baino","bezain","ago"],a:["baino"],w:"Baino significa «que» al comparar."},
+     {s:"Hau hori ___ polita da",es:"Esto es tan bonito como eso",o:["baino","bezain","gehiago"],a:["bezain"],w:"Bezain significa «tan... como»."},
+     {s:"Etxe hau handi___ da",es:"Esta casa es más grande",o:["agoa","ena","ra"],a:["agoa"],w:"-ago es el comparativo: handiagoa."}],
+  d:[{bot:"Zein da handiagoa, Donostia ala Bilbo?",es:"¿Cuál es más grande, San Sebastián o Bilbao?",re:"handiagoa da$",ok:["Bilbo handiagoa da","Bilbo Donostia baino handiagoa da"],model:"Bilbo handiagoa da."}],
+  tw:[{es:"Soy más alto que tú",ok:["Ni zu baino altuagoa naiz","Zu baino altuagoa naiz"]},{es:"Esta casa es más grande",ok:["Etxe hau handiagoa da"]}]},
+ {id:"m2",t:"Órdenes y peticiones",x:"Para las órdenes cotidianas se usa el verbo en su forma básica, en tono familiar: <b>Etorri hona!</b> (¡ven aquí!), <b>Itxi atea!</b> (¡cierra la puerta!), <b>Ireki leihoa!</b> (¡abre la ventana!). Con <b>mesedez</b> suena más amable. Otras: <b>zatoz</b> (ven), <b>zoaz</b> (ve) y <b>goazen</b> (vamos).",
+  w:[["etorri hona","ven aquí"],["itxi","cerrar"],["ireki","abrir"],["eseri","sentarse"],["itxaron","esperar"],["begiratu","mirar"],["entzun","escuchar"],["zatoz","ven"],["zoaz","ve"],["goazen","vamos"]],
+  p:[["Etorri hona, mesedez","Ven aquí, por favor"],["Itxi atea, mesedez","Cierra la puerta, por favor"],["Ireki leihoa","Abre la ventana"],["Itxaron pixka bat","Espera un poco"],["Goazen etxera","Vamos a casa"]],
+  f:[{s:"___ atea, mesedez",es:"Cierra la puerta, por favor",o:["Itxi","Ireki","Eseri"],a:["Itxi"],w:"Itxi significa «cerrar»."},
+     {s:"___ etxera!",es:"¡Vamos a casa!",o:["Goazen","Zatoz","Itxaron"],a:["Goazen"],w:"Goazen significa «vamos»."},
+     {s:"___ hona, mesedez",es:"Ven aquí, por favor",o:["Zatoz","Zoaz","Goazen"],a:["Zatoz"],w:"Zatoz significa «ven»."}],
+  d:[{bot:"Atea irekita dago. Zer esaten diozu Aneri?",es:"La puerta está abierta. ¿Qué le dices a Ane?",re:"itxi",ok:["Itxi atea, mesedez","Itxi atea"],model:"Itxi atea, mesedez."}],
+  tw:[{es:"Abre la ventana",ok:["Ireki leihoa"]},{es:"Vamos a casa",ok:["Goazen etxera"]}]}
+]},
+{id:"u8c",t:"Familia y viajes",d:"Parentescos, hotel y estación",c:"green",lv:2,L:[
+ {id:"m3",t:"La familia",x:"<b>Aitona</b> (abuelo), <b>amona</b> (abuela), <b>osaba</b> (tío), <b>izeba</b> (tía), <b>seme</b> (hijo), <b>alaba</b> (hija). Los hermanos dependen de quién habla: un hombre dice <b>anaia</b> (su hermano) y <b>arreba</b> (su hermana); una mujer dice <b>neba</b> (su hermano) y <b>ahizpa</b> (su hermana).",
+  w:[["aitona","el abuelo"],["amona","la abuela"],["osaba","el tío"],["izeba","la tía"],["seme","el hijo"],["alaba","la hija"],["anaia","el hermano (de un hombre)"],["arreba","la hermana (de un hombre)"],["neba","el hermano (de una mujer)"],["ahizpa","la hermana (de una mujer)"],["senarra","el marido"],["emaztea","la esposa"]],
+  p:[["Nire aitona Donostian bizi da","Mi abuelo vive en San Sebastián"],["Alaba bat dut","Tengo una hija"],["Ane nire ahizpa da","Ane es mi hermana (lo dice una mujer)"],["Nire anaia medikua da","Mi hermano es médico (lo dice un hombre)"],["Nire senarra irakaslea da","Mi marido es profesor"]],
+  f:[{s:"Nire alaba ikaslea ___",es:"Mi hija es estudiante",o:["da","naiz","dut"],a:["da"],w:"Ser con tercera persona: da."},
+     {s:"Nik alaba bat ___",es:"Tengo una hija",o:["dut","naiz","nago"],a:["dut"],w:"Tener: ukan, dut."}],
+  d:[{bot:"Anaiarik edo arrebarik duzu?",es:"¿Tienes hermano o hermana?",re:"dut$",ok:["Anaia bat dut","Arreba bat dut","Ez dut"],model:"Anaia bat dut."}],
+  tw:[{es:"Tengo una hija",ok:["Alaba bat dut"]},{es:"Mi abuela vive en casa",ok:["Nire amona etxean bizi da"]}]},
+ {id:"m4",t:"Viajar",x:"Para pedir en un hotel o una estación: <b>Gela bat nahi dut</b> (quiero una habitación), <b>Txartel bat nahi dut</b> (quiero un billete). <b>Zer ordutan irteten da trena?</b> es «¿a qué hora sale el tren?». La hora lleva <b>-etan</b>: <b>zortzietan</b> (a las ocho).",
+  w:[["gela","la habitación"],["txartela","el billete"],["maleta","la maleta"],["erreserba","la reserva"],["ordaindu","pagar"],["irten","salir"],["iritsi","llegar"],["ordutan","a las (horas)"],["zenbat balio du","cuánto cuesta"],["bidaiatu","viajar"]],
+  p:[["Gela bat nahi dut, mesedez","Quiero una habitación, por favor"],["Txartel bat nahi dut","Quiero un billete"],["Zer ordutan irteten da trena?","¿A qué hora sale el tren?"],["Trena zortzietan iristen da","El tren llega a las ocho"],["Erreserba bat dut","Tengo una reserva"]],
+  f:[{s:"Gela bat ___ dut",es:"Quiero una habitación",o:["nahi","behar","ezin"],a:["nahi"],w:"Nahi dut: quiero."},
+     {s:"Zer ___ irteten da trena?",es:"¿A qué hora sale el tren?",o:["ordutan","egunean","urtean"],a:["ordutan"],w:"Zer ordutan: ¿a qué hora?"}],
+  d:[{bot:"Zer nahi duzu?",es:"¿Qué desea?",re:"nahi dut$",ok:["Gela bat nahi dut","Txartel bat nahi dut"],model:"Gela bat nahi dut."}],
+  tw:[{es:"Quiero un billete",ok:["Txartel bat nahi dut"]},{es:"El tren llega a las ocho",ok:["Trena zortzietan iristen da"]}]}
+]},
+{id:"u8d",t:"Hablar de ti",d:"Aficiones y lo que sabes hacer",c:"sun",lv:2,L:[
+ {id:"m5",t:"Aficiones: me gusta + -tzea",x:"Para decir qué te gusta hacer, el verbo toma <b>-tzea / -tea</b> y se usa <b>gustatzen zait</b>: <b>Irakurtzea gustatzen zait</b> (me gusta leer), <b>Musika entzutea gustatzen zait</b>. La terminación cambia según el verbo (irakurri → irakurtzea, entzun → entzutea, jan → jatea): aprende cada ejemplo completo.",
+  w:[["irakurtzea","leer"],["entzutea","escuchar"],["ikastea","estudiar"],["jatea","comer"],["dantzatzea","bailar"],["kantatzea","cantar"],["ibiltzea","pasear"],["bidaiatzea","viajar"],["sukaldatzea","cocinar"],["jolastea","jugar"]],
+  p:[["Irakurtzea gustatzen zait","Me gusta leer"],["Musika entzutea gustatzen zait","Me gusta escuchar música"],["Zuri dantzatzea gustatzen zaizu?","¿A ti te gusta bailar?"],["Aneri sukaldatzea gustatzen zaio","A Ane le gusta cocinar"],["Niri ez zait bidaiatzea gustatzen","A mí no me gusta viajar"]],
+  f:[{s:"Niri irakurtzea ___ zait",es:"A mí me gusta leer",o:["gustatzen","gustatu","gustuko"],a:["gustatzen"],w:"Gustatzen zait: me gusta."},
+     {s:"Aneri ___ gustatzen zaio",es:"A Ane le gusta cocinar",o:["sukaldatzea","sukaldea","sukaldatu"],a:["sukaldatzea"],w:"Verbo + -tzea: sukaldatzea."}],
+  d:[{bot:"Zer gustatzen zaizu?",es:"¿Qué te gusta hacer?",re:"gustatzen zait$",ok:["Irakurtzea gustatzen zait","Musika entzutea gustatzen zait"],model:"Irakurtzea gustatzen zait."}],
+  tw:[{es:"Me gusta escuchar música",ok:["Musika entzutea gustatzen zait"]},{es:"Me gusta leer",ok:["Irakurtzea gustatzen zait"]}]},
+ {id:"m6",t:"Saber: jakin",x:"<b>Jakin</b> («saber»): <b>dakit</b> (sé), <b>dakizu</b> (sabes), <b>daki</b> (sabe), <b>dakigu</b> (sabemos), <b>dakizue</b> (sabéis), <b>dakite</b> (saben). Para «saber hacer algo» se pone antes el verbo con <b>-ten/-tzen</b>: <b>Euskaraz hitz egiten dakit</b> (sé hablar euskera). Negativo: <b>Ez dakit</b> (no sé).",
+  w:[["dakit","yo sé"],["dakizu","tú sabes"],["daki","él / ella sabe"],["dakigu","nosotros sabemos"],["dakizue","vosotros sabéis"],["dakite","ellos saben"],["ez dakit","no sé"],["hitz egiten dakit","sé hablar"],["igeri egiten dakit","sé nadar"],["sukaldatzen dakit","sé cocinar"]],
+  p:[["Euskaraz hitz egiten dakit","Sé hablar euskera"],["Zuk igeri egiten dakizu?","¿Sabes nadar?"],["Ez dakit non dagoen","No sé dónde está"],["Anek sukaldatzen daki","Ane sabe cocinar"],["Ez dakit","No lo sé"]],
+  f:[{s:"Euskaraz hitz egiten ___",es:"Sé hablar euskera",o:["dakit","dut","naiz"],a:["dakit"],w:"Saber hacer algo: dakit."},
+     {s:"Zuk igeri egiten ___?",es:"¿Sabes nadar?",o:["dakizu","dakit","daki"],a:["dakizu"],w:"Para «tú»: dakizu."}],
+  d:[{bot:"Igeri egiten dakizu?",es:"¿Sabes nadar?",re:"(dakit|ez dakit)$",ok:["Bai, igeri egiten dakit","Ez dakit"],model:"Bai, igeri egiten dakit."}],
+  tw:[{es:"Sé hablar euskera",ok:["Euskaraz hitz egiten dakit"]},{es:"Ane sabe cocinar",ok:["Anek sukaldatzen daki"]}]}
 ]}
 ];
 var UNITS4=[
@@ -607,6 +728,58 @@ var UNITS4=[
   tw:[{es:"Te he enviado un mensaje",ok:["Mezu bat bidali dizut"]},{es:"Le he dado el libro a mamá",ok:["Amari liburua eman diot"]}],
   cz:{eu:"Amari opari bat eman {1}. Anek mezu bat bidali {2}. Zuk niri laguntzen {3}.",b:{1:{o:["diot","dizut","dit"],a:"diot"},2:{o:["dit","diot","dizut"],a:"dit"},3:{o:["didazu","dizut","dit"],a:"didazu"}}},
   wr:{p:"Escribe 2 frases contando qué le has dado o enviado a alguien.",check:["El auxiliar incluye a quien recibe (diot, dizut, dio...)","El participio va antes del auxiliar","El verbo va al final"],model:"Amari opari bat eman diot. Anaiari mezu bat bidali diot."}}
+]},
+{id:"u12",t:"Nivel avanzado",d:"Poder, estar haciendo, finalidad, tiempo y negaciones",c:"red",lv:3,L:[
+ {id:"a1",t:"Poder: dezaket",x:"Para «poder» en positivo se usa el verbo en forma básica y <b>dezaket</b>: <b>Euskaraz hitz egin dezaket</b> (puedo hablar euskera). Formas: <b>dezaket</b> (yo), <b>dezakezu</b> (tú), <b>dezake</b> (él/ella), <b>dezakegu</b> (nosotros), <b>dezakezue</b> (vosotros), <b>dezakete</b> (ellos). Para pedir algo: <b>Atea ireki dezakezu?</b> (¿puedes abrir la puerta?). Para «no puedo»: <b>ezin</b>.",
+  w:[["dezaket","yo puedo"],["dezakezu","tú puedes"],["dezake","él / ella puede"],["dezakegu","nosotros podemos"],["dezakezue","vosotros podéis"],["dezakete","ellos pueden"],["ezin","no poder"],["lagundu","ayudar"],["laguntza","la ayuda"],["pixka bat","un poco"]],
+  p:[["Euskaraz hitz egin dezaket","Puedo hablar euskera"],["Atea ireki dezakezu?","¿Puedes abrir la puerta?"],["Mesedez, errepika dezakezu?","Por favor, ¿puedes repetirlo?"],["Ezin dut gehiago jan","No puedo comer más"],["Gaur ezin naiz etorri","Hoy no puedo venir"]],
+  f:[{s:"Euskaraz hitz egin ___",es:"Puedo hablar euskera",o:["dezaket","dut","dakit"],a:["dezaket"],w:"Dezaket: puedo."},
+     {s:"Atea ireki ___?",es:"¿Puedes abrir la puerta?",o:["dezakezu","dezaket","dezake"],a:["dezakezu"],w:"Para «tú»: dezakezu."},
+     {s:"Gaur ___ naiz etorri",es:"Hoy no puedo venir",o:["ezin","ez","behar"],a:["ezin"],w:"Ezin naiz: no puedo."}],
+  d:[{bot:"Atea ireki dezakezu?",es:"¿Puedes abrir la puerta?",re:"(bai|noski|ireki)",ok:["Bai, noski","Noski"],model:"Bai, noski."}],
+  tw:[{es:"Puedo hablar euskera",ok:["Euskaraz hitz egin dezaket"]},{es:"Hoy no puedo venir",ok:["Gaur ezin naiz etorri"]}],
+  cz:{eu:"Euskaraz hitz egin {1}. Atea ireki {2}? Gaur ez nago ondo, {3} naiz etorri.",b:{1:{o:["dezaket","dut","naiz"],a:"dezaket"},2:{o:["dezakezu","dezaket","dezake"],a:"dezakezu"},3:{o:["ezin","ez","behar"],a:"ezin"}}},
+  wr:{p:"Escribe dos frases sobre qué puedes y qué no puedes hacer hoy. Usa «dezaket» y «ezin».",check:["Hay una frase con dezaket","Hay una frase con ezin","El verbo va al final"],model:"Euskaraz hitz egin dezaket. Gaur ezin naiz zinemara joan."}},
+ {id:"a2",t:"Estar haciendo: ari naiz",x:"Para decir que estás haciendo algo ahora: verbo con <b>-ten/-tzen</b> + <b>ari</b> + <b>izan</b>: <b>Lan egiten ari naiz</b> (estoy trabajando), <b>Zer egiten ari zara?</b> (¿qué estás haciendo?). En pasado: <b>ari nintzen</b> (estaba haciendo).",
+  w:[["ari naiz","estoy (haciendo)"],["ari zara","estás (haciendo)"],["ari da","está (haciendo)"],["ari gara","estamos (haciendo)"],["ari nintzen","estaba (haciendo)"],["orain","ahora"],["oraintxe","ahora mismo"],["bitartean","mientras tanto"],["telebista","la televisión"],["afaria","la cena"]],
+  p:[["Lan egiten ari naiz","Estoy trabajando"],["Zer egiten ari zara?","¿Qué estás haciendo?"],["Telebista ikusten ari gara","Estamos viendo la tele"],["Ama afaria prestatzen ari da","Mamá está preparando la cena"],["Lan egiten ari nintzen","Yo estaba trabajando"]],
+  f:[{s:"Orain euskara ikasten ___ naiz",es:"Ahora estoy estudiando euskera",o:["ari","egon","joan"],a:["ari"],w:"Ari naiz: estoy (haciendo)."},
+     {s:"Zer egiten ari ___?",es:"¿Qué estás haciendo?",o:["zara","zaude","duzu"],a:["zara"],w:"Ari + izan: zara."},
+     {s:"Atzo lan egiten ___ nintzen",es:"Ayer estaba trabajando",o:["ari","egon","izan"],a:["ari"],w:"Ari nintzen: estaba (haciendo)."}],
+  d:[{bot:"Zer egiten ari zara?",es:"¿Qué estás haciendo?",re:"ari naiz$",ok:["Lan egiten ari naiz","Euskara ikasten ari naiz"],model:"Euskara ikasten ari naiz."}],
+  tw:[{es:"Estoy trabajando",ok:["Lan egiten ari naiz"]},{es:"Estamos viendo la tele",ok:["Telebista ikusten ari gara"]}],
+  cz:{eu:"Orain euskara ikasten {1} naiz. Zer egiten {2} zara? Atzo lan egiten ari {3}.",b:{1:{o:["ari","egon","joan"],a:"ari"},2:{o:["ari","egon","joan"],a:"ari"},3:{o:["nintzen","naiz","nengoen"],a:"nintzen"}}},
+  wr:{p:"Describe lo que estás haciendo ahora mismo y lo que hacías ayer a esta hora. Usa «ari naiz» y «ari nintzen».",check:["Hay un ari naiz","Hay un ari nintzen","El verbo con -ten/-tzen va antes de ari"],model:"Orain euskara ikasten ari naiz. Atzo, ordu honetan, lan egiten ari nintzen."}},
+ {id:"a3",t:"Finalidad: -tzeko y -tzera",x:"Para decir «para hacer algo» el verbo toma <b>-tzeko/-teko</b>: <b>Euskara ikasteko liburu bat erosi dut</b> (he comprado un libro para aprender euskera). Para «ir a hacer algo» se usa <b>-tzera/-tera</b>: <b>Ogia erostera noa</b> (voy a comprar pan).",
+  w:[["ikasteko","para estudiar"],["erosteko","para comprar"],["jateko","para comer"],["erostera","a comprar"],["ikustera","a ver"],["hitz egitera","a hablar"],["janaria","la comida"],["dendara","a la tienda"],["lagunak","los amigos"],["zerbait","algo"]],
+  p:[["Euskara ikasteko liburu bat erosi dut","He comprado un libro para aprender euskera"],["Ogia erostera noa","Voy a comprar pan"],["Lagunak ikustera etorri naiz","He venido a ver a los amigos"],["Jateko zerbait nahi dut","Quiero algo para comer"],["Dendara noa ogia erostera","Voy a la tienda a comprar pan"]],
+  f:[{s:"Euskara ___ liburu bat erosi dut",es:"He comprado un libro para aprender euskera",o:["ikasteko","ikastera","ikasi"],a:["ikasteko"],w:"-tzeko expresa finalidad: «para»."},
+     {s:"Ogia ___ noa",es:"Voy a comprar pan",o:["erostera","erosteko","erosi"],a:["erostera"],w:"-tzera con ir: «a hacer algo»."},
+     {s:"___ zerbait nahi dut",es:"Quiero algo para comer",o:["Jateko","Jatera","Jan"],a:["Jateko"],w:"Jateko: «para comer»."}],
+  d:[{bot:"Nora zoaz?",es:"¿Adónde vas?",re:"era noa$",ok:["Ogia erostera noa","Lagunak ikustera noa"],model:"Ogia erostera noa."}],
+  tw:[{es:"Voy a comprar pan",ok:["Ogia erostera noa"]},{es:"He venido a ver a los amigos",ok:["Lagunak ikustera etorri naiz"]}],
+  cz:{eu:"Euskara {1} liburu bat erosi dut. Ogia {2} noa. {3} zerbait nahi dut.",b:{1:{o:["ikasteko","ikastera","ikasi"],a:"ikasteko"},2:{o:["erostera","erosteko","erosi"],a:"erostera"},3:{o:["Jateko","Jatera","Jan"],a:"Jateko"}}},
+  wr:{p:"Escribe dos frases: una con «-tzeko» (para qué haces algo) y otra con «-tzera» (a qué vas).",check:["Hay un verbo con -tzeko/-teko","Hay un verbo con -tzera/-tera","El verbo principal va al final"],model:"Euskara hobeto ikasteko liburuak irakurtzen ditut. Gaur liburutegira noa liburu bat hartzera."}},
+ {id:"a4",t:"Cuándo, antes y después",x:"<b>-nean</b> es «cuando»: <b>Etxera iristen naizenean, afaltzen dut</b> (cuando llego a casa, ceno). <b>Ondoren</b> es «después» y <b>aurretik</b> «antes»: <b>Jan ondoren, kafea hartzen dut</b> (después de comer, tomo café), <b>Lanera joan aurretik, gosaltzen dut</b>. <b>Bitartean</b> es «mientras».",
+  w:[["ondoren","después"],["aurretik","antes"],["bitartean","mientras"],["naizenean","cuando soy / llego"],["iritsi","llegar"],["afaldu","cenar"],["gosaldu","desayunar"],["lanera","al trabajo"],["lotara","a dormir"],["atseden hartu","descansar"]],
+  p:[["Etxera iristen naizenean, afaltzen dut","Cuando llego a casa, ceno"],["Jan ondoren, kafea hartzen dut","Después de comer, tomo café"],["Lanera joan aurretik, gosaltzen dut","Antes de ir al trabajo, desayuno"],["Lotara joan aurretik, liburu bat irakurtzen dut","Antes de ir a dormir, leo un libro"],["Lan egin ondoren, atseden hartzen dut","Después de trabajar, descanso"]],
+  f:[{s:"Jan ___, kafea hartzen dut",es:"Después de comer, tomo café",o:["ondoren","aurretik","bitartean"],a:["ondoren"],w:"Ondoren: después."},
+     {s:"Lanera joan ___, gosaltzen dut",es:"Antes de ir al trabajo, desayuno",o:["aurretik","ondoren","bitartean"],a:["aurretik"],w:"Aurretik: antes."},
+     {s:"Etxera iristen ___, afaltzen dut",es:"Cuando llego a casa, ceno",o:["naizenean","naiz","nintzen"],a:["naizenean"],w:"-nean: cuando (naizenean)."}],
+  d:[{bot:"Zer egiten duzu lanera joan aurretik?",es:"¿Qué haces antes de ir al trabajo?",re:"dut$",ok:["Gosaltzen dut","Kafea hartzen dut"],model:"Gosaltzen dut."}],
+  tw:[{es:"Después de comer, tomo café",ok:["Jan ondoren, kafea hartzen dut","Jan ondoren kafea hartzen dut"]},{es:"Antes de ir al trabajo, desayuno",ok:["Lanera joan aurretik, gosaltzen dut","Lanera joan aurretik gosaltzen dut"]}],
+  cz:{eu:"Jan {1}, kafea hartzen dut. Lanera joan {2}, gosaltzen dut. Etxera iristen {3}, afaltzen dut.",b:{1:{o:["ondoren","aurretik","bitartean"],a:"ondoren"},2:{o:["aurretik","ondoren","bitartean"],a:"aurretik"},3:{o:["naizenean","naiz","nintzen"],a:"naizenean"}}},
+  wr:{p:"Cuenta tu rutina con «antes de» y «después de»: dos frases.",check:["Hay una frase con ondoren","Hay una frase con aurretik","El verbo principal va al final"],model:"Lan egin ondoren, euskara ikasten dut. Lotara joan aurretik, liburu bat irakurtzen dut."}},
+ {id:"a5",t:"Negaciones: ezer, inor, inoiz",x:"Con <b>ez</b> se combinan palabras negativas: <b>ezer</b> (nada), <b>inor</b> (nadie), <b>inoiz</b> (nunca, alguna vez), <b>inon</b> (en ningún sitio). <b>Ez dut ezer ikusi</b> (no he visto nada), <b>Ez dago inor etxean</b> (no hay nadie en casa), <b>Inoiz ez naiz Bilbon egon</b> (nunca he estado en Bilbao).",
+  w:[["ezer","nada"],["inor","nadie"],["inoiz","nunca, alguna vez"],["inon","en ningún sitio"],["sekula","jamás"],["oraindik","todavía"],["oraindik ez","todavía no"],["dena","todo"],["denak","todos"],["ezer ez","nada (como respuesta)"]],
+  p:[["Ez dut ezer ikusi","No he visto nada"],["Ez dago inor etxean","No hay nadie en casa"],["Inoiz ez naiz Bilbon egon","Nunca he estado en Bilbao"],["Oraindik ez dut afaldu","Todavía no he cenado"],["Ez naiz inora joango","No iré a ninguna parte"]],
+  f:[{s:"Ez dut ___ ikusi",es:"No he visto nada",o:["ezer","inor","inoiz"],a:["ezer"],w:"Ezer: nada."},
+     {s:"Ez dago ___ etxean",es:"No hay nadie en casa",o:["inor","ezer","inoiz"],a:["inor"],w:"Inor: nadie."},
+     {s:"___ ez naiz Bilbon egon",es:"Nunca he estado en Bilbao",o:["Inoiz","Inor","Ezer"],a:["Inoiz"],w:"Inoiz ez: nunca."}],
+  d:[{bot:"Zer ikusi duzu?",es:"¿Qué has visto?",re:"ez dut ezer ikusi$",ok:["Ez dut ezer ikusi","Ezer ez"],model:"Ez dut ezer ikusi."}],
+  tw:[{es:"No he visto nada",ok:["Ez dut ezer ikusi"]},{es:"Nunca he estado en Bilbao",ok:["Inoiz ez naiz Bilbon egon"]}],
+  cz:{eu:"Ez dut {1} ikusi. Ez dago {2} etxean. {3} ez naiz Bilbon egon.",b:{1:{o:["ezer","inor","inoiz"],a:"ezer"},2:{o:["inor","ezer","inoiz"],a:"inor"},3:{o:["Inoiz","Inor","Ezer"],a:"Inoiz"}}},
+  wr:{p:"Escribe dos frases negativas con «ezer», «inor» o «inoiz».",check:["Hay una palabra negativa (ezer, inor, inoiz...)","Aparece ez delante del verbo","El verbo va al final"],model:"Gaur ez dut ezer erosi. Inoiz ez naiz Iruñean egon."}}
 ]}
 ];
 UNITS=UNITS.concat(UNITS2,UNITS3,UNITS4);
@@ -615,6 +788,46 @@ UNITS.forEach(function(u){u.lv=u.lv||1;u.L.forEach(function(l){l.u=u.id;l.c=u.c;
   l.w.forEach(function(x){WORDS.push({eu:x[0],es:x[1],em:x[2]||"",lid:l.id})});
   l.p.forEach(function(x){PHR.push({eu:x[0],es:x[1],lid:l.id})});});});
 
+
+/* ---------- diccionario con dibujos ---------- */
+var DICTX="Animales|txakur,perro,🐕;katu,gato,🐈;zaldi,caballo,🐴;behi,vaca,🐄;ardi,oveja,🐑;txerri,cerdo,🐖;oilo,gallina,🐔;ahate,pato,🦆;arrain,pez,🐟;txori,pájaro,🐦;tximeleta,mariposa,🦋;erle,abeja,🐝;armiarma,araña,🕷️;sagu,ratón,🐭;untxi,conejo,🐇;otso,lobo,🐺;hartz,oso,🐻;lehoi,león,🦁;igel,rana,🐸;suge,serpiente,🐍;dortoka,tortuga,🐢;azeri,zorro,🦊;balea,ballena,🐋;izurde,delfín,🐬;tximino,mono,🐒;euli,mosca,🪰;inurri,hormiga,🐜;ahuntz,cabra,🐐;asto,burro,🫏;elefante,elefante,🐘\nNaturaleza|zuhaitz,árbol,🌳;lore,flor,🌸;eguzki,sol,☀️;ilargi,luna,🌙;izar,estrella,⭐;hodei,nube,☁️;euri,lluvia,🌧️;elur,nieve,❄️;haize,viento,💨;mendi,montaña,⛰️;itsaso,mar,🌊;ibai,río,🏞️;hondartza,playa,🏖️;su,fuego,🔥;ur,agua,💧;baso,bosque,🌲;hosto,hoja,🍃;landare,planta,🌱;harri,piedra,🪨;tximista,rayo,⚡;ortzadar,arcoíris,🌈;mundu,mundo,🌍\nComida y bebida|ogi,pan,🍞;gazta,queso,🧀;arrautza,huevo,🥚;esne,leche,🥛;sagar,manzana,🍎;udare,pera,🍐;platano,plátano,🍌;laranja,naranja,🍊;gerezi,cereza,🍒;mahats,uva,🍇;marrubi,fresa,🍓;sandia,sandía,🍉;limoi,limón,🍋;tomate,tomate,🍅;patata,patata,🥔;azenario,zanahoria,🥕;baratxuri,ajo,🧄;tipula,cebolla,🧅;piper,pimiento,🌶️;okela,carne,🥩;oilasko,pollo,🍗;arroz,arroz,🍚;ogitarteko,bocadillo,🥪;ardo,vino,🍷;garagardo,cerveza,🍺;kafe,café,☕;te,té,🍵;txokolate,chocolate,🍫;gatz,sal,🧂;ezti,miel,🍯;izozki,helado,🍦;tarta,tarta,🍰;gaztaina,castaña,🌰\nCuerpo|begi,ojo,👁️;belarri,oreja,👂;sudur,nariz,👃;aho,boca,👄;hortz,diente,🦷;esku,mano,🤚;oin,pie,🦶;hanka,pierna,🦵;beso,brazo,💪;bihotz,corazón,❤️;garun,cerebro,🧠;hezur,hueso,🦴;mihi,lengua,👅\nCasa y objetos|etxe,casa,🏠;ate,puerta,🚪;leiho,ventana,🪟;ohe,cama,🛏️;aulki,silla,🪑;liburu,libro,📖;mugikor,móvil,📱;ordenagailu,ordenador,💻;telebista,televisión,📺;giltza,llave,🔑;erloju,reloj,⌚;lapitz,lápiz,✏️;paper,papel,📄;argi,luz,💡;kutxa,caja,📦;poltsa,bolsa,👜;koilara,cuchara,🥄;sardexka,tenedor,🍴;labana,cuchillo,🔪;plater,plato,🍽️;kandela,vela,🕯️;aterki,paraguas,☂️;irrati,radio,📻;argazki,foto,📷;diru,dinero,💰;opari,regalo,🎁;gitarra,guitarra,🎸\nRopa|kamiseta,camiseta,👕;praka,pantalón,👖;soineko,vestido,👗;zapata,zapato,👟;kapela,sombrero,🎩\nCiudad y lugares|eliza,iglesia,⛪;ospital,hospital,🏥;eskola,escuela,🏫;denda,tienda,🏪;banku,banco,🏦;hotel,hotel,🏨;geltoki,estación,🚉;aireportu,aeropuerto,🛫;zubi,puente,🌉;gaztelu,castillo,🏰;iturri,fuente,⛲;kale,calle,🛣️;baserri,caserío,🏡\nTransporte|kotxe,coche,🚗;autobus,autobús,🚌;tren,tren,🚆;bizikleta,bicicleta,🚲;hegazkin,avión,✈️;itsasontzi,barco,🚢\nGente y oficios|mutil,chico,👦;neska,chica,👧;gizon,hombre,👨;emakume,mujer,👩;haur,niño pequeño,👶;mediku,médico,🩺;irakasle,profesor,🧑‍🏫;sukaldari,cocinero,🧑‍🍳;polizia,policía,👮;suhiltzaile,bombero,🧑‍🚒;nekazari,agricultor,🧑‍🌾;errege,rey,🤴;erregina,reina,👸\nOcio|musika,música,🎵;baloi,balón,⚽;festa,fiesta,🎉";
+var DICT=[];
+DICTX.split("\n").forEach(function(ln){var i=ln.indexOf("|"),cat=ln.slice(0,i);ln.slice(i+1).split(";").forEach(function(it){var q=it.trim().split(",");if(q.length>=3)DICT.push({eu:q[0].trim(),es:q[1].trim(),em:q[2].trim(),cat:cat})})});
+function ART(b){return /a$/.test(b)?b:b+"a"}
+function mkImg(x,typed){
+  var d=DICT.filter(function(y){return y.eu!==x.eu}),same=shuffle(d.filter(function(y){return y.cat===x.cat})),oth=shuffle(d.filter(function(y){return y.cat!==x.cat}));
+  var ds=same.slice(0,3);if(ds.length<3)ds=ds.concat(oth.slice(0,3-ds.length));
+  return {t:"img",x:x,typed:!!typed,ans:x.eu,opts:shuffle([x.eu].concat(ds.map(function(y){return y.eu})))};
+}
+function mkHang(x){return {t:"hang",x:x}}
+var HABC="abdefghijklmnñoprstuxz".split("");
+function hangSvg(n){
+  var p=['<circle cx="70" cy="38" r="9"/>','<path d="M70 47v31"/>','<path d="M70 55 55 68"/>','<path d="M70 55 85 68"/>','<path d="M70 78 57 98"/>','<path d="M70 78 83 98"/>'];
+  return '<svg class="hang" viewBox="0 0 140 110" width="160" height="126" role="img" aria-label="Fallos: '+n+' de 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 106h60M35 106V8h35v14"/>'+p.slice(0,n).join("")+'</svg>';
+}
+function hangTap(c){
+  var st=R.st,e=R.cur;if(!st||!st.h||st.checked)return;
+  var hs=st.h,w=e.x.eu.toLowerCase();if(hs.g.indexOf(c)>=0)return;
+  hs.g.push(c);if(w.indexOf(c)<0){hs.bad++;beep(false)}else beep(true);
+  var won=w.split("").every(function(ch){return hs.g.indexOf(ch)>=0});
+  if(won||hs.bad>=6){
+    st.checked=true;st.ok=won;st.ans="Era: "+ART(e.x.eu)+" ("+e.x.es+")";
+    if(won)R.ok++;else R.bad++;
+    var ss=SS();if(won){ss.run++;ss.ok++;if(ss.run>ss.best)ss.best=ss.run}else ss.run=0;
+    rec(e.x.eu,won);if(won)say(e.x.eu);checkAch();
+  }
+  drawEx();
+}
+function startImg(){
+  var pool=shuffle(DICT.slice()),qs=[];
+  pool.slice(0,5).forEach(function(x){qs.push(mkImg(x,false))});
+  pool.slice(5,10).forEach(function(x){qs.push(mkImg(x,true))});
+  startRun({q:qs,title:"¡Imágenes completadas!",xpPer:10,game:"img"});
+}
+function startHang(){
+  var pool=shuffle(DICT.filter(function(x){return /^[a-zñ]+$/.test(x.eu)&&x.eu.length>=4&&x.eu.length<=9})).slice(0,6);
+  startRun({q:pool.map(mkHang),title:"¡Ahorcado completado!",xpPer:12,game:"hang"});
+}
 
 var STORY=[
  {cap:"Capítulo 1 · En la cafetería"},
@@ -739,7 +952,9 @@ var IC={
  timer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round"><circle cx="12" cy="13.500" r="8"/><path d="M12 9v5l3 2M9.500 2h5"/></svg>',
  grid:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="9.500" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="9.500" width="5" height="5" rx="1"/><rect x="9.500" y="9.500" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/></svg>',
  blocks:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="4" width="8" height="6" rx="2"/><rect x="12" y="4" width="10" height="6" rx="2"/><rect x="2" y="12" width="12" height="6" rx="2"/><rect x="16" y="12" width="6" height="6" rx="2"/></svg>',
- map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.400" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14"/></svg>'
+ map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.400" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14"/></svg>',
+ img:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>',
+ hang:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V3h10v3M2 21h12"/><circle cx="14" cy="9" r="2.5"/><path d="M14 11.5V16M14 13l-3 2M14 13l3 2M14 16l-2 3M14 16l2 3"/></svg>'
 };
 function spk(t){return '<button class="spk" data-say="'+E(t)+'" aria-label="Escuchar">'+IC.spk+'</button><button class="spk slow" data-say="'+E(t)+'" data-slow="1" aria-label="Escuchar despacio">lento</button>'}
 
@@ -831,9 +1046,9 @@ var GR=[
     {q:"Completa: «Gu lagunak ___» (somos amigos)",o:["gara","zarete","dira"],a:"gara",w:"Gu gara: nosotros somos."},
     {q:"Completa: «Etxeak handiak ___» (las casas son grandes)",o:["da","dira","naiz"],a:"dira",w:"Con sujeto plural, da pasa a dira."}]},
 {id:"g5",t:"Estar: egon",s:"Lugares y estados",
- x:"<b>Egon</b> significa «estar» y se usa para lugares y estados.<br><br><b>nago</b> (yo estoy), <b>zaude</b> (tú estás), <b>dago</b> (él/ella está), <b>gaude</b> (nosotros estamos), <b>zaudete</b> (vosotros estáis), <b>daude</b> (ellos están).<br><br>Diferencia: <b>Ane irakaslea da</b> (Ane es profesora) y <b>Ane etxean dago</b> (Ane está en casa).",
- ex:[["Etxean nago","Estoy en casa"],["Non zaude?","¿Dónde estás?"],["Ama sukaldean dago","Mamá está en la cocina"],["Gu hirian gaude","Estamos en la ciudad"]],
- q:[{q:"¿Cómo se dice «Estoy en casa»?",o:["Etxean naiz","Etxean nago","Etxean dut"],a:"Etxean nago",w:"Para lugares se usa egon: nago."},
+ x:"<b>Egon</b> significa «estar» y se usa para lugares y estados.<br><br><b>nago</b> (yo estoy), <b>zaude</b> (tú estás), <b>dago</b> (él/ella está), <b>gaude</b> (nosotros estamos), <b>zaudete</b> (vosotros estáis), <b>daude</b> (ellos están).<br><br>También para estados: <b>Ni ondo nago</b> (estoy bien), <b>Gaixo nago</b> (estoy enfermo), <b>Nekatuta nago</b> (estoy cansado). No se dice «ondo naiz».<br><br>Diferencia: <b>Ane irakaslea da</b> (Ane es profesora) y <b>Ane etxean dago</b> (Ane está en casa).",
+ ex:[["Etxean nago","Estoy en casa"],["Non zaude?","¿Dónde estás?"],["Ama sukaldean dago","Mamá está en la cocina"],["Gu hirian gaude","Estamos en la ciudad"],["Ni ondo nago","Yo estoy bien"]],
+ q:[{q:"¿Cómo se dice «Yo estoy bien»?",o:["Ni ondo naiz","Ni ondo nago","Ni ondo dut"],a:"Ni ondo nago",w:"Cómo estás es un estado: egon, nago."},
     {q:"Completa: «Ane irakaslea ___» (es profesora)",o:["da","dago","gara"],a:"da",w:"La profesión se dice con izan: da."},
     {q:"Completa: «Gu hirian ___» (estamos en la ciudad)",o:["gara","gaude","daude"],a:"gaude",w:"Lugar y nosotros: gaude."}]},
 {id:"g6",t:"Adjetivos, plural y «este»",s:"Etxe handia, etxe hau",
@@ -915,7 +1130,19 @@ var GR2=[
  ex:[["Dirua banu, etxea erosiko nuke","Si tuviera dinero, compraría una casa"],["Aberatsa banintz, mundua ikusiko nuke","Si fuera rico, vería el mundo"],["Kafe bat nahi nuke","Querría un café"]],
  q:[{q:"«Si tuviera» (de ukan) es...",o:["banu","banintz","nuke"],a:"banu",w:"Banu para ukan; banintz para izan."},
     {q:"«Compraría» se dice...",o:["erosiko dut","erosiko nuke","erosi nuen"],a:"erosiko nuke",w:"-ko nuke: condicional."},
-    {q:"¿Qué frase es una petición cortés?",o:["Kafe bat nahi nuke","Kafe bat nahi dut","Kafe bat nahi nuen"],a:"Kafe bat nahi nuke",w:"Nahi nuke suena más cortés."}]}
+    {q:"¿Qué frase es una petición cortés?",o:["Kafe bat nahi nuke","Kafe bat nahi dut","Kafe bat nahi nuen"],a:"Kafe bat nahi nuke",w:"Nahi nuke suena más cortés."}]},
+{id:"g20",t:"Casos: tabla completa",s:"Todas las terminaciones con ejemplos",
+ x:"Con <b>etxe</b> (casa) y <b>ama</b> (mamá):<br>• <b>-n / -an</b> en: <b>etxean</b> (en casa)<br>• <b>-ra</b> a: <b>etxera</b> (a casa)<br>• <b>-tik</b> desde: <b>etxetik</b> (desde casa)<br>• <b>-raino</b> hasta: <b>etxeraino</b><br>• <b>-rantz</b> hacia: <b>etxerantz</b><br>• <b>-ko</b> de (lugar): <b>etxeko</b>, <b>Donostiakoa naiz</b><br>• <b>-rekin</b> con: <b>amarekin</b><br>• <b>-ren</b> de: <b>amaren</b><br>• <b>-rentzat</b> para: <b>amarentzat</b><br>• <b>-ri</b> a (alguien): <b>amari</b><br>• <b>-k</b> sujeto con objeto: <b>amak</b><br>• <b>-z</b> en/por medio de: <b>euskaraz</b><br>• <b>-gatik</b> por: <b>zuregatik</b><br><br>Personas: <b>-rengana</b> (a donde), <b>-rengandik</b> (de parte de). Plural: <b>-etan</b>, <b>-etara</b>, <b>-etatik</b>. Preguntas: <b>non</b> (dónde), <b>nora</b> (adónde), <b>nondik</b> (de dónde), <b>noren</b> (de quién), <b>norekin</b> (con quién), <b>norentzat</b> (para quién).",
+ ex:[["Ni etxean nago","Estoy en casa"],["Ni etxera noa","Voy a casa"],["Ni etxetik nator","Vengo de casa"],["Ni amarekin nago","Estoy con mamá"],["Hau zuretzat da","Esto es para ti"],["Amari liburua eman diot","Le he dado el libro a mamá"]],
+ q:[{q:"¿Cómo se dice «Voy a casa»?",o:["Etxean noa","Etxera noa","Etxetik noa"],a:"Etxera noa",w:"Movimiento hacia: -ra."},
+    {q:"¿Cómo se dice «para ti»?",o:["zurekin","zuretzat","zuren"],a:"zuretzat",w:"-(r)entzat es «para»."},
+    {q:"Para preguntar «¿adónde vas?» se dice...",o:["Non zoaz?","Nora zoaz?","Nondik zoaz?"],a:"Nora zoaz?",w:"Nora = adónde."}]},
+{id:"g21",t:"Presente, pasado y futuro",s:"Ser y estar en los tres tiempos",
+ x:"<b>Izan</b> (ser): <b>naiz</b>, <b>zara</b>, <b>da</b>, <b>gara</b>, <b>zarete</b>, <b>dira</b> · pasado <b>nintzen</b>, <b>zinen</b>, <b>zen</b>, <b>ginen</b>, <b>zineten</b>, <b>ziren</b> · futuro <b>izango naiz</b>, <b>izango zara</b>, <b>izango da</b>...<br><br><b>Egon</b> (estar): <b>nago</b>, <b>zaude</b>, <b>dago</b>, <b>gaude</b>, <b>zaudete</b>, <b>daude</b> · pasado <b>nengoen</b>, <b>zeunden</b>, <b>zegoen</b>, <b>geunden</b>, <b>zeundeten</b>, <b>zeuden</b> · futuro <b>egongo naiz</b>, <b>egongo zara</b>, <b>egongo da</b>...<br><br>Otros verbos: <b>jaten dut</b> (como), <b>jan nuen</b> (comí), <b>jango dut</b> (comeré). Marcas: <b>gaur</b> (hoy), <b>atzo</b> (ayer), <b>bihar</b> (mañana).",
+ ex:[["Gaur ondo nago","Hoy estoy bien"],["Atzo ondo nengoen","Ayer estaba bien"],["Bihar ondo egongo naiz","Mañana estaré bien"],["Ni medikua izango naiz","Seré médico"]],
+ q:[{q:"¿Cómo se dice «ayer estaba bien»?",o:["Atzo ondo nago","Atzo ondo nengoen","Atzo ondo egongo naiz"],a:"Atzo ondo nengoen",w:"Estado en pasado: nengoen."},
+    {q:"¿Cómo se dice «mañana estaré en casa»?",o:["Bihar etxean nago","Bihar etxean nengoen","Bihar etxean egongo naiz"],a:"Bihar etxean egongo naiz",w:"Futuro de egon: egongo naiz."},
+    {q:"«Seré médico» se dice...",o:["Medikua naiz","Medikua izango naiz","Medikua nintzen"],a:"Medikua izango naiz",w:"Profesión en futuro: izango naiz."}]}
 ];
 GR=GR.concat(GR2);
 var TIPS=[
@@ -987,8 +1214,8 @@ function audioCard(){
 var LVT=[[1,"Hasiberri","principiante"],[3,"Ikasle","estudiante"],[5,"Hiztun","hablante"],[8,"Euskaldun berri","nuevo vascohablante"],[12,"Bertsolari","poeta improvisador"],[17,"Txapeldun","campeón"],[25,"Euskaldun zahar","vascohablante de siempre"]];
 function lvTitle(l){var r=LVT[0],v=l||level();LVT.forEach(function(x){if(v>=x[0])r=x});return r}
 function SS(){var s=S.st=S.st||{};["run","best","ok","perf","exP","say","gn","dgn","ms"].forEach(function(k){if(typeof s[k]!=="number")s[k]=0});if(!s.g)s.g={};return s}
-var DGK=["pairs","cross","ws","frases","story"],DGXP=25;
-var GN={pairs:["Parejas contrarreloj"],cross:["Crucigrama"],ws:["Sopa de letras"],frases:["Construir frases"],story:["Aventura en Donostia"]};
+var DGK=["pairs","cross","ws","frases","story","img","hang"],DGXP=25;
+var GN={pairs:["Parejas contrarreloj"],cross:["Crucigrama"],ws:["Sopa de letras"],frases:["Construir frases"],story:["Aventura en Donostia"],img:["Adivina la imagen"],hang:["Ahorcado vasco"]};
 function dgKey(){return DGK[dayNum()%DGK.length]}
 function gameDone(kind){
   var ss=SS(),td=dayKey(new Date());ss.gn++;ss.g[kind]=(ss.g[kind]||0)+1;
@@ -996,7 +1223,7 @@ function gameDone(kind){
   save();return 0;
 }
 function startGameKey(g){
-  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory();
+  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory();else if(g==="img")startImg();else if(g==="hang")startHang();
   else if(g==="frases"){var ps=shuffle(unlockedPhr()).slice(0,8).map(mkBd);startRun({q:ps,title:"¡Frases construidas!",xpPer:10,game:"frases"})}
 }
 var ACH=[
@@ -1051,7 +1278,7 @@ function rInicio(){
   h+='<div class="tiles">'
    +(lw.length?'<button class="tile" data-act="review">':'<button class="tile" disabled>')+IC.loop+'<div><b>Repaso</b><span>'+(lw.length?(due?due+' por repasar':'Todo al día'):'Tras tu 1ª lección')+'</span></div></button>'
    +'<button class="tile" data-act="exam" data-n="'+xl+'">'+IC.check+'<div><b>Examen</b><span>Nivel '+LVN[xl]+'</span></div></button>'
-   +'<button class="tile" data-tab="games">'+IC.pad+'<div><b>Juegos</b><span>5 minijuegos</span></div></button>'
+   +'<button class="tile" data-tab="games">'+IC.pad+'<div><b>Juegos</b><span>'+Object.keys(GN).length+' minijuegos</span></div></button>'
    +'<button class="tile" data-tab="gram">'+IC.book+'<div><b>Gramática</b><span>'+GR.length+' temas</span></div></button>'
    +'<button class="tile" data-tab="vocab">'+IC.list+'<div><b>Palabras</b><span>Diccionario</span></div></button>'
    +'<button class="tile" data-tab="ach">'+IC.trophy+'<div><b>Logros</b><span>'+achCount()+' / '+(ACH.length*3)+'</span></div></button></div>';
@@ -1115,14 +1342,16 @@ function rGames(){
    ["cross","Crucigrama","Pistas en español, respuestas en euskera. Se crea uno nuevo cada vez.",IC.grid,"var(--green-t)","var(--green)",""],
    ["ws","Sopa de letras","Lee la pregunta en español y busca la palabra vasca entre las letras.",IC.search,"var(--blue-t)","var(--blue)",""],
    ["frases","Construir frases","Ordena las palabras para formar la frase correcta.",IC.blocks,"var(--red-t)","var(--red)",""],
-   ["story","Aventura: un día en Donostia","Una mini historia en tres capítulos. Tú eliges qué decir.",IC.map,"var(--sun-t)","var(--sun-d)",S.story?'<span class="best">Completada</span>':""]
+   ["story","Aventura: un día en Donostia","Una mini historia en tres capítulos. Tú eliges qué decir.",IC.map,"var(--sun-t)","var(--sun-d)",S.story?'<span class="best">Completada</span>':""],
+   ["img","Adivina la imagen","Mira el dibujo y di cómo se llama en euskera: unas veces eliges y otras lo escribes.",IC.img,"var(--blue-t)","var(--blue)",""],
+   ["hang","Ahorcado vasco","Adivina la palabra letra a letra. Tienes seis fallos.",IC.hang,"var(--red-t)","var(--red)",""]
   ];
   var h='<h2 class="sec-h">Juegos</h2><p class="hint" style="margin-bottom:12px">Usan las palabras de las lecciones que ya tienes desbloqueadas.</p>';
   g.forEach(function(x){h+='<button class="card game" data-act="game" data-g="'+x[0]+'" style="--gc:'+x[4]+';--gk:'+x[5]+'"><span class="gi">'+x[3]+'</span><span style="min-width:0"><h3>'+x[1]+'</h3><p>'+x[2]+'</p>'+x[6]+'</span></button>'});
   return h;
 }
 function rVocab(){
-  var h='<h2 class="sec-h">Vocabulario</h2><input id="vq" class="inp" type="search" placeholder="Busca en español o en euskera" value="'+E(V.vq)+'" autocomplete="off" autocapitalize="off"><div id="vlist">'+vlist()+'</div>';
+  var h='<h2 class="sec-h">Diccionario</h2><input id="vq" class="inp" type="search" placeholder="Busca en español o en euskera" value="'+E(V.vq)+'" autocomplete="off" autocapitalize="off"><p class="hint" style="margin:6px 2px 4px">'+(WORDS.length+DICT.length)+' palabras: las de tus lecciones y otras con dibujo, por temas. Toca el altavoz para oírlas.</p><div id="vlist">'+vlist()+'</div>';
   return h;
 }
 function vlist(){
@@ -1136,6 +1365,14 @@ function vlist(){
       h+='<div class="vrow"><span class="dot '+c+'"></span><div class="tx"><div class="eu">'+(x[2]?x[2]+" ":"")+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>';
     });
     h+='</div>';
+  });
+  var cats={};
+  DICT.forEach(function(x){if(q&&norm(x.eu).indexOf(q)<0&&norm(ART(x.eu)).indexOf(q)<0&&norm(x.es).indexOf(q)<0)return;(cats[x.cat]=cats[x.cat]||[]).push(x)});
+  Object.keys(cats).forEach(function(c){
+    h+='<div class="vh">Con dibujos · '+E(c)+'</div><div class="card" style="padding:4px 12px">'+cats[c].map(function(x){
+      var sc=S.words[x.eu]||0,cl=sc>=4?"l3":sc>=2?"l2":sc>=1?"l1":"";
+      return '<div class="vrow"><span class="dot '+cl+'"></span><div class="tx"><div class="eu">'+x.em+' '+E(ART(x.eu))+'</div><div class="es">'+E(x.es)+'</div></div>'+spk(ART(x.eu))+'</div>';
+    }).join("")+'</div>';
   });
   return h||'<p class="hint" style="padding:16px 0">No hay resultados.</p>';
 }
@@ -1219,6 +1456,7 @@ function tyInput(st,ph){return '<input id="ty" class="inp" type="text" autocompl
 function fbHtml(e,st){
   if(e.t==="wr")return '<div class="fb ok"><h3>Modelo</h3><p>'+E(e.model)+spk(e.model)+'</p><p><b>Revisa tu texto:</b></p><ul style="margin:0;padding-left:20px;color:var(--ink);font-weight:600">'+e.check.map(function(c){return '<li>'+E(c)+'</li>'}).join("")+'</ul><button class="btn" data-r="cont">Continuar</button></div>';
   var msg=e.t==="mt"?(st.ok?"¡Todas sin fallar!":"¡Completado! Algunas pedirán repaso."):(st.ok?["¡Muy bien!","¡Eso es!","¡Correcto!"][R.done%3]:"Respuesta correcta"),extra="";
+  if(e.t==="hang")msg=st.ok?"¡Salvado!":"Te has quedado sin intentos";
   if(e.t!=="mt"&&!st.ok)extra+='<p>'+E(st.ans)+'</p>';
   if(e.t==="mc"&&e.why)extra+='<p>'+E(e.why)+'</p>';
   if(e.t==="mc"&&e.ctxEs)extra+='<p>'+E(e.ctxEs)+'</p>';
@@ -1306,6 +1544,7 @@ function nextEx(){
   animStage();
   if(!R.q.length)return finishRun();
   R.cur=R.q.shift();var st=R.st={sel:null,used:[],checked:false,ok:false,ans:"",val:"",cz:{},show:!VZ.ok,played:false};
+  if(R.cur.t==="hang")st.h={g:[],bad:0};
   if(R.cur.t==="mt")st.m={L:shuffle(R.cur.pairs.map(function(p){return p.eu})),R:shuffle(R.cur.pairs.map(function(p){return p.es})),sl:null,sr:null,dl:[],dr:[],err:0,fl:null};
   drawEx();
 }
@@ -1334,6 +1573,16 @@ function drawEx(){
     b='<p class="q">Escucha y elige el significado</p><button class="lbig" data-say="'+E(e.w.eu)+'" aria-label="Escuchar">'+IC.spk+'</button><div style="text-align:center"><button class="btn sec sm" data-say="'+E(e.w.eu)+'" data-slow="1">Escuchar despacio</button></div>'
      +(st.show||st.checked?'<div class="big" style="justify-content:center">'+E(e.w.eu)+'</div>':'<div style="text-align:center"><button class="btn sec sm" data-r="lshow">No oigo nada: mostrar texto</button></div>')+optsHtml(e,st);
     can=st.sel!==null;
+  }else if(e.t==="img"){
+    b='<p class="q">'+(e.typed?"Escribe su nombre en euskera":"¿Cómo se llama en euskera?")+'</p><div class="big" style="font-size:84px;justify-content:center;line-height:1.1">'+e.x.em+'</div>'
+     +(e.typed?'<p class="hint" style="text-align:center">Pista: empieza por «'+E(e.x.eu.charAt(0))+'» y tiene '+e.x.eu.length+' letras</p>'+tyInput(st,"Escribe la palabra"):optsHtml(e,st));
+    can=e.typed?true:st.sel!==null;
+  }else if(e.t==="hang"){
+    var hw=e.x.eu.toLowerCase(),hs=st.h,hk=HABC.slice();
+    hw.split("").forEach(function(c){if(hk.indexOf(c)<0)hk.push(c)});hk.sort();
+    b='<p class="q">Ahorcado: adivina la palabra en euskera</p><div class="big" style="justify-content:center">'+E(e.x.em+" "+e.x.es)+'</div>'+hangSvg(hs.bad)
+     +'<div class="hw">'+hw.split("").map(function(c){return '<span class="hl'+(st.checked&&!st.ok&&hs.g.indexOf(c)<0?" miss":"")+'">'+((hs.g.indexOf(c)>=0||st.checked)?E(c):"&nbsp;")+'</span>'}).join("")+'</div>'
+     +'<div class="hkb">'+hk.map(function(c){var u=hs.g.indexOf(c)>=0;return '<button class="hk'+(u?(hw.indexOf(c)>=0?" ok":" bad"):"")+'" data-r="hk" data-c="'+E(c)+'"'+((u||st.checked)?" disabled":"")+'>'+E(c)+'</button>'}).join("")+'</div>';
   }else if(e.t==="say"){
     b='<p class="q">Escucha y repite en voz alta</p><div class="ctx"><div class="eu">'+E(e.eu)+spk(e.eu)+'</div><div class="tr" style="font-family:var(--body)">'+E(e.es)+'</div></div><p class="hint">Escúchala, dila en voz alta tres veces imitando el ritmo y el tono. Después dila a la vez que el audio. Cuando termines, valora cómo te ha salido.</p>';
   }else if(e.t==="wr"){
@@ -1362,15 +1611,15 @@ function drawEx(){
     f=fbHtml(e,st);
   }else if(e.t==="say"){
     f='<div class="row2"><button class="btn sec" data-r="saybad">Repetir luego</button><button class="btn" data-r="sayok">Me ha salido bien</button></div>';
-  }else if(e.t!=="mt"){
+  }else if(e.t!=="mt"&&e.t!=="hang"){
     f='<button class="btn" data-r="check"'+(can?"":" disabled")+'>Comprobar</button>';
   }
   var modal=R.quitAsk?'<div class="modal"><div><h3>¿Salir de la lección?</h3><p class="hint">Perderás el progreso de esta sesión.</p><button class="btn" data-r="stay">Seguir</button><button class="btn sec" data-r="leave">Salir</button></div></div>':"";
   stage(topbar(pct)+'<div class="ex">'+b+'</div><div class="foot">'+f+'</div>'+modal);
-  if((e.t==="ty"||e.t==="tw"||e.t==="dlg"||(e.t==="f"&&e.typed))&&!st.checked){var el=$("#ty");if(el)el.focus({preventScroll:true})}
+  if((e.t==="ty"||e.t==="tw"||e.t==="dlg"||(e.t==="img"&&e.typed)||(e.t==="f"&&e.typed))&&!st.checked){var el=$("#ty");if(el)el.focus({preventScroll:true})}
   if(e.t==="lis"&&!st.checked&&!st.played){st.played=true;say(e.w.eu)}
 }
-function euOf(e){return e.t==="ch"?(e.dir==="es2eu"?e.ans:e.w.eu):e.t==="ty"?e.w.eu:e.t==="bd"?e.ans:e.t==="lis"?e.w.eu:""}
+function euOf(e){if(e.t==="img"||e.t==="hang")return e.x.eu;return e.t==="ch"?(e.dir==="es2eu"?e.ans:e.w.eu):e.t==="ty"?e.w.eu:e.t==="bd"?e.ans:e.t==="lis"?e.w.eu:""}
 function check(){
   var e=R.cur,st=R.st;if(st.checked)return;var ok=false,ans="";
   if(e.t==="ch"||e.t==="mc"){if(st.sel===null)return;ok=e.opts[st.sel]===e.ans;ans=e.ans;if(e.t==="ch")rec(e.w.eu,ok)}
@@ -1383,6 +1632,7 @@ function check(){
   }
   else if(e.t==="tw"){var elt=$("#ty"),vt=elt?elt.value:"";if(!vt.trim())return;st.val=vt;ok=e.ok.some(function(a){return norm(a)===norm(vt)});ans=e.ok[0]}
   else if(e.t==="dlg"){var eld=$("#ty"),vd=eld?eld.value:"";if(!vd.trim())return;st.val=vd;var nd=norm(vd);ok=e.ok.some(function(a){return norm(a)===nd})||(e.re?new RegExp(e.re).test(nd):false);ans=e.model}
+  else if(e.t==="img"){if(e.typed){var eli=$("#ty"),vi=eli?eli.value:"";if(!vi.trim())return;st.val=vi;ok=norm(vi)===norm(e.x.eu)||norm(vi)===norm(ART(e.x.eu))}else{if(st.sel===null)return;ok=e.opts[st.sel]===e.ans}ans=ART(e.x.eu)+" ("+e.x.es+")";rec(e.x.eu,ok)}
   else if(e.t==="lis"){if(st.sel===null)return;ok=e.opts[st.sel]===e.ans;ans=e.w.eu+" · "+e.ans;rec(e.w.eu,ok)}
   else if(e.t==="cz"){var allok=true;for(var cn in e.b){if(st.cz[cn]!==e.b[cn].a)allok=false}ok=allok;ans=e.eu.replace(/\{(\d)\}/g,function(m,n){return e.b[n].a})}
   else if(e.t==="wr"){var elw=$("#wr"),vw=elw?elw.value:"";if(vw.trim().length<6){toast("Escribe algo antes de comprobar");return}st.val=vw;ok=true;ans=e.model}
@@ -1784,6 +2034,7 @@ document.addEventListener("click",function(ev){
   if(k==="cont"){R.done++;nextEx();return}
   if(k==="tile"){if(R.st.checked)return;var i=+r.getAttribute("data-i");if(R.st.used.indexOf(i)<0){R.st.used.push(i);drawEx()}return}
   if(k==="untile"){if(R.st.checked)return;R.st.used.splice(+r.getAttribute("data-k"),1);drawEx();return}
+  if(k==="hk"){hangTap(r.getAttribute("data-c"));return}
   if(k==="ml"){mtTap("l",r.getAttribute("data-v"));return}
   if(k==="mr"){mtTap("r",r.getAttribute("data-v"));return}
   if(k==="pl"){pairTap("l",r.getAttribute("data-v"));return}
