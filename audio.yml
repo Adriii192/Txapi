@@ -1,0 +1,182 @@
+name: Generar audios
+# Genera las voces nativas (Maider y Antton) de todas las frases de la app.
+# Se lanza a mano: pestaña Actions, "Generar audios", Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Cuantas frases generar. 5 = prueba rapida, 0 = todas"
+        default: "5"
+permissions:
+  contents: write
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Crear scripts
+        run: |
+          mkdir -p tools audio
+          cat > tools/extract_texts.js <<'JSEOF'
+          // Saca de la app todas las frases y palabras en euskera que se pueden escuchar.
+          const fs = require("fs");
+          const src = fs.readFileSync(process.argv[2], "utf8");
+          const code = [...src.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(x => x[1]).sort((a, b) => b.length - a.length)[0];
+          const mk = () => ({ style: {}, _h: "", value: "", set innerHTML(v) { this._h = v; }, get innerHTML() { return this._h; }, focus() {}, hidden: false, textContent: "", classList: { toggle() {}, add() {}, remove() {} }, setAttribute() {}, getAttribute() { return null; } });
+          const els = {};
+          global.els = els;
+          global.document = { documentElement: { getAttribute() { return null; }, setAttribute() {}, removeAttribute() {}, style: { setProperty() {} } }, getElementById() { return null; }, querySelector: s => els[s] || (els[s] = mk()), querySelectorAll: () => [], addEventListener() {}, elementFromPoint() { return null; } };
+          global.window = { scrollTo() {} };
+          global.requestAnimationFrame = function () {};
+          global.matchMedia = function () { return { matches: false, addEventListener() {} }; };
+          global.localStorage = { getItem: () => null, setItem() {} };
+          global.setTimeout = () => 0; global.clearInterval = () => {}; global.setInterval = () => 0;
+          global.fetch = () => Promise.reject(new Error("sin red"));
+          global.navigator = {};
+          const extra = `
+          var OUT = {};
+          function add(t){ if(!t) return; t = String(t); if(/[<>]/.test(t)) return; t = t.replace(/\\s+/g," ").trim(); if(t) OUT[t] = 1; }
+          function scan(html){ var re=/data-say="([^"]*)"/g, m; while((m=re.exec(html))) add(m[1].replace(/&quot;/g,'"').replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&")); }
+          add("Kaixo!"); add("Kaixo! Zer moduz? Euskara ikasten ari naiz.");
+          WORDS.forEach(function(w){ add(w.eu); });
+          PHR.forEach(function(p){ add(p.eu); });
+          scan(vlist());
+          STORY.forEach(function(s){ add(s.eu); (s.o||[]).forEach(function(o){ add(o.eu); }); });
+          GR.forEach(function(g){ try{ startGrammar(g.id); scan(els["#stage"]._h); }catch(x){} (g.ex||[]).forEach(function(x){ add(x[0].split(" → ")[0]); }); });
+          LESSONS.forEach(function(l){
+            try{ startLesson(l.id); scan(els["#stage"]._h); }catch(x){}
+            (l.d||[]).forEach(function(d){ add(d.bot); add(d.model); (d.ok||[]).forEach(add); });
+            (l.f||[]).forEach(function(f){ if(f.s && f.a) add(f.s.replace("___", f.a[0])); });
+            (l.tw||[]).forEach(function(t){ (t.ok||[]).forEach(add); });
+            if(l.cz && l.cz.eu) add(l.cz.eu.replace(/\\{(\\d)\\}/g, function(m,n){ return l.cz.b[n].a; }));
+            if(l.wr && l.wr.model) add(l.wr.model);
+            try{
+              lessonQueue(l).forEach(function(e){
+                var s = euOf(e); if(s) add(s);
+                R = {cur:e, st:{sel:null,used:[],checked:true,ok:true,ans:"",val:"",cz:{},show:true,played:false}, cfg:{}, q:[], done:0, total:1, ok:0, bad:0, again:{}};
+                try{ drawEx(); scan(els["#stage"]._h); }catch(x){}
+              });
+            }catch(x){}
+          });
+          module.exports = Object.keys(OUT).sort();
+          `;
+          const m = { exports: null };
+          new Function("module", "require", code + extra)(m, require);
+          const list = m.exports;
+          fs.mkdirSync(require("path").dirname(process.argv[3]), { recursive: true });
+          fs.writeFileSync(process.argv[3], JSON.stringify(list, null, 0));
+          console.log("textos:", list.length);
+          JSEOF
+          cat > tools/gen_audio.py <<'PYEOF'
+          # Genera los audios con la voz neuronal vasca de HiTZ (StyleTTS2). Se ejecuta dentro de la carpeta "tts".
+          import argparse, json, os, re, subprocess, sys, tempfile
+
+          p = argparse.ArgumentParser()
+          p.add_argument("--texts"); p.add_argument("--out"); p.add_argument("--limit", type=int, default=0)
+          a = p.parse_args()
+
+          def hz(t):
+              t = re.sub(r"[?!¿¡]", "", t); t = re.sub(r"\s+", " ", t).strip().lower()
+              h = 0x811c9dc5
+              for b in t.encode("utf-8"):
+                  h ^= b; h = (h * 0x01000193) & 0xFFFFFFFF
+              return "%08x" % h
+
+          texts = json.load(open(a.texts, encoding="utf-8"))
+          if a.limit > 0:
+              texts = texts[:a.limit]
+          print("Textos a generar por voz:", len(texts), flush=True)
+
+          from inference import Synthesizer
+          CFG = "Models/Basque_Multispeaker_Phoneme_wavlm_normal/config_basque_multispeaker_phoneme_wavlm_800_2nd_normal.yml"
+          CKPT = "Models/Basque_Multispeaker_Phoneme_wavlm_normal/epoch_2nd_00030.pth"
+          ok = fail = 0
+          for voice in ["maider", "antton"]:
+              os.makedirs("%s/%s" % (a.out, voice), exist_ok=True)
+              synth = Synthesizer(config=CFG, checkpoint=CKPT, default_ref="Demo/ref_%s.wav" % voice)
+              for i, t in enumerate(texts):
+                  dst = "%s/%s/%s.mp3" % (a.out, voice, hz(t))
+                  if os.path.exists(dst):
+                      continue
+                  try:
+                      wav = synth.run(re.sub(r"\s+", " ", t).strip())
+                      tmp = tempfile.mktemp(suffix=".wav")
+                      synth.save(wav, tmp)
+                      subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", tmp, "-ac", "1", "-b:a", "56k", dst], check=True)
+                      os.remove(tmp); ok += 1
+                  except Exception as e:
+                      fail += 1
+                      print("FALLO", voice, repr(t), e, flush=True)
+                  if (i + 1) % 25 == 0:
+                      print(voice, i + 1, "/", len(texts), flush=True)
+
+          idx = {}
+          for v in ["maider", "antton"]:
+              d = "%s/%s" % (a.out, v)
+              if os.path.isdir(d):
+                  idx[v] = sorted(f[:-4] for f in os.listdir(d) if f.endswith(".mp3"))
+          json.dump(idx, open("%s/index.json" % a.out, "w"))
+          print("Listo. Generados:", ok, "Fallos:", fail, flush=True)
+          if ok == 0 and fail > 0:
+              sys.exit(1)
+          PYEOF
+          cat > tools/download_weights.py <<'PYEOF2'
+          # Descarga los pesos del modelo de HiTZ y los coloca donde los espera el código.
+          import os, shutil
+          from huggingface_hub import hf_hub_download
+          REPO = "HiTZ/StyleTTS2-eu"
+          M = "tts/Models/Basque_Multispeaker_Phoneme_wavlm_normal/"
+          FILES = {
+              "config_basque_multispeaker_phoneme_wavlm.yml": M + "config_basque_multispeaker_phoneme_wavlm_800_2nd_normal.yml",
+              "epoch_2nd_00030.pth": M + "epoch_2nd_00030.pth",
+              "epoch_00200.pth": "tts/Utils/ASR_basque/epoch_00200.pth",
+              "step_4000000.t7": "tts/Utils/PLBERT_phoneme/step_4000000.t7",
+          }
+          for name, dst in FILES.items():
+              os.makedirs(os.path.dirname(dst), exist_ok=True)
+              shutil.copy(hf_hub_download(repo_id=REPO, filename=name), dst)
+              print("OK", dst, flush=True)
+          PYEOF2
+      - name: Sacar los textos de la app
+        run: node tools/extract_texts.js index.html audio/texts.json
+      - name: Instalar herramientas
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng ffmpeg libsndfile1
+      - name: Descargar el motor de voz de HiTZ
+        run: git clone --depth 1 https://github.com/AArriandiaga/StyleTTS2_basque tts
+      - name: Instalar Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          grep -v -i -E '^(torch|torchaudio|torchvision|nvidia|triton)' tts/requirements.txt > tts/req_cpu.txt
+          pip install -r tts/req_cpu.txt
+          pip install huggingface_hub
+      - name: Descargar el modelo
+        run: |
+          python tools/download_weights.py
+          mkdir -p tts/Utils/JDC
+          wget -q -O tts/Utils/JDC/bst.t7 https://github.com/yl4579/StyleTTS2/raw/main/Utils/JDC/bst.t7
+      - name: Preparar para CPU
+        run: |
+          grep -rl "cuda" --include=*.py tts | xargs -r sed -i "s/'cuda'/'cpu'/g; s/\"cuda\"/\"cpu\"/g; s/\.cuda()/.cpu()/g"
+          true
+      - name: Generar audios
+        working-directory: tts
+        env:
+          CUDA_VISIBLE_DEVICES: ""
+        run: python ../tools/gen_audio.py --texts ../audio/texts.json --out ../audio --limit "${{ inputs.limit }}"
+      - name: Guardar audios en el repositorio
+        if: always()
+        run: |
+          git config user.name "txapi-bot"
+          git config user.email "txapi-bot@users.noreply.github.com"
+          git add audio
+          git diff --cached --quiet || git commit -m "Audios generados"
+          git pull --rebase || true
+          git push
