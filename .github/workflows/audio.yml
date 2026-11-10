@@ -209,11 +209,11 @@ jobs:
       - name: Instalar Python
         run: |
           python -m pip install --upgrade pip
-          pip install "torch==2.5.1" "torchaudio==2.5.1" --index-url https://download.pytorch.org/whl/cpu
+          pip install "torch==2.8.0" "torchaudio==2.8.0" --index-url https://download.pytorch.org/whl/cpu
           grep -v -i -E '^(torch|torchaudio|torchvision|nvidia|triton)' tts/requirements.txt > tts/req_cpu.txt
           pip install -r tts/req_cpu.txt
           pip install huggingface_hub soundfile
-          pip install "torch==2.5.1" "torchaudio==2.5.1" --index-url https://download.pytorch.org/whl/cpu
+          pip install "torch==2.8.0" "torchaudio==2.8.0" --index-url https://download.pytorch.org/whl/cpu
           python -c "import torch, torchaudio; print('torch', torch.__version__, 'torchaudio', torchaudio.__version__)"
       - name: Descargar el modelo
         run: |
