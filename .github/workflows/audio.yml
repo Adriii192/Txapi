@@ -77,6 +77,7 @@ jobs:
           cat > tools/gen_audio.py <<'PYEOF'
           # Genera los audios con la voz neuronal vasca de HiTZ (StyleTTS2). Se ejecuta dentro de la carpeta "tts".
           import argparse, json, os, re, subprocess, sys, tempfile
+          sys.path.insert(0, os.getcwd())  # para encontrar inference.py, que esta en la carpeta tts
 
           p = argparse.ArgumentParser()
           p.add_argument("--texts"); p.add_argument("--out"); p.add_argument("--limit", type=int, default=0)
@@ -170,7 +171,7 @@ jobs:
         working-directory: tts
         env:
           CUDA_VISIBLE_DEVICES: ""
-        run: python ../tools/gen_audio.py --texts ../audio/texts.json --out ../audio --limit "${{ inputs.limit }}"
+        run: PYTHONPATH=. python ../tools/gen_audio.py --texts ../audio/texts.json --out ../audio --limit "${{ inputs.limit }}"
       - name: Guardar audios en el repositorio
         if: always()
         run: |
