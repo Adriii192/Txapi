@@ -1580,7 +1580,12 @@ document.addEventListener("click",function(ev){
   if(k==="cwk"){cwKey(r.getAttribute("data-k"));return}
   if(k==="cwcl"){var w=CW.words[+r.getAttribute("data-i")];CW.sel={r:w.r,c:w.c};CW.dir=w.d;drawCW();return}
   if(k==="cwchk"){CW.chk=true;drawCW();return}
-  if(k==="cwhint"){if(!CW.sel)return;var kk=CW.sel.r+","+CW.sel.c;CW.inp[kk]=CW.g[kk].ch;CW.hints++;CW.chk=false;if(cwComplete())return cwWin();drawCW();return}
+  if(k==="cwhint"){
+    var kk=CW.sel?CW.sel.r+","+CW.sel.c:null;
+    if(!kk||!CW.g[kk]||CW.inp[kk]===CW.g[kk].ch){kk=null;for(var key in CW.g){if(CW.inp[key]!==CW.g[key].ch){kk=key;break}}}
+    if(!kk)return;
+    var pr=kk.split(",");CW.sel={r:+pr[0],c:+pr[1]};
+    CW.inp[kk]=CW.g[kk].ch;CW.hints++;CW.chk=false;toast("Pista: letra «"+CW.g[kk].ch+"»");if(cwComplete())return cwWin();drawCW();return}
   if(k==="so"){storyPick(+r.getAttribute("data-i"));return}
   if(k==="tr"){var n=+r.getAttribute("data-i");ST.tr[n]=!ST.tr[n];drawStory();return}
 });
@@ -1616,6 +1621,39 @@ document.addEventListener("change",function(ev){
     if(v){VZ.voice=v;try{localStorage.setItem("hitzezVoice",v.voiceURI)}catch(e){}say("Kaixo!")}
   }
 });
+
+/* ---------- botón atrás del móvil: lleva al inicio y pregunta antes de salir ---------- */
+(function(){
+  if(window.top!==window||!window.history||!history.pushState)return;
+  var armed=false,asking=false;
+  function arm(){
+    if(armed)return;armed=true;
+    try{history.replaceState({txapi:"base"},"");history.pushState({txapi:"app"},"")}catch(e){armed=false}
+  }
+  document.addEventListener("pointerdown",arm,{once:true,capture:true});
+  function closeAsk(){var m=document.getElementById("exitq");if(m)m.remove();asking=false}
+  function askExit(){
+    if(asking)return;asking=true;
+    var m=document.createElement("div");m.className="modal";m.id="exitq";
+    m.innerHTML='<div role="dialog" aria-label="Salir de Txapi">'+mascot(110,"base")+'<h3 style="font-size:22px">¿Salir de Txapi?</h3><p class="hint">Tu progreso está guardado.</p><button class="btn" id="exstay">Seguir aprendiendo</button><button class="btn sec" id="exgo">Salir</button></div>';
+    document.body.appendChild(m);
+    document.getElementById("exstay").onclick=closeAsk;
+    document.getElementById("exgo").onclick=function(){closeAsk();armed=false;history.go(-2);setTimeout(function(){try{window.close()}catch(e){}},400)};
+  }
+  window.addEventListener("popstate",function(){
+    if(!armed)return;
+    try{history.pushState({txapi:"app"},"")}catch(e){}
+    if(asking){closeAsk();return}
+    if(!$("#stage").hidden){
+      if(R&&R.quitAsk){R.quitAsk=false;drawEx();return}
+      if(R&&R.finished){leave();return}
+      if(R&&R.cur&&!R.intro){R.quitAsk=true;drawEx();return}
+      leave();return;
+    }
+    if(V.tab!=="learn"){V.tab="learn";V.reset=false;render();window.scrollTo(0,0);return}
+    askExit();
+  });
+})();
 render();
 </script>
 <script>
