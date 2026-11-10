@@ -76,7 +76,7 @@ jobs:
           JSEOF
           cat > tools/gen_audio.py <<'PYEOF'
           # Genera los audios con la voz neuronal vasca de HiTZ (StyleTTS2). Se ejecuta dentro de la carpeta "tts".
-          import argparse, json, os, re, subprocess, sys, tempfile
+          import argparse, inspect, json, os, re, subprocess, sys, tempfile, traceback
           sys.path.insert(0, os.getcwd())  # para encontrar inference.py, que esta en la carpeta tts
 
           p = argparse.ArgumentParser()
@@ -98,23 +98,78 @@ jobs:
           from inference import Synthesizer
           CFG = "Models/Basque_Multispeaker_Phoneme_wavlm_normal/config_basque_multispeaker_phoneme_wavlm_800_2nd_normal.yml"
           CKPT = "Models/Basque_Multispeaker_Phoneme_wavlm_normal/epoch_2nd_00030.pth"
+
+          print("== Synthesizer.__init__ :", inspect.signature(Synthesizer.__init__), flush=True)
+          for n in dir(Synthesizer):
+              if not n.startswith("_"):
+                  try:
+                      print("== metodo", n, inspect.signature(getattr(Synthesizer, n)), flush=True)
+                  except Exception:
+                      pass
+
+          def first(names, params):
+              return next((n for n in names if n in params), None)
+
+          def make_synth(ref):
+              sig = inspect.signature(Synthesizer.__init__)
+              params = [n for n in sig.parameters if n != "self"]
+              kw = {}
+              c = first(["config", "config_path", "cfg", "config_file", "cfg_path"], params)
+              m = first(["checkpoint", "model", "model_path", "ckpt", "checkpoint_path", "model_checkpoint", "ckpt_path"], params)
+              r = first(["default_ref", "ref", "ref_audio", "reference", "ref_wav", "ref_path", "default_reference", "default_ref_audio", "ref_audio_path", "speaker_ref"], params)
+              if c: kw[c] = CFG
+              if m: kw[m] = CKPT
+              if r: kw[r] = ref
+              obligatorios = [n for n, p in sig.parameters.items() if n != "self" and p.default is inspect._empty and n not in kw and p.kind in (p.POSITIONAL_OR_KEYWORD, p.KEYWORD_ONLY)]
+              if obligatorios:
+                  raise RuntimeError("Faltan parametros que no conozco: %s (firma: %s)" % (obligatorios, sig))
+              print("Creando Synthesizer con:", kw, flush=True)
+              return Synthesizer(**kw), (r is not None)
+
+          def synth_text(synth, text, ref, ref_in_ctor):
+              rp = list(inspect.signature(synth.run).parameters)
+              kw = {}
+              rn = first(["ref", "ref_audio", "reference", "ref_wav", "ref_path", "speaker_ref", "ref_audio_path"], rp)
+              if rn:
+                  kw[rn] = ref
+              return synth.run(text, **kw)
+
+          def save_wav(synth, wav, path):
+              if hasattr(synth, "save"):
+                  try:
+                      synth.save(wav, path)
+                      return
+                  except TypeError:
+                      pass
+              import wave
+              import numpy as np
+              arr = wav.detach().cpu().numpy() if hasattr(wav, "detach") else np.asarray(wav)
+              arr = np.clip(arr.squeeze(), -1.0, 1.0)
+              with wave.open(path, "wb") as w:
+                  w.setnchannels(1); w.setsampwidth(2); w.setframerate(24000)
+                  w.writeframes((arr * 32767).astype("<i2").tobytes())
+
           ok = fail = 0
+          shown = 0
           for voice in ["maider", "antton"]:
               os.makedirs("%s/%s" % (a.out, voice), exist_ok=True)
-              synth = Synthesizer(config=CFG, checkpoint=CKPT, default_ref="Demo/ref_%s.wav" % voice)
+              ref = "Demo/ref_%s.wav" % voice
+              synth, ref_in_ctor = make_synth(ref)
               for i, t in enumerate(texts):
                   dst = "%s/%s/%s.mp3" % (a.out, voice, hz(t))
                   if os.path.exists(dst):
                       continue
                   try:
-                      wav = synth.run(re.sub(r"\s+", " ", t).strip())
+                      wav = synth_text(synth, re.sub(r"\s+", " ", t).strip(), ref, ref_in_ctor)
                       tmp = tempfile.mktemp(suffix=".wav")
-                      synth.save(wav, tmp)
+                      save_wav(synth, wav, tmp)
                       subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", tmp, "-ac", "1", "-b:a", "56k", dst], check=True)
                       os.remove(tmp); ok += 1
                   except Exception as e:
                       fail += 1
-                      print("FALLO", voice, repr(t), e, flush=True)
+                      print("FALLO", voice, repr(t), repr(e), flush=True)
+                      if shown < 2:
+                          traceback.print_exc(); shown += 1
                   if (i + 1) % 25 == 0:
                       print(voice, i + 1, "/", len(texts), flush=True)
 
@@ -157,7 +212,7 @@ jobs:
           pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           grep -v -i -E '^(torch|torchaudio|torchvision|nvidia|triton)' tts/requirements.txt > tts/req_cpu.txt
           pip install -r tts/req_cpu.txt
-          pip install huggingface_hub
+          pip install huggingface_hub soundfile
       - name: Descargar el modelo
         run: |
           python tools/download_weights.py
