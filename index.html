@@ -960,6 +960,14 @@ function openChest(uid){
 var DICTX="Animales|txakur,perro,🐕;katu,gato,🐈;zaldi,caballo,🐴;behi,vaca,🐄;ardi,oveja,🐑;txerri,cerdo,🐖;oilo,gallina,🐔;ahate,pato,🦆;arrain,pez,🐟;txori,pájaro,🐦;tximeleta,mariposa,🦋;erle,abeja,🐝;armiarma,araña,🕷️;sagu,ratón,🐭;untxi,conejo,🐇;otso,lobo,🐺;hartz,oso,🐻;lehoi,león,🦁;igel,rana,🐸;suge,serpiente,🐍;dortoka,tortuga,🐢;azeri,zorro,🦊;balea,ballena,🐋;izurde,delfín,🐬;tximino,mono,🐒;euli,mosca,🪰;inurri,hormiga,🐜;ahuntz,cabra,🐐;asto,burro,🫏;elefante,elefante,🐘\nNaturaleza|zuhaitz,árbol,🌳;lore,flor,🌸;eguzki,sol,☀️;ilargi,luna,🌙;izar,estrella,⭐;hodei,nube,☁️;euri,lluvia,🌧️;elur,nieve,❄️;haize,viento,💨;mendi,montaña,⛰️;itsaso,mar,🌊;ibai,río,🏞️;hondartza,playa,🏖️;su,fuego,🔥;ur,agua,💧;baso,bosque,🌲;hosto,hoja,🍃;landare,planta,🌱;harri,piedra,🪨;tximista,rayo,⚡;ortzadar,arcoíris,🌈;mundu,mundo,🌍\nComida y bebida|ogi,pan,🍞;gazta,queso,🧀;arrautza,huevo,🥚;esne,leche,🥛;sagar,manzana,🍎;udare,pera,🍐;platano,plátano,🍌;laranja,naranja,🍊;gerezi,cereza,🍒;mahats,uva,🍇;marrubi,fresa,🍓;sandia,sandía,🍉;limoi,limón,🍋;tomate,tomate,🍅;patata,patata,🥔;azenario,zanahoria,🥕;baratxuri,ajo,🧄;tipula,cebolla,🧅;piper,pimiento,🌶️;okela,carne,🥩;oilasko,pollo,🍗;arroz,arroz,🍚;ogitarteko,bocadillo,🥪;ardo,vino,🍷;garagardo,cerveza,🍺;kafe,café,☕;te,té,🍵;txokolate,chocolate,🍫;gatz,sal,🧂;ezti,miel,🍯;izozki,helado,🍦;tarta,tarta,🍰;gaztaina,castaña,🌰\nCuerpo|begi,ojo,👁️;belarri,oreja,👂;sudur,nariz,👃;aho,boca,👄;hortz,diente,🦷;esku,mano,🤚;oin,pie,🦶;hanka,pierna,🦵;beso,brazo,💪;bihotz,corazón,❤️;garun,cerebro,🧠;hezur,hueso,🦴;mihi,lengua,👅\nCasa y objetos|etxe,casa,🏠;ate,puerta,🚪;leiho,ventana,🪟;ohe,cama,🛏️;aulki,silla,🪑;liburu,libro,📖;mugikor,móvil,📱;ordenagailu,ordenador,💻;telebista,televisión,📺;giltza,llave,🔑;erloju,reloj,⌚;lapitz,lápiz,✏️;paper,papel,📄;argi,luz,💡;kutxa,caja,📦;poltsa,bolsa,👜;koilara,cuchara,🥄;sardexka,tenedor,🍴;labana,cuchillo,🔪;plater,plato,🍽️;kandela,vela,🕯️;aterki,paraguas,☂️;irrati,radio,📻;argazki,foto,📷;diru,dinero,💰;opari,regalo,🎁;gitarra,guitarra,🎸\nRopa|kamiseta,camiseta,👕;praka,pantalón,👖;soineko,vestido,👗;zapata,zapato,👟;kapela,sombrero,🎩\nCiudad y lugares|eliza,iglesia,⛪;ospital,hospital,🏥;eskola,escuela,🏫;denda,tienda,🏪;banku,banco,🏦;hotel,hotel,🏨;geltoki,estación,🚉;aireportu,aeropuerto,🛫;zubi,puente,🌉;gaztelu,castillo,🏰;iturri,fuente,⛲;kale,calle,🛣️;baserri,caserío,🏡\nTransporte|kotxe,coche,🚗;autobus,autobús,🚌;tren,tren,🚆;bizikleta,bicicleta,🚲;hegazkin,avión,✈️;itsasontzi,barco,🚢\nGente y oficios|mutil,chico,👦;neska,chica,👧;gizon,hombre,👨;emakume,mujer,👩;haur,niño pequeño,👶;mediku,médico,🩺;irakasle,profesor,🧑‍🏫;sukaldari,cocinero,🧑‍🍳;polizia,policía,👮;suhiltzaile,bombero,🧑‍🚒;nekazari,agricultor,🧑‍🌾;errege,rey,🤴;erregina,reina,👸\nOcio|musika,música,🎵;baloi,balón,⚽;festa,fiesta,🎉";
 var DICT=[];
 DICTX.split("\n").forEach(function(ln){var i=ln.indexOf("|"),cat=ln.slice(0,i);ln.slice(i+1).split(";").forEach(function(it){var q=it.trim().split(",");if(q.length>=3)DICT.push({eu:q[0].trim(),es:q[1].trim(),em:q[2].trim(),cat:cat})})});
+var NUMS=(function(){
+  var U=["","bat","bi","hiru","lau","bost","sei","zazpi","zortzi","bederatzi","hamar"],T={11:"hamaika",12:"hamabi",13:"hamahiru",14:"hamalau",15:"hamabost",16:"hamasei",17:"hamazazpi",18:"hemezortzi",19:"hemeretzi"},B={20:"hogei",40:"berrogei",60:"hirurogei",80:"laurogei"};
+  var E0=["cero","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez","once","doce","trece","catorce","quince","dieciséis","diecisiete","dieciocho","diecinueve","veinte","veintiuno","veintidós","veintitrés","veinticuatro","veinticinco","veintiséis","veintisiete","veintiocho","veintinueve"],ET={30:"treinta",40:"cuarenta",50:"cincuenta",60:"sesenta",70:"setenta",80:"ochenta",90:"noventa"};
+  function eu(n){if(n===0)return "zero";if(n<=10)return U[n];if(n<20)return T[n];if(B[n])return B[n];var b=n-n%20,r=n%20;if(r===0)return B[b];var t=r<=10?U[r]:T[r];return B[b]+"ta "+t}
+  function es(n){if(n<30)return E0[n];if(n===100)return "cien";var d=n-n%10,u=n%10;return u?ET[d]+" y "+E0[u]:ET[d]}
+  var o=[];for(var n=0;n<=100;n++)o.push([n===100?"ehun":eu(n),n+" · "+(n===100?"cien":es(n))]);
+  o.push(["berrehun","200 · doscientos"]);o.push(["bostehun","500 · quinientos"]);o.push(["mila","1000 · mil"]);o.push(["bi mila","2000 · dos mil"]);
+  return o})();
 function ART(b){return /a$/.test(b)?b:b+"a"}
 function mkImg(x,typed){
   var d=DICT.filter(function(y){return y.eu!==x.eu}),same=shuffle(d.filter(function(y){return y.cat===x.cat})),oth=shuffle(d.filter(function(y){return y.cat!==x.cat}));
@@ -1536,6 +1544,12 @@ function rVocab(){
 }
 function vlist(){
   var q=norm(V.vq),h="";
+  var nr=NUMS.filter(function(x){return !q||norm(x[0]).indexOf(q)>=0||norm(x[1]).indexOf(q)>=0});
+  if(nr.length){
+    h+='<details style="margin-top:14px"'+(q?' open':'')+'><summary class="vh" style="cursor:pointer;margin:0 0 6px">Números 0–100 y más ('+nr.length+')</summary><div class="card" style="padding:4px 12px">';
+    nr.forEach(function(x){h+='<div class="vrow"><span class="dot"></span><div class="tx"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
+    h+='</div></details>';
+  }
   LESSONS.forEach(function(l){
     var rows=l.w.filter(function(x){return !q||norm(x[0]).indexOf(q)>=0||norm(x[1]).indexOf(q)>=0});
     if(!rows.length)return;
