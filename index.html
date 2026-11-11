@@ -1103,7 +1103,106 @@ function settingsCard(){
    +Object.keys(PALS).map(function(k){return '<button class="pal" data-act="pal" data-v="'+k+'" style="--c:'+PALS[k].l[0]+'" aria-label="'+PALS[k].n+'" aria-pressed="'+(pl===k)+'"></button>'}).join("")
    +'</div></div>';
 }
-function save(){try{localStorage.setItem("hitzez1",JSON.stringify(S))}catch(e){}}
+function rawSave(){try{localStorage.setItem("hitzez1",JSON.stringify(S))}catch(e){}}
+function save(){S.ts=Date.now();rawSave();clQueue()}
+
+/* ---------- cuenta y nube (Firebase) ---------- */
+var FB_CFG={apiKey:"AIzaSyB8ipPyZD_aSUKGmmhfCtRHGln3sL_NW9c",authDomain:"txapi-3f6ce.firebaseapp.com",projectId:"txapi-3f6ce",storageBucket:"txapi-3f6ce.firebasestorage.app",messagingSenderId:"917218412825",appId:"1:917218412825:web:21a791ebfc6ba3ba345d88"};
+var CL={user:null,ready:false,msg:"",busy:false,t:null,ask:null,ok:0};
+function clOn(){return !!(FB_CFG.apiKey&&FB_CFG.projectId)}
+function clScripts(cb){
+  if(window.firebase&&firebase.auth&&firebase.firestore){cb(true);return}
+  var u=["app","auth","firestore"].map(function(n){return "https://www.gstatic.com/firebasejs/10.12.2/firebase-"+n+"-compat.js"}),i=0;
+  (function nx(){if(i>=u.length){cb(true);return}var sc=document.createElement("script");sc.src=u[i++];sc.onload=nx;sc.onerror=function(){cb(false)};document.head.appendChild(sc)})();
+}
+function clRefresh(){if(V.tab==="me"&&!R)render()}
+function clInit(){
+  if(!clOn()||CL.ready)return;
+  try{clScripts(clBoot)}catch(e){}
+}
+function clBoot(ok){
+  {
+    if(!ok){CL.msg="Sin conexión: la nube se activará cuando vuelvas a tener internet.";clRefresh();return}
+    try{
+      if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+      CL.auth=firebase.auth();CL.db=firebase.firestore();CL.auth.languageCode="es";CL.ready=true;
+      CL.auth.onAuthStateChanged(function(u){CL.user=u||null;if(u)clSync();clRefresh()});
+    }catch(e){CL.msg="No se ha podido iniciar la cuenta.";clRefresh()}
+  }
+}
+function clErr(e){
+  var c=e&&e.code||"";
+  var m={"auth/popup-closed-by-user":"Has cerrado la ventana antes de terminar.","auth/cancelled-popup-request":"","auth/invalid-email":"El email no es válido.","auth/missing-password":"Escribe la contraseña.","auth/weak-password":"La contraseña es muy corta (mínimo 6 caracteres).","auth/email-already-in-use":"Ese email ya tiene cuenta. Prueba a entrar.","auth/invalid-credential":"Email o contraseña incorrectos.","auth/wrong-password":"Email o contraseña incorrectos.","auth/user-not-found":"Email o contraseña incorrectos.","auth/too-many-requests":"Demasiados intentos. Espera un rato.","auth/network-request-failed":"No hay conexión a internet.","auth/invalid-api-key":"Los datos de conexión de Firebase no son correctos (clave de API).","auth/api-key-not-valid.-please-pass-a-valid-api-key.":"Los datos de conexión de Firebase no son correctos (clave de API).","auth/unauthorized-domain":"Este dominio no está autorizado en Firebase.","auth/operation-not-allowed":"Ese método de acceso no está activado en Firebase."};
+  return m[c]!==undefined?m[c]:"Ha habido un problema ("+(c||"error")+").";
+}
+function clDoc(){return CL.db.collection("users").doc(CL.user.uid)}
+function clFresh(){return !S.xp&&!Object.keys(S.done||{}).length}
+function clApply(c){
+  var d=def(),j={};try{j=JSON.parse(c.data)}catch(e){return}
+  for(var k in j)d[k]=j[k];if(!d.best)d.best={pairs:0,wordle:0};
+  d.ts=c.ts||0;d.cl=c.ts||0;d.cu=CL.user.uid;S=d;rawSave();
+  try{applyTheme()}catch(e){}CL.ask=null;CL.msg="Progreso descargado de tu cuenta.";CL.ok=Date.now();render();
+}
+function clPush(){
+  if(!CL.user||!CL.ready)return Promise.resolve();
+  clearTimeout(CL.t);CL.t=null;var ts=S.ts||Date.now();
+  return clDoc().set({data:JSON.stringify(S),ts:ts,xp:S.xp||0,upd:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){S.cl=ts;S.cu=CL.user.uid;rawSave();CL.ok=Date.now();CL.msg="";clRefresh()}).catch(function(){CL.msg="No se ha podido guardar en la nube ahora mismo.";clRefresh()});
+}
+function clQueue(){if(!CL||!CL.user||!CL.ready||CL.ask)return;clearTimeout(CL.t);CL.t=setTimeout(clPush,3000)}
+function clSync(){
+  if(!CL.user||!CL.ready)return;
+  clDoc().get().then(function(snap){
+    if(!snap.exists){clPush();return}
+    var c=snap.data(),cts=c.ts||0;
+    if(S.cu===CL.user.uid&&S.cl===cts){if((S.ts||0)>cts)clPush();return}
+    if(clFresh()){clApply(c);return}
+    if(!c.xp){clPush();return}
+    CL.ask=c;askCloud();
+  }).catch(function(){CL.msg="No he podido consultar tu cuenta (¿sin conexión?).";clRefresh()});
+}
+function askCloud(){
+  var old=document.getElementById("clm");if(old)old.remove();if(!CL.ask)return;
+  var d=document.createElement("div");d.className="modal";d.id="clm";
+  d.innerHTML='<div><h3>¿Qué progreso quieres usar?</h3><p class="hint">Tu cuenta ya tiene un progreso guardado y este dispositivo también tiene el suyo.</p><p class="hint"><b>Cuenta:</b> '+(CL.ask.xp||0)+' XP<br><b>Este dispositivo:</b> '+(S.xp||0)+' XP</p><button class="btn" data-cl="usecloud">Usar el de la cuenta</button><button class="btn sec" data-cl="uselocal">Usar el de este dispositivo</button></div>';
+  document.body.appendChild(d);
+}
+function accountCard(){
+  if(!clOn())return "";
+  var h='<div class="card"><h3>Cuenta</h3>';
+  if(CL.user){
+    h+='<p class="hint" style="margin-top:6px">Conectado como <b>'+E(CL.user.email||"tu cuenta")+'</b>. Tu progreso se guarda solo en la nube.</p>'
+     +(CL.msg?'<p class="hint"><b>'+E(CL.msg)+'</b></p>':CL.ok?'<p class="hint">Última copia: '+new Date(CL.ok).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})+'</p>':"")
+     +'<div class="row2"><button class="btn sec sm" data-cl="sync">Guardar ahora</button><button class="btn sec sm" data-cl="out">Cerrar sesión</button></div>';
+  }else if(!CL.ready){
+    h+='<p class="hint" style="margin-top:6px">'+E(CL.msg||"Cargando la cuenta…")+'</p>';
+  }else{
+    h+='<p class="hint" style="margin-top:6px">Entra para guardar tu progreso en la nube y usarlo en otro móvil.</p>'
+     +'<button class="btn" data-cl="google" style="margin-top:8px">Entrar con Google</button>'
+     +'<p class="hint" style="margin:12px 0 4px">O con email y contraseña</p>'
+     +'<input id="cle" class="inp" type="email" placeholder="Email" autocomplete="email" autocapitalize="off"><input id="clp" class="inp" type="password" placeholder="Contraseña (mín. 6)" autocomplete="current-password" style="margin-top:6px">'
+     +'<div class="row2" style="margin-top:8px"><button class="btn sec sm" data-cl="in">Entrar</button><button class="btn sec sm" data-cl="up">Crear cuenta</button></div>'
+     +'<button class="btn sec sm" data-cl="reset" style="margin-top:6px">He olvidado la contraseña</button>'
+     +(CL.msg?'<p class="hint" style="margin-top:8px"><b>'+E(CL.msg)+'</b></p>':"");
+  }
+  return h+'</div>';
+}
+function clAct(k){
+  if(k==="usecloud"){var c=CL.ask;var m=document.getElementById("clm");if(m)m.remove();if(c)clApply(c);return}
+  if(k==="uselocal"){CL.ask=null;var m2=document.getElementById("clm");if(m2)m2.remove();clPush();return}
+  if(!CL.ready)return;
+  var em=(document.getElementById("cle")||{}).value||"",pw=(document.getElementById("clp")||{}).value||"";
+  function fail(e){CL.msg=clErr(e);clRefresh()}
+  if(k==="google"){
+    var pr=new firebase.auth.GoogleAuthProvider();CL.msg="";
+    CL.auth.signInWithPopup(pr).catch(function(e){
+      if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"))CL.auth.signInWithRedirect(pr);else fail(e)});
+  }else if(k==="in"){CL.msg="";CL.auth.signInWithEmailAndPassword(em.trim(),pw).catch(fail)}
+  else if(k==="up"){CL.msg="";CL.auth.createUserWithEmailAndPassword(em.trim(),pw).catch(fail)}
+  else if(k==="reset"){if(!em.trim()){CL.msg="Escribe tu email arriba y vuelve a pulsar.";clRefresh();return}CL.auth.sendPasswordResetEmail(em.trim()).then(function(){CL.msg="Te he enviado un email para cambiar la contraseña.";clRefresh()}).catch(fail)}
+  else if(k==="sync"){clPush().then(function(){CL.msg="Guardado en la nube.";clRefresh()})}
+  else if(k==="out"){clPush().then(function(){return CL.auth.signOut()}).then(function(){CL.user=null;CL.msg="";clRefresh()})}
+}
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"&&CL.t)clPush()});
 function level(){return Math.floor(S.xp/100)+1}
 function touchDay(){var t=dayKey(new Date());if(S.last===t)return;var y=new Date();y.setDate(y.getDate()-1);S.streak=(S.last===dayKey(y))?S.streak+1:1;S.last=t}
 function dispStreak(){var t=new Date(),y=new Date();y.setDate(y.getDate()-1);return (S.last===dayKey(t)||S.last===dayKey(y))?S.streak:0}
@@ -1585,6 +1684,7 @@ function rMe(){
   var learned=Object.keys(S.words).filter(function(k){return S.words[k]>=1}).length,les=Object.keys(S.done).length;
   var h='<section class="hello">'+mascot(110,"strong")+'<div class="bubble">Nivel '+level()+' · '+lvTitle()[1]+' ('+lvTitle()[2]+'). Te faltan '+(100-S.xp%100)+' XP para el siguiente.</div></section>';
   h+='<div class="stat"><div><b>'+dispStreak()+'</b><span>días de racha</span></div><div><b>'+S.xp+'</b><span>XP total</span></div><div><b>'+les+' / '+LESSONS.length+'</b><span>lecciones</span></div><div><b>'+learned+'</b><span>palabras practicadas</span></div></div>';
+  h+=accountCard();
   h+=settingsCard();
   h+=examsCard();
   h+=audioCard();
@@ -2228,6 +2328,7 @@ function storyPick(i){
 /* ---------- eventos ---------- */
 document.addEventListener("click",function(ev){
   var t=ev.target;
+  var cb=t.closest("[data-cl]");if(cb){clAct(cb.getAttribute("data-cl"));return}
   var sp=t.closest("[data-say]");if(sp){ev.stopPropagation();say(sp.getAttribute("data-say"),sp.hasAttribute("data-slow"));return}
   var tab=t.closest("[data-tab]");if(tab){V.tab=tab.getAttribute("data-tab");V.reset=false;V.anim=true;render();window.scrollTo(0,0);return}
   var a=t.closest("[data-act]");
@@ -2373,6 +2474,7 @@ document.addEventListener("change",function(ev){
   });
 })();
 render();
+clInit();
 </script>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
