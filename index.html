@@ -1654,22 +1654,25 @@ function rVocab(){
 }
 function vlist(){
   var q=norm(V.vq),h="";
-  var nr=NUMS.filter(function(x){return !q||norm(x[0]).indexOf(q)>=0||norm(x[1]).indexOf(q)>=0});
+  var nr=NUMS.filter(function(x){return !q||norm(x[0]).indexOf(q)>=0||norm(x[1]).indexOf(q)>=0}),nh="",placed=false;
   if(nr.length){
-    h+='<details style="margin-top:14px"'+(q?' open':'')+'><summary class="vh" style="cursor:pointer;margin:0 0 6px">Números 0–100 y más ('+nr.length+')</summary><div class="card" style="padding:4px 12px">';
-    nr.forEach(function(x){h+='<div class="vrow"><span class="dot"></span><div class="tx"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
-    h+='</div></details>';
+    nh+='<details style="margin:10px 0 4px"'+(q?' open':'')+'><summary class="vh" style="cursor:pointer;margin:0 0 6px;color:var(--green)">Más números: del 0 al 100 y más ('+nr.length+')</summary><div class="card" style="padding:4px 12px">';
+    nr.forEach(function(x){nh+='<div class="vrow"><span class="dot"></span><div class="tx"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
+    nh+='</div></details>';
   }
   LESSONS.forEach(function(l){
     var rows=l.w.filter(function(x){return !q||norm(x[0]).indexOf(q)>=0||norm(x[1]).indexOf(q)>=0});
-    if(!rows.length)return;
+    var anchor=!placed&&l.w.some(function(x){return x[0]==="hamar"});
+    if(!rows.length){if(anchor){h+=nh;placed=true}return}
     h+='<div class="vh">'+l.t+'</div><div class="card" style="padding:4px 12px">';
     rows.forEach(function(x){
       var s=S.words[x[0]]||0,c=s>=4?"l3":s>=2?"l2":S.done[l.id]?"l1":"";
       h+='<div class="vrow"><span class="dot '+c+'"></span><div class="tx"><div class="eu">'+(x[2]?x[2]+" ":"")+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>';
     });
     h+='</div>';
+    if(anchor){h+=nh;placed=true}
   });
+  if(!placed)h=nh+h;
   var cats={};
   DICT.forEach(function(x){if(q&&norm(x.eu).indexOf(q)<0&&norm(ART(x.eu)).indexOf(q)<0&&norm(x.es).indexOf(q)<0)return;(cats[x.cat]=cats[x.cat]||[]).push(x)});
   Object.keys(cats).forEach(function(c){
