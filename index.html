@@ -66,7 +66,7 @@ main{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 nav.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:2px solid var(--line);
   padding:6px max(10px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px))}
 .nin{max-width:560px;margin:0 auto;display:flex;gap:4px}
-.nb{flex:1;border:2px solid transparent;background:none;border-radius:14px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font:600 12px var(--display);color:var(--muted)}
+.nb{flex:1;min-width:0;border:2px solid transparent;background:none;border-radius:14px;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:2px;font:600 12px var(--display);color:var(--muted)}
 .nb svg{width:26px;height:26px}
 .nb[aria-current="true"]{color:var(--blue);background:var(--blue-t);border-color:var(--blue)}
 
@@ -393,6 +393,15 @@ main.anim>*:nth-child(2){animation-delay:.05s}main.anim>*:nth-child(3){animation
 .chest.open{opacity:.65}
 .uh{position:sticky;top:calc(env(safe-area-inset-top,0px) + 56px);z-index:6}
 .uh small{display:block;font:700 12px var(--display);text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+.nin{gap:2px}
+.nb{font-size:9.5px;letter-spacing:-.3px;white-space:nowrap}
+.nb svg{width:23px;height:23px}
+.uin{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:-6px 0 16px}
+.uin p{font-size:15px;margin:0 0 8px}
+.uin .ul{display:flex;flex-wrap:wrap;gap:8px}
+.uin .btn{width:auto;padding:6px 12px;font-size:13px}
+.chp.fin{cursor:pointer}
+.chv{width:100%;aspect-ratio:1;border-radius:14px;background-size:cover;background-position:center}
 </style>
 </head>
 <body>
@@ -831,6 +840,33 @@ UNITS.forEach(function(u){u.lv=u.lv||1;u.L.forEach(function(l){l.u=u.id;l.c=u.c;
   l.p.forEach(function(x){PHR.push({eu:x[0],es:x[1],lid:l.id})});});});
 
 
+var UINTRO={
+ u1:["Empiezas con lo esencial: saludar, decir quién eres, los sonidos que más confunden (tx, ts, tz), los números y los colores.",["g2","g19"]],
+ u2:["Palabras de todos los días: comida, familia y casa. El euskera no distingue género: la terminación -a significa «el/la».",["g3"]],
+ u3:["Para moverte: calles, bar y direcciones. Aparecen por primera vez las terminaciones que significan «en» y «a».",["g8","g9"]],
+ u4:["Los dos verbos más importantes: izan (ser) y egon (estar). También aprendes los casos básicos y el plural.",["g4","g5"]],
+ u5:["Del 11 al 20, los días, los meses, las estaciones y el tiempo. Todo lo necesario para hablar de cuándo pasa algo.",[]],
+ u6:["Animales, cuerpo y ropa, más tus primeros verbos con auxiliar (jan dut, edan dut).",["g10","g6"]],
+ u6c:["Cómo preguntar y los verbos que más vas a usar: tener (ukan), querer y necesitar, y no poder.",["g12","g10"]],
+ u6d:["Más vocabulario: frutas, transporte, la casa por dentro y adjetivos opuestos. El adjetivo va detrás del nombre.",["g6"]],
+ u6b:["Los números hasta el 100 (el euskera cuenta de veinte en veinte) y cómo decir la fecha.",[]],
+ u7:["Pasado y futuro. Ser y estar tienen formas propias de pasado; los demás verbos usan un auxiliar que cambia.",["g13","g14","g21"]],
+ u7b:["El euskera no usa preposiciones: añade terminaciones al final de la palabra (etxean, etxera, amarekin).",["g8","g20"]],
+ u8:["Rutina, la hora y profesiones. Practicas los verbos con auxiliar en presente.",["g10","g11"]],
+ u9:["Compras, salud, clase y gustos. Para «me gusta» se usa una construcción distinta: niri gustatzen zait.",["g15"]],
+ u8b:["Comparar (más que, tan como) y dar órdenes o hacer peticiones amables.",[]],
+ u8c:["Los parentescos (con distinciones según quién habla) y frases útiles para hoteles y estaciones.",["g12"]],
+ u8d:["Aficiones con -tzea y cómo decir lo que sabes hacer con jakin.",["g15"]],
+ u10:["Frases con «que», relativas y «porque». El verbo de la frase subordinada lleva una terminación especial (-la, -en, -lako).",["g16","g17"]],
+ u11:["Condicional y cortesía (nuke, nahi nuke) y verbos con dativo: dar, decir y ayudar.",["g18","g15"]],
+ u12:["Poder, estar haciendo algo, finalidad, «cuando / antes / después» y negaciones. Son la base de las frases largas de los exámenes.",["g21"]]
+};
+function uintro(u){
+  var x=UINTRO[u.id];if(!x)return "";
+  var b=x[1].map(function(id){var g=GR.filter(function(y){return y.id===id})[0];return g?'<button class="btn sec sm" data-act="gopen" data-id="'+id+'">Gramática: '+E(g.t)+'</button>':""}).join("");
+  return '<div class="uin"><p>'+x[0]+'</p>'+(b?'<div class="ul">'+b+'</div>':"")+'</div>';
+}
+
 /* ---------- chapas (puzzles), metas diarias, gemas y cofres ---------- */
 var CH=[
  ["Kontxa","La Concha (Donostia)","La bahía con la isla de Santa Clara","#f6b36b","#e9776a","#2f7fa3","#1d5a7e"],
@@ -846,7 +882,7 @@ var CH=[
  ["Biasteri","Laguardia (Araba)","Viñedos y pueblo medieval","#f4d9a0","#e4a65a","#7d9a3f","#566b2a"],
  ["Miarritze","Biarritz (Iparralde)","El faro y la costa","#b5d8ee","#5a9cc6","#d9c9a0","#a89268"]
 ];
-function chSrc(i){return "chapas/chapa-"+(i<9?"0":"")+(i+1)+".jpg"}
+function chSrc(i){return "chapa-"+(i<9?"0":"")+(i+1)+".jpg"}
 function chFb(i){var c=CH[i];return "linear-gradient(180deg,"+c[3]+" 0%,"+c[4]+" 52%,"+c[5]+" 52%,"+c[6]+" 100%)"}
 function pzOf(i){return S.pz[i]||[]}
 function pzDone(i){return pzOf(i).length>=9}
@@ -894,11 +930,12 @@ function rChapas(){
   var h='<p class="hint" style="margin-bottom:12px">Completa lecciones para ganar piezas. Caen en la chapa «en curso»; si quieres otra, pulsa «Trabajar en esta». Al juntar las 9 piezas ganas la chapa y 25 gemas.</p>'+goalCard(false);
   CH.forEach(function(c,i){
     var n=pzOf(i).length,done=n>=9,act=(S.pza!==""&&+S.pza===i&&!done);
-    h+='<div class="card chp'+(done?" fin":"")+'">'+(done?chFull(i):pzGrid(i))+'<div style="min-width:0"><h3>'+E(c[0])+'</h3><p>'+E(c[1])+'</p><p class="hint">'+(done?E(c[2]):n+' de 9 piezas')+'</p>'
+    h+='<div class="card chp'+(done?" fin":"")+'"'+(done?' data-act="chview" data-i="'+i+'"':'')+'>'+(done?chFull(i):pzGrid(i))+'<div style="min-width:0"><h3>'+E(c[0])+'</h3><p>'+E(c[1])+'</p><p class="hint">'+(done?E(c[2]):n+' de 9 piezas')+'</p>'
      +(done?'<span class="best">Conseguida</span>':(act?'<span class="best">En curso</span>':'<button class="btn sec sm" data-act="pzsel" data-i="'+i+'" style="width:auto;padding:6px 12px">Trabajar en esta</button>'))+'</div></div>';
   });
   return h;
 }
+function chView(i){var c=CH[i];showReward(E(c[0]),'<div class="chv" role="img" aria-label="'+E(c[1])+'" style="background-image:url('+chSrc(i)+'),'+chFb(i)+'"></div><p><b>'+E(c[1])+'</b></p><p class="hint">'+E(c[2])+'</p>')}
 function showReward(t,h){
   var old=document.getElementById("rwm");if(old)old.remove();
   var m=document.createElement("div");m.className="modal";m.id="rwm";
@@ -1419,12 +1456,12 @@ function rInicio(){
    +'<button class="tile" data-act="exam" data-n="'+xl+'">'+IC.check+'<div><b>Examen</b><span>Nivel '+LVN[xl]+'</span></div></button>'
    +'<button class="tile" data-tab="games">'+IC.pad+'<div><b>Juegos</b><span>'+Object.keys(GN).length+' minijuegos</span></div></button>'
    +'<button class="tile" data-tab="gram">'+IC.book+'<div><b>Gramática</b><span>'+GR.length+' temas</span></div></button>'
-   +'<button class="tile" data-tab="vocab">'+IC.list+'<div><b>Palabras</b><span>Diccionario</span></div></button>'
+   +'<button class="tile" data-tab="vocab">'+IC.list+'<div><b>Diccionario</b><span>'+(WORDS.length+DICT.length)+' palabras</span></div></button>'
    +'<button class="tile" data-tab="ach">'+IC.trophy+'<div><b>Logros</b><span>'+achCount()+' / '+(ACH.length*3)+'</span></div></button></div>';
   return h;
 }
 var V={tab:"inicio",vq:"",reset:false};
-var NAV=[["inicio","Inicio",IC.home],["learn","Camino",IC.path],["games","Juegos",IC.pad],["ach","Logros",IC.trophy],["me","Perfil",IC.user]];
+var NAV=[["inicio","Inicio",IC.home],["learn","Camino",IC.path],["games","Juegos",IC.pad],["gram","Gramática",IC.book],["vocab","Diccionario",IC.list],["ach","Logros",IC.trophy],["me","Perfil",IC.user]];
 function drawBar(){
   $("#bar").innerHTML='<div class="brand">'+mascot(34)+'Txapi</div>'
    +'<div class="chip st" title="Racha">'+IC.flame+dispStreak()+'</div>'
@@ -1434,7 +1471,7 @@ function drawBar(){
   $("#lvfill").style.width=(S.xp%100)+"%";
   $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0])+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch})[V.tab]();if(V.tab==="gram"||V.tab==="vocab")body='<button class="backlink" data-tab="inicio">‹ Inicio</button>'+body;m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -1456,7 +1493,7 @@ function rLearn(){
   UNITS.forEach(function(u){
     if(u.lv!==V.lv)return;
     un++;
-    h+='<section class="unit u-'+u.c+'"><div class="uh"><small>Unidad '+un+'</small><h2>'+u.t+'</h2><p>'+u.d+'</p></div><div class="path">';
+    h+='<section class="unit u-'+u.c+'"><div class="uh"><small>Unidad '+un+'</small><h2>'+u.t+'</h2><p>'+u.d+'</p></div>'+uintro(u)+'<div class="path">';
     u.L.forEach(function(l){
       var i=LESSONS.indexOf(l),pos=++cnt,done=S.done[l.id],cur=i===ci,lock=!S.open&&i>ci&&!done;
       var x=Math.round(Math.sin(pos*1.15)*56);
@@ -2142,6 +2179,7 @@ document.addEventListener("click",function(ev){
     else if(act==="chapas"){V.tab="ach";V.sub="chapas";V.anim=true;render();window.scrollTo(0,0)}
     else if(act==="pzsel"){S.pza=+a.getAttribute("data-i");save();render()}
     else if(act==="chest"){openChest(a.getAttribute("data-u"))}
+    else if(act==="chview"){chView(+a.getAttribute("data-i"))}
     else if(act==="rwclose"){var rm=document.getElementById("rwm");if(rm)rm.remove();render()}
     else if(act==="dgame"){startGameKey(dgKey())}
     else if(act==="sound"){S.sound=!S.sound;save();render()}
