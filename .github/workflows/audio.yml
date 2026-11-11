@@ -47,7 +47,7 @@ jobs:
           add("Kaixo!"); add("Kaixo! Zer moduz? Euskara ikasten ari naiz.");
           WORDS.forEach(function(w){ add(w.eu); });
           if(typeof NUMS!=="undefined") NUMS.forEach(d=>add(d[0]));
-  if(typeof DICT!=="undefined") DICT.forEach(function(d){ add(d.eu); add(ART(d.eu)); });
+          if(typeof DICT!=="undefined") DICT.forEach(function(d){ add(d.eu); add(ART(d.eu)); });
           PHR.forEach(function(p){ add(p.eu); });
           scan(vlist());
           STORY.forEach(function(s){ add(s.eu); (s.o||[]).forEach(function(o){ add(o.eu); }); });
