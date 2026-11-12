@@ -266,6 +266,10 @@ select.inp{appearance:auto}
 .czp select{font:600 17px var(--body);padding:4px 6px;border-radius:10px;border:2px solid var(--blue);background:var(--surface);color:var(--ink);max-width:100%}
 .czp select.ok{border-color:var(--ok)}.czp select.bad{border-color:var(--red)}
 .ta{width:100%;min-height:120px;font:600 17px var(--body);padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical}
+.backlink{background:none;color:var(--blue);font:700 15px var(--body);padding:4px 0;margin-bottom:4px}
+.rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
+.rev svg{width:26px;height:26px;color:var(--blue);flex:none}
+.rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
 .lvt{display:flex;gap:6px;margin-bottom:16px}
 .lvt button{flex:1;border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:14px;padding:8px 4px;font:600 16px var(--display);color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
 .lvt button small{font:700 12px var(--body)}
@@ -410,6 +414,7 @@ main.anim>*:nth-child(2){animation-delay:.05s}main.anim>*:nth-child(3){animation
 .uin .ul{display:flex;flex-wrap:wrap;gap:8px}
 .uin .btn{width:auto;padding:6px 12px;font-size:13px}
 .chp.fin{cursor:pointer}
+.lsn.study .node{border-radius:18px}
 .chv{width:100%;aspect-ratio:1;border-radius:14px;background-size:cover;background-position:center}
 </style>
 </head>
@@ -870,6 +875,119 @@ var UINTRO={
  u11:["Condicional y cortesía (nuke, nahi nuke) y verbos con dativo: dar, decir y ayudar.",["g18","g15"]],
  u12:["Poder, estar haciendo algo, finalidad, «cuando / antes / después» y negaciones. Son la base de las frases largas de los exámenes.",["g21"]]
 };
+
+/* ---------- estudio previo de cada unidad (puerta) y mezcla de repaso ---------- */
+function ugr(u){var x=UINTRO[u.id];return x?x[1].filter(function(id){return GR.some(function(g){return g.id===id})}):[]}
+function gOk(id){return (S.gram[id]||0)>=2}
+function studyDone(u){
+  var ids=ugr(u);if(!ids.length||S.open)return true;
+  if(u.L.some(function(l){return S.done[l.id]}))return true;
+  return ids.every(gOk);
+}
+function nextStudy(u){var ids=ugr(u).filter(function(id){return !gOk(id)});return ids[0]||""}
+
+/* ---------- dominio de palabras, frases y conjugaciones ---------- */
+var URG_ON=15,URG_OFF=8,WIDX=null;
+function wInfo(eu){if(!WIDX){WIDX={};DICT.forEach(function(d){WIDX[d.eu]=d});WORDS.forEach(function(w){WIDX[w.eu]=w})}return WIDX[eu]||null}
+function msInfo(e){
+  if(e.t==="ch"||e.t==="ty"||e.t==="lis")return {k:"w:"+e.w.eu,eu:e.w.eu,es:e.w.es};
+  if(e.t==="img"||e.t==="hang")return {k:"w:"+e.x.eu,eu:e.x.eu,es:e.x.es};
+  if(e.t==="bd")return {k:"p:"+e.ans,eu:e.ans,es:e.es||"",x:1};
+  if(e.t==="f")return {k:"f:"+e.s.replace("___",e.ans),eu:e.s.replace("___",e.ans),es:e.es||"",x:1};
+  if(e.t==="tw")return {k:"t:"+e.ok[0],eu:e.ok[0],es:e.es||"",x:1};
+  if(e.t==="dlg")return {k:"d:"+e.model,eu:e.model,es:e.es||"",x:1};
+  return null;
+}
+function msCount(st){var n=0;for(var k in S.ms)if(S.ms[k].s===st)n++;return n}
+function urgCheck(){
+  var n=msCount("s");
+  if(!S.urg&&n>=URG_ON){S.urg=1;V.lv="urg";if(typeof toast==="function")toast("Tienes muchas palabras sin dominar: toca repaso urgente")}
+  else if(S.urg&&n<=URG_OFF){S.urg=0;V.lv=0;if(typeof toast==="function")toast("¡Repaso urgente superado! Camino desbloqueado")}
+}
+function msPrune(){
+  var ks=Object.keys(S.ms);if(ks.length<=450)return;
+  ks.filter(function(k){return S.ms[k].s==="d"}).sort(function(a,b){return S.ms[a].t-S.ms[b].t}).slice(0,ks.length-450).forEach(function(k){delete S.ms[k]});
+}
+function msRec(k,eu,es,ok,ex){
+  if(!S.ms)S.ms={};
+  var m=S.ms[k];if(!m){m=S.ms[k]={eu:eu,es:es||"",f:0,sr:0,s:"n",t:0}}
+  if(es&&!m.es)m.es=es;
+  if(ex&&!m.x){try{m.x=JSON.parse(JSON.stringify(ex))}catch(e){}}
+  var need=(typeof R!=="undefined"&&R&&R.cfg&&R.cfg.need)||5;m.t=Date.now();
+  if(ok){
+    m.sr++;m.f=0;
+    if(m.s==="s"&&m.sr>=need){m.s="d";m.f=0;m.sr=0;if(R)R.mst=(R.mst||0)+1}
+    else if(m.s==="n"&&m.sr>=3){m.s="d";m.f=0}
+    else if(m.s==="d"&&m.sr>=5)m.f=0;
+  }else{
+    m.f++;m.sr=0;
+    if(m.s!=="s"&&m.f>=3){m.s="s";if(ex&&!m.x){try{m.x=JSON.parse(JSON.stringify(ex))}catch(e2){}}}
+  }
+  msPrune();urgCheck();
+}
+function msItems(st){var o=[];for(var k in S.ms)if(S.ms[k].s===st)o.push({k:k,m:S.ms[k]});return o}
+function msEx(it){
+  var k=it.k,m=it.m,t=k.charAt(0),w;
+  if(t==="w"){
+    w=wInfo(m.eu);if(!w)return null;
+    var tw=WORDS.filter(function(x){return x.eu===m.eu})[0];
+    if(!tw)return mkImg?{t:"ty",w:w}:null;
+    var r=Math.random();return r<.34?mkCh(tw,"es2eu"):r<.67?mkCh(tw,"eu2es"):r<.85?mkLis(tw):mkTy(tw);
+  }
+  if(t==="p"){var p=PHR.filter(function(x){return x.eu===m.eu})[0];return p?mkBd(p):(m.x?JSON.parse(JSON.stringify(m.x)):null)}
+  if(!m.x)return null;
+  var x=JSON.parse(JSON.stringify(m.x));if(x.t==="f"&&x.opts)x.opts=shuffle(x.opts);return x;
+}
+function msQueue(st,n,rounds){
+  var its=shuffle(msItems(st)).sort(function(a,b){return (b.m.f-a.m.f)||(a.m.sr-b.m.sr)}).slice(0,n),q=[];
+  for(var r=0;r<(rounds||1);r++)shuffle(its).forEach(function(it){var e=msEx(it);if(e)q.push(e)});
+  return q;
+}
+function mixReview(l,q){
+  var out=q.slice(),extra=[],ss=shuffle(msItems("s")).slice(0,3),dd=shuffle(msItems("d"));
+  ss.forEach(function(it){var e=msEx(it);if(e)extra.push(e)});
+  if(dd.length&&Math.random()<.35){var e2=msEx(dd[0]);if(e2)extra.push(e2)}
+  if(extra.length<3){
+    var pool=learnedWords().filter(function(w){return w.lid!==l.id}).sort(function(a,b){return (S.words[a.eu]||0)-(S.words[b.eu]||0)||Math.random()-.5}).slice(0,4-extra.length);
+    pool.forEach(function(w,i){extra.push(i%2?mkTy(w):mkCh(w,i%3===0?"eu2es":"es2eu"))});
+  }
+  extra.forEach(function(e){var p=Math.min(out.length,2+Math.floor(Math.random()*Math.max(1,out.length-2)));out.splice(p,0,e)});
+  return out;
+}
+function startMsReview(st){
+  var need=st==="s"?10:10,q=msQueue(st,st==="s"?8:10,st==="s"?3:1);
+  if(q.length<2){toast("Aún no hay suficientes para repasar");return}
+  startRun({q:q,title:st==="s"?"¡Repaso de sin dominar!":"¡Repaso de dominadas!",xpPer:8,need:need,bonus:10});
+}
+function urgNodes(){return [["Elige","Elige la traducción correcta"],["Escucha","Escucha y responde"],["Escribe","Escríbelo en euskera"],["Frases","Frases y conjugaciones"],["Parejas","Une palabras con su traducción"]]}
+function startUrgent(i){
+  var its=shuffle(msItems("s")).sort(function(a,b){return (b.m.f-a.m.f)||(a.m.sr-b.m.sr)}).slice(0,6),q=[];
+  var words=its.filter(function(it){return it.k.charAt(0)==="w"}),others=its.filter(function(it){return it.k.charAt(0)!=="w"});
+  function tw(it){return WORDS.filter(function(x){return x.eu===it.m.eu})[0]}
+  function push(e){if(e)q.push(e)}
+  if(i===0)its.forEach(function(it){var w=tw(it);if(w){push(mkCh(w,"es2eu"));push(mkCh(w,"eu2es"))}else push(msEx(it))});
+  else if(i===1)its.forEach(function(it){var w=tw(it);if(w){push(mkLis(w));push(mkCh(w,"es2eu"))}else push(msEx(it))});
+  else if(i===2)its.forEach(function(it){var w=tw(it);if(w){push(mkTy(w));push(mkTy(w))}else push(msEx(it))});
+  else if(i===3){others.forEach(function(it){push(msEx(it));push(msEx(it))});words.forEach(function(it){var w=tw(it);if(w){push(mkTy(w));push(mkLis(w))}})}
+  else{var ws=words.map(tw).filter(Boolean);if(ws.length>=3){push(mkMt(ws.slice(0,5)));push(mkMt(shuffle(ws).slice(0,5)))}its.forEach(function(it){push(msEx(it))})}
+  q=shuffle(q).slice(0,12);
+  if(q.length<3){toast("Prueba con otro tipo de ejercicio");return}
+  startRun({q:q,title:"¡Repaso urgente hecho!",xpPer:10,need:5,bonus:10});
+}
+function rUrg(){
+  var n=msCount("s"),h='<div class="card" style="border:2px solid var(--red)"><h3>Repaso urgente</h3><p class="hint" style="margin-top:6px">Tienes <b>'+n+'</b> sin dominar. El Camino sigue bloqueado hasta que queden <b>'+URG_OFF+'</b> o menos. Cada palabra, frase o conjugación pasa a dominada cuando aciertas 5 seguidas.</p></div><div class="unit u-red"><div class="uh"><small>Repaso urgente</small><h2>Solo lo que te cuesta</h2><p>Sin material nuevo: lo dominado se mezcla con lo que falla.</p></div><div class="path">';
+  urgNodes().forEach(function(x,i){var px=Math.round(Math.sin((i+1)*1.15)*56);h+='<button class="lsn cur" style="--x:'+px+'px" data-act="urg" data-i="'+i+'"><span class="node">'+(i+1)+'</span><span class="lt">'+x[0]+'</span><span class="empieza" style="position:static;margin-top:2px">'+x[1]+'</span></button>'});
+  return h+'</div></div>';
+}
+function rRev(){
+  var t=V.rt||"s",ns=msCount("s"),nd=msCount("d"),its=msItems(t).sort(function(a,b){return t==="s"?(b.m.f-a.m.f):(b.m.t-a.m.t)});
+  var h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Repaso</h2><p class="hint" style="margin-bottom:10px">Lo que fallas se guarda en <b>Sin dominar</b>. Con 5 aciertos seguidos en el Camino (o 10 aquí) pasa a <b>Dominado</b>. Si fallas 3 veces seguidas algo, pasa a Sin dominar (también las dominadas).</p>';
+  h+='<div class="seg"><button class="sg" data-act="rt" data-v="s" aria-pressed="'+(t==="s")+'">Sin dominar ('+ns+')</button><button class="sg" data-act="rt" data-v="d" aria-pressed="'+(t==="d")+'">Dominado ('+nd+')</button></div>';
+  h+='<button class="btn" style="margin:12px 0" data-act="msgo" data-v="'+t+'"'+(its.length<2?' disabled':'')+'>'+(t==="s"?'Repasar sin dominar':'Repasar dominadas')+'</button>';
+  if(!its.length)h+='<div class="card"><p class="hint">'+(t==="s"?"Ahora mismo no tienes nada sin dominar. ¡Bien!":"Todavía no hay dominadas. Se añaden según practicas.")+'</p></div>';
+  else{h+='<div class="card" style="padding:4px 12px">';its.slice(0,120).forEach(function(it){h+='<div class="vrow"><span class="dot '+(t==="d"?"l3":"")+'"></span><div class="tx"><div class="eu">'+E(it.m.eu)+'</div><div class="es">'+E(it.m.es||"")+(t==="s"?' · racha '+it.m.sr+'/5':'')+'</div></div>'+spk(it.m.eu)+'</div>'});h+='</div>'}
+  return h;
+}
 function uintro(u){
   var x=UINTRO[u.id];if(!x)return "";
   var b=x[1].map(function(id){var g=GR.filter(function(y){return y.id===id})[0];return g?'<button class="btn sec sm" data-act="gopen" data-id="'+id+'">Gramática: '+E(g.t)+'</button>':""}).join("");
@@ -1072,7 +1190,7 @@ function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dayKey(d){var y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();return y+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd}
 
 /* ---------- estado ---------- */
-function def(){return {gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
+function def(){return {ms:{},urg:0,gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
 function load(){try{var j=JSON.parse(localStorage.getItem("hitzez1"));if(j&&typeof j==="object"){var d=def();for(var k in j)d[k]=j[k];if(!d.best)d.best={pairs:0,wordle:0};return d}}catch(e){}return def()}
 var S=load();
 
@@ -1207,7 +1325,7 @@ function level(){return Math.floor(S.xp/100)+1}
 function touchDay(){var t=dayKey(new Date());if(S.last===t)return;var y=new Date();y.setDate(y.getDate()-1);S.streak=(S.last===dayKey(y))?S.streak+1:1;S.last=t}
 function dispStreak(){var t=new Date(),y=new Date();y.setDate(y.getDate()-1);return (S.last===dayKey(t)||S.last===dayKey(y))?S.streak:0}
 function addXP(n){var before=level();S.xp+=n;touchDay();save();return level()>before}
-function rec(eu,ok){S.words[eu]=clamp((S.words[eu]||0)+(ok?1:-2),0,5);save()}
+function rec(eu,ok){S.words[eu]=clamp((S.words[eu]||0)+(ok?1:-2),0,5);var w=wInfo(eu);msRec("w:"+eu,eu,w?w.es:"",ok);save()}
 function curIdx(){for(var i=0;i<LESSONS.length;i++)if(!S.done[LESSONS[i].id])return i;return LESSONS.length}
 function learnedWords(){var out=[];WORDS.forEach(function(w){if(S.done[w.lid])out.push(w)});return out}
 function unlockedWords(){var n=S.open?LESSONS.length:Math.max(curIdx(),0),ids={};LESSONS.forEach(function(l,i){if(i<=n||S.done[l.id])ids[l.id]=1});return WORDS.filter(function(w){return ids[w.lid]})}
@@ -1588,7 +1706,7 @@ function drawBar(){
   $("#lvfill").style.width=(S.xp%100)+"%";
   $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0])+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -1599,11 +1717,14 @@ function rLearn(){
   var ci=curIdx(),due=dueWords().length;
   if(!V.lv){var cl=LESSONS[ci];V.lv=cl?cl.lv:3}
   var h='<h2 class="sec-h">Camino</h2>';
+  if(S.urg&&V.lv==="urg")return h+'<div class="lvt"><button data-act="lv" data-n="urg" aria-pressed="true"><span>Urgente</span><small>'+msCount("s")+' sin dominar</small></button><button data-act="lv" data-n="0" aria-pressed="false"><span>Camino</span><small>Bloqueado</small></button></div>'+rUrg();
   if(learnedWords().length){
     h+='<button class="rev" data-act="review">'+IC.loop+'<div><b>Repaso inteligente</b><span>'+(due?due+' palabras que conviene repasar':'Todo al día. Practica igualmente')+'</span></div></button>';
   }else{
     h+='<button class="rev" disabled>'+IC.loop+'<div><b>Repaso inteligente</b><span>Se activa al terminar tu primera lección</span></div></button>';
   }
+  if(learnedWords().length||msCount("s")||msCount("d"))h+='<button class="rev" data-act="revpage">'+IC.list+'<div><b>Mis repasos</b><span>'+msCount("s")+' sin dominar · '+msCount("d")+' dominadas</span></div></button>';
+  if(S.urg)h+='<div class="card" style="border:2px solid var(--red)"><h3>Camino bloqueado</h3><p class="hint" style="margin:6px 0 8px">Tienes muchas palabras sin dominar. Hazles un repaso urgente para seguir.</p><button class="btn sm" data-act="lv" data-n="urg">Ir al repaso urgente</button></div>';
   h+='<div class="lvt">'+[1,2,3].map(function(n){var s=lvStats(n),lk=!S.open&&LESSONS.indexOf(s.first)>ci;return '<button data-act="lv" data-n="'+n+'" aria-pressed="'+(V.lv===n)+'"><span>'+LVN[n]+'</span><small>'+(lk?'Bloqueado':s.d+' / '+s.t)+'</small></button>'}).join("")+'</div>';
   h+=examCard(V.lv);
   var cnt=0,un=0;
@@ -1611,8 +1732,13 @@ function rLearn(){
     if(u.lv!==V.lv)return;
     un++;
     h+='<section class="unit u-'+u.c+'"><div class="uh"><small>Unidad '+un+'</small><h2>'+u.t+'</h2><p>'+u.d+'</p></div>'+uintro(u)+'<div class="path">';
+    var sdone=studyDone(u),sids=ugr(u);
+    if(sids.length){
+      var ng=sids.filter(gOk).length,reach=S.open||LESSONS.indexOf(u.L[0])<=ci||sdone;
+      h+='<button class="lsn study'+(sdone?'':reach?' cur':' lock')+'" style="--x:0px" data-act="study" data-u="'+u.id+'" aria-label="Estudio de la unidad"><span class="node">'+(sdone?IC.check:reach?IC.book:IC.lock)+'</span><span class="lt">Estudio previo'+(sdone?'':' ('+ng+'/'+sids.length+')')+'</span>'+(sdone||!reach?'':'<span class="empieza">Empezar</span>')+'</button>';
+    }
     u.L.forEach(function(l){
-      var i=LESSONS.indexOf(l),pos=++cnt,done=S.done[l.id],cur=i===ci,lock=!S.open&&i>ci&&!done;
+      var i=LESSONS.indexOf(l),pos=++cnt,done=S.done[l.id],cur=i===ci&&sdone&&!S.urg,lock=(!S.open&&i>ci&&!done)||(!sdone&&!done)||(S.urg&&!done);
       var x=Math.round(Math.sin(pos*1.15)*56);
       var inner=lock?IC.lock:(done?IC.check:pos);
       h+='<button class="lsn '+(lock?'lock':cur?'cur':'')+'" style="--x:'+x+'px" data-act="lesson" data-id="'+l.id+'" aria-label="Lección '+pos+': '+l.t+'"><span class="node">'+inner+'</span><span class="lt">'+l.t+'</span>'
@@ -1987,6 +2113,7 @@ function check(){
   else if(e.t==="cz"){var allok=true;for(var cn in e.b){if(st.cz[cn]!==e.b[cn].a)allok=false}ok=allok;ans=e.eu.replace(/\{(\d)\}/g,function(m,n){return e.b[n].a})}
   else if(e.t==="wr"){var elw=$("#wr"),vw=elw?elw.value:"";if(vw.trim().length<6){toast("Escribe algo antes de comprobar");return}st.val=vw;ok=true;ans=e.model}
   st.checked=true;st.ok=ok;st.ans=ans;
+  var mi=msInfo(e);if(mi&&mi.x)msRec(mi.k,mi.eu,mi.es,ok,e);
   var ss=SS();if(ok){ss.run++;ss.ok++;if(ss.run>ss.best)ss.best=ss.run}else ss.run=0;
   if(ok)R.ok++;else{R.bad++;if(R.cfg&&R.cfg.exam){}else{var key=e.t+(e.w?e.w.eu:(e.q||e.s||e.bot||e.eu||e.es||e.ans||""))+(e.dir||"");if(!R.again[key]){R.again[key]=1;R.q.push(e);R.total++}}}
   beep(ok);if(ok){var s=euOf(e);if(s)say(s)}
@@ -2014,7 +2141,7 @@ function finishRun(){
   var up=addXP(xp);if(R.cfg.onDone)R.cfg.onDone(acc);if(R.cfg.title==="¡Lección completada!"&&acc===1)SS().perf++;var gb=R.cfg.game?gameDone(R.cfg.game):0;checkAch();save();
   var pct=Math.round(acc*100),gp=(R.cfg.title==="¡Lección completada!")?goalTick():null,secs=Math.max(1,Math.round((Date.now()-(R.t0||Date.now()))/1000)),tm=Math.floor(secs/60)+":"+("0"+secs%60).slice(-2);
   var mood=acc>=.8?"cheer":acc>=.6?"strong":"sad",ttl=R.cfg.title||"¡Bien hecho!",enc=acc>=.8?"":(acc>=.6?"Buen intento: con otra pasada saldrá mejor.":"Hoy ha costado. Repasa estas palabras y vuelve a intentarlo.");
-  stage('<div class="res">'+mascot(130,mood)+'<h1 style="font-size:30px">'+ttl+'</h1>'+(enc?'<p class="hint">'+enc+'</p>':'')+(gb?'<p class="q" style="color:var(--sun-d)">Reto del día cumplido: +'+gb+' XP</p>':'')+(up?'<p class="q" style="color:var(--ok)">¡Subes al nivel '+level()+': '+lvTitle()[1]+'!</p>':'')
+  stage('<div class="res">'+mascot(130,mood)+'<h1 style="font-size:30px">'+ttl+'</h1>'+(enc?'<p class="hint">'+enc+'</p>':'')+(R.mst?'<p class="q" style="color:var(--ok)">¡'+R.mst+(R.mst>1?' elementos dominados!':' elemento dominado!')+'</p>':'')+(gb?'<p class="q" style="color:var(--sun-d)">Reto del día cumplido: +'+gb+' XP</p>':'')+(up?'<p class="q" style="color:var(--ok)">¡Subes al nivel '+level()+': '+lvTitle()[1]+'!</p>':'')
    +'<div class="sc3"><div class="c-xp"><small>XP ganados</small><b>'+IC.bolt+'+'+xp+'</b></div><div class="c-ok"><small>Aciertos</small><b>'+pct+'%</b></div><div class="c-tm"><small>Tiempo</small><b>'+tm+'</b></div></div>'+rwHtml(gp)+'</div><div class="foot"><button class="btn" data-r="leave">Continuar</button></div>');
   R.finished=true;
 }
@@ -2340,7 +2467,16 @@ document.addEventListener("click",function(ev){
     if(act==="lesson"){
       var id=a.getAttribute("data-id"),idx=LESSONS.findIndex(function(l){return l.id===id});
       if(!S.open&&idx>curIdx()&&!S.done[id]){toast("Termina la lección anterior para abrir esta");return}
+      if(S.urg&&!S.done[id]){toast("Primero el repaso urgente");V.lv="urg";render();return}
+      var lu=UNITS.filter(function(u){return u.L.some(function(x){return x.id===id})})[0];
+      if(lu&&!studyDone(lu)&&!S.done[id]){toast("Antes toca el estudio previo de esta unidad");startGrammar(nextStudy(lu));return}
       startLesson(id);
+    }else if(act==="study"){
+      var su=UNITS.filter(function(u){return u.id===a.getAttribute("data-u")})[0];if(!su)return;
+      var ng=nextStudy(su);
+      if(!ng){toast("Estudio completado");return}
+      if(!S.open&&LESSONS.indexOf(su.L[0])>curIdx()&&!studyDone(su)){toast("Termina la unidad anterior para abrir esta");return}
+      startGrammar(ng);
     }else if(act==="review"){startRun({q:reviewQueue(),title:"¡Repaso hecho!",xpPer:8})}
     else if(act==="theme"){S.theme=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="pal"){S.pal=a.getAttribute("data-v");save();applyTheme();render()}
@@ -2359,7 +2495,11 @@ document.addEventListener("click",function(ev){
     else if(act==="voice"){S.voice=a.getAttribute("data-v");save();render();say("Kaixo!")}
     else if(act==="vtest"){say("Kaixo! Zer moduz? Euskara ikasten ari naiz.")}
     else if(act==="vtest2"){say("Kaixo! Zer moduz? Euskara ikasten ari naiz.",true)}
-    else if(act==="lv"){V.lv=+a.getAttribute("data-n");render()}
+    else if(act==="lv"){var nv=a.getAttribute("data-n");V.lv=nv==="urg"?"urg":+nv;render()}
+    else if(act==="revpage"){V.tab="rev";V.reset=false;render();window.scrollTo(0,0)}
+    else if(act==="rt"){V.rt=a.getAttribute("data-v");render()}
+    else if(act==="msgo"){startMsReview(a.getAttribute("data-v"))}
+    else if(act==="urg"){startUrgent(+a.getAttribute("data-i"))}
     else if(act==="open"){S.open=!S.open;save();render()}
     else if(act==="bkshow"){try{V.bk=btoa(unescape(encodeURIComponent(JSON.stringify(S))))}catch(e){V.bk=""}render()}
     else if(act==="bkcopy"){try{V.bk=btoa(unescape(encodeURIComponent(JSON.stringify(S))))}catch(e){V.bk=""}
@@ -2381,7 +2521,7 @@ document.addEventListener("click",function(ev){
   }
   if(k==="stay"){R.quitAsk=false;drawEx();return}
   if(k==="leave"){leave();return}
-  if(k==="go"){var l=R.intro;startRun({q:lessonQueue(l),title:"¡Lección completada!",bonus:20,xpPer:10,onDone:function(acc){var st=acc>=.9?3:acc>=.7?2:1;S.done[l.id]=Math.max(S.done[l.id]||0,st);touchDay();save()}});return}
+  if(k==="go"){var l=R.intro;startRun({q:mixReview(l,lessonQueue(l)),title:"¡Lección completada!",bonus:20,xpPer:10,onDone:function(acc){var st=acc>=.9?3:acc>=.7?2:1;S.done[l.id]=Math.max(S.done[l.id]||0,st);touchDay();save()}});return}
   if(k==="again"){if(LAST==="cross")startCross();else if(LAST==="ws")startWS();else startPairs();return}
   if(k==="lshow"){R.st.show=true;drawEx();return}
   if(k==="mic"){micStart();return}
