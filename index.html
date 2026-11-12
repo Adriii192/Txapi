@@ -431,6 +431,8 @@ main.anim>*:nth-child(2){animation-delay:.05s}main.anim>*:nth-child(3){animation
 .uin .ul{display:flex;flex-wrap:wrap;gap:8px}
 .uin .btn{width:auto;padding:6px 12px;font-size:13px}
 .chp.fin{cursor:pointer}
+.lsn.sub .node{width:62px;height:62px;font-size:24px}
+.lsn.sub .lt{font-size:13px}
 .lsn.study .node{border-radius:18px}
 .chv{width:100%;aspect-ratio:1;border-radius:14px;background-size:cover;background-position:center}
 </style>
@@ -866,7 +868,145 @@ var UNITS4=[
 ];
 UNITS=UNITS.concat(UNITS2,UNITS3,UNITS4);
 var LESSONS=[],WORDS=[],PHR=[];
-UNITS.forEach(function(u){u.lv=u.lv||1;u.L.forEach(function(l){l.u=u.id;l.c=u.c;l.lv=u.lv;LESSONS.push(l);
+/* contenido ampliado por lección */
+var EXT={
+l1:{w:[["laster arte","hasta pronto"],["bihar arte","hasta mañana"],["ongi etorri","bienvenido/a"],["ez horregatik","de nada"],["zorionak","felicidades"]],
+ p:[["Egun on, zer moduz?","Buenos días, ¿qué tal?"],["Laster arte, Ane","Hasta pronto, Ane"],["Eskerrik asko, ez horregatik","Gracias, de nada"],["Ongi etorri etxera","Bienvenido a casa"]],
+ f:[{s:"Eskerrik ___",es:"Muchas gracias",o:["asko","on","gabon"],a:["asko"],w:"«Eskerrik asko» = muchas gracias."},{s:"___ on!",es:"¡Buenos días!",o:["Egun","Gabon","Agur"],a:["Egun"],w:"«Egun on» = buenos días."},{s:"___ etorri!",es:"¡Bienvenido!",o:["Ongi","Egun","Ondo"],a:["Ongi"],w:"«Ongi etorri» = bienvenido."}],
+ tw:[{es:"Buenos días",ok:["Egun on"]},{es:"Gracias",ok:["Eskerrik asko"]},{es:"Hasta pronto",ok:["Laster arte"]},{es:"Por favor",ok:["Mesedez"]}],
+ d:[{bot:"Kaixo! Zer moduz?",es:"¡Hola! ¿Qué tal?",re:"ondo|ongi",ok:["Ondo, eskerrik asko","Oso ondo","Ondo"],model:"Ondo, eskerrik asko."}]},
+l2:{w:[["nire izena","mi nombre"],["zure izena","tu nombre"],["pozten naiz","encantado/a"],["nongoa zara?","¿de dónde eres?"],["Espainiakoa","de España"]],
+ p:[["Nire izena Ane da","Mi nombre es Ane"],["Zein da zure izena?","¿Cuál es tu nombre?"],["Pozten naiz","Encantado"],["Espainiakoa naiz","Soy de España"],["Nongoa zara?","¿De dónde eres?"]],
+ f:[{s:"Nire izena Ane ___",es:"Mi nombre es Ane",o:["da","naiz","dut"],a:["da"],w:"El nombre «es»: izena ... da."},{s:"Ni Ane ___",es:"Yo soy Ane",o:["naiz","da","zara"],a:["naiz"],w:"Yo soy: naiz."},{s:"Eta ___?",es:"¿Y tú?",o:["zu","ni","hura"],a:["zu"],w:"«Eta zu?» = ¿y tú?"}],
+ tw:[{es:"Yo soy Ane",ok:["Ni Ane naiz","Ane naiz"]},{es:"Mi nombre es Ane",ok:["Nire izena Ane da"]},{es:"Estoy muy bien",ok:["Oso ondo nago","Ni oso ondo nago"]},{es:"¿Y tú?",ok:["Eta zu?"]}],
+ d:[{bot:"Kaixo! Zein da zure izena?",es:"¡Hola! ¿Cuál es tu nombre?",re:"izena .* da$|naiz$",ok:["Nire izena Ane da","Ni Ane naiz","Ane naiz"],model:"Nire izena Ane da."},{bot:"Zer moduz?",es:"¿Qué tal?",re:"ondo|txarto",ok:["Ondo","Oso ondo","Txarto"],model:"Oso ondo, eskerrik asko."}]},
+l2b:{w:[["txerria","el cerdo"],["txoria","el pájaro"],["botsa","la bolsa"],["ontzia","el recipiente"]],
+ p:[["Txerria handia da","El cerdo es grande"],["Botsa txikia da","La bolsa es pequeña"],["Txoria zuhaitzean dago","El pájaro está en el árbol"]],
+ f:[{s:"___oria",es:"El pájaro",o:["tx","ts","tz"],a:["tx"],w:"Txoria: la tx suena como «ch»."},{s:"Hi___a",es:"La palabra",o:["tx","ts","tz"],a:["tz"],w:"Hitza se escribe con tz."},{s:"I___asoa",es:"El mar",o:["ts","tx","tz"],a:["ts"],w:"Itsasoa se escribe con ts."}],
+ tw:[{es:"La boina",ok:["Txapela"]},{es:"El mar",ok:["Itsasoa"]},{es:"El cerdo",ok:["Txerria"]},{es:"Ayer",ok:["Atzo"]}]},
+l3:{w:[["zero","cero"],["zenbaki","el número"],["zenbat?","¿cuánto? / ¿cuántos?"],["ken","menos"]],
+ p:[["Bost eta bost hamar dira","Cinco y cinco son diez"],["Zazpi eta bi bederatzi dira","Siete y dos son nueve"],["Zenbat dira sei eta bi?","¿Cuánto son seis y dos?"],["Hamar ken lau sei dira","Diez menos cuatro son seis"]],
+ f:[{s:"Bi eta bi ___ dira",es:"Dos y dos son cuatro",o:["lau","hiru","bost"],a:["lau"],w:"2 + 2 = 4: lau."},{s:"Hiru eta lau ___ dira",es:"Tres y cuatro son siete",o:["sei","zazpi","zortzi"],a:["zazpi"],w:"3 + 4 = 7: zazpi."},{s:"Hamar ken bi ___ dira",es:"Diez menos dos son ocho",o:["zortzi","zazpi","bederatzi"],a:["zortzi"],w:"10 − 2 = 8: zortzi."}],
+ tw:[{es:"Cinco",ok:["Bost"]},{es:"Siete",ok:["Zazpi"]},{es:"Diez",ok:["Hamar"]},{es:"Tres y uno son cuatro",ok:["Hiru eta bat lau dira"]}],
+ d:[{bot:"Zenbat dira bi eta bi?",es:"¿Cuánto son dos y dos?",re:"lau",ok:["Lau","Lau dira","Bi eta bi lau dira"],model:"Bi eta bi lau dira."}]},
+l4:{w:[["more","morado"],["grisa","gris"],["arrosa","rosa"],["marroia","marrón"],["kolorea","el color"]],
+ p:[["Zer kolore da?","¿De qué color es?"],["Txakur beltza","Perro negro"],["Zeru urdina","Cielo azul"],["Ardoa gorria da","El vino es tinto"]],
+ f:[{s:"Sagarra ___ da",es:"La manzana es roja",o:["gorria","urdina","beltza"],a:["gorria"],w:"gorri = rojo."},{s:"Zeru ___",es:"Cielo azul",o:["urdina","berdea","horia"],a:["urdina"],w:"urdin = azul."},{s:"Ogi ___",es:"Pan blanco",o:["zuria","beltza","berdea"],a:["zuria"],w:"zuri = blanco."}],
+ tw:[{es:"Rojo",ok:["Gorri","Gorria"]},{es:"Casa blanca",ok:["Etxe zuria"]},{es:"Perro negro",ok:["Txakur beltza"]},{es:"Verde",ok:["Berde","Berdea"]}]},
+l5:{w:[["zukua","el zumo"],["zopa","la sopa"],["gatza","la sal"],["azukrea","el azúcar"],["gosaria","el desayuno"],["bazkaria","la comida (mediodía)"],["afaria","la cena"]],
+ p:[["Zopa goxoa da","La sopa está rica"],["Gatza eta ura","Sal y agua"],["Zuku bat nahi dut","Quiero un zumo"],["Bazkaria prest dago","La comida está lista"]],
+ f:[{s:"Ura ___ dut",es:"Quiero agua",o:["nahi","da","naiz"],a:["nahi"],w:"«Nahi dut» = quiero."},{s:"Zopa ___ da",es:"La sopa está rica",o:["goxoa","handia","beltza"],a:["goxoa"],w:"goxo = rico."}],
+ tw:[{es:"El pan",ok:["Ogia"]},{es:"Quiero café",ok:["Kafea nahi dut"]},{es:"La leche",ok:["Esnea"]},{es:"Pan y queso",ok:["Ogia eta gazta"]}],
+ d:[{bot:"Zer nahi duzu?",es:"¿Qué quieres?",re:"nahi dut",ok:["Kafea nahi dut","Ura nahi dut","Ogia nahi dut"],model:"Kafea nahi dut."}]},
+l6:{w:[["gurasoak","los padres"],["umea","el niño / la niña"],["senarra","el marido"],["emaztea","la esposa"]],
+ p:[["Nire gurasoak etxean daude","Mis padres están en casa"],["Umea txikia da","El niño es pequeño"],["Aita eta ama gurasoak dira","Papá y mamá son los padres"]],
+ f:[{s:"Ama eta aita ___ dira",es:"Mamá y papá son los padres",o:["gurasoak","umeak","lagunak"],a:["gurasoak"],w:"gurasoak = los padres."},{s:"Nire ___ etxean dago",es:"Mi abuela está en casa",o:["amona","aita","seme"],a:["amona"],w:"amona = abuela."}],
+ tw:[{es:"Mi madre",ok:["Nire ama"]},{es:"Mi familia",ok:["Nire familia"]},{es:"Mi amigo",ok:["Nire laguna"]},{es:"Mi abuelo",ok:["Nire aitona"]}],
+ d:[{bot:"Nor da hori?",es:"¿Quién es ese?",re:"nire",ok:["Nire aita da","Nire laguna da","Hura nire aita da"],model:"Nire aita da."}]},
+l7:{w:[["armairua","el armario"],["sofa","el sofá"],["argia","la luz"],["zabalik","abierto"],["itxita","cerrado"]],
+ p:[["Sofa berdea da","El sofá es verde"],["Armairua logelan dago","El armario está en el dormitorio"],["Leihoa zabalik dago","La ventana está abierta"],["Atea itxita dago","La puerta está cerrada"]],
+ f:[{s:"Mahaia sukaldean ___",es:"La mesa está en la cocina",o:["dago","da","dut"],a:["dago"],w:"Lugar: dago."},{s:"Atea ___ dago",es:"La puerta está cerrada",o:["itxita","zabalik","handia"],a:["itxita"],w:"itxita = cerrada."}],
+ tw:[{es:"La ventana",ok:["Leihoa"]},{es:"La casa es grande",ok:["Etxea handia da"]},{es:"La cama",ok:["Ohea"]}]},
+l8:{w:[["parkea","el parque"],["eskola","la escuela"],["ospitalea","el hospital"],["liburutegia","la biblioteca"],["zubia","el puente"]],
+ p:[["Eskola hurbil dago","La escuela está cerca"],["Ospitalea handia da","El hospital es grande"],["Zubia luzea da","El puente es largo"],["Liburutegia kalean dago","La biblioteca está en la calle"]],
+ f:[{s:"Eskola ___ dago",es:"La escuela está cerca",o:["hurbil","urrun","zuzen"],a:["hurbil"],w:"hurbil = cerca."},{s:"Hiria ___ da",es:"La ciudad es grande",o:["handia","txikia","beltza"],a:["handia"],w:"handi = grande."}],
+ tw:[{es:"El parque",ok:["Parkea"]},{es:"La escuela",ok:["Eskola"]},{es:"El hospital",ok:["Ospitalea"]},{es:"El autobús",ok:["Autobusa"]}]},
+l9:{w:[["pintxoa","el pintxo"],["tortilla","la tortilla"],["txokolatea","el chocolate"],["tea","el té"],["ordaindu","pagar"]],
+ p:[["Pintxo bat nahi dut","Quiero un pintxo"],["Tortilla goxoa da","La tortilla está rica"],["Ordaindu nahi dut","Quiero pagar"],["Kafe bat, mesedez","Un café, por favor"]],
+ f:[{s:"Kafe bat, ___",es:"Un café, por favor",o:["mesedez","eskerrik","agur"],a:["mesedez"],w:"mesedez = por favor."},{s:"Zenbat ___ kafea?",es:"¿Cuánto es el café?",o:["da","dut","naiz"],a:["da"],w:"«Zenbat da?» = ¿cuánto es?"}],
+ tw:[{es:"La cuenta, por favor",ok:["Kontua, mesedez"]},{es:"Quiero una cerveza",ok:["Garagardo bat nahi dut","Garagardoa nahi dut"]},{es:"¿Cuánto es?",ok:["Zenbat da?"]}],
+ d:[{bot:"Zer nahi duzu?",es:"¿Qué quieres?",re:"nahi dut",ok:["Garagardoa nahi dut","Kafea nahi dut","Pintxo bat nahi dut"],model:"Kafe bat nahi dut."}]},
+l10:{w:[["ondoan","al lado"],["aurrean","delante"],["atzean","detrás"],["bira egin","girar"]],
+ p:[["Eskuinera bira egin","Gira a la derecha"],["Ezkerrera joan","Ve a la izquierda"],["Hondartza hurbil dago","La playa está cerca"]],
+ f:[{s:"Non ___ geltokia?",es:"¿Dónde está la estación?",o:["dago","da","naiz"],a:["dago"],w:"«Non dago?» = ¿dónde está?"},{s:"Zuzen eta ___",es:"Recto y a la izquierda",o:["ezkerrera","eskuinera","urrun"],a:["ezkerrera"],w:"ezkerrera = a la izquierda."}],
+ tw:[{es:"A la derecha",ok:["Eskuinera"]},{es:"Recto",ok:["Zuzen"]},{es:"¿Dónde está la playa?",ok:["Non dago hondartza?"]}],
+ d:[{bot:"Non dago geltokia?",es:"¿Dónde está la estación?",re:"zuzen|ezkerrera|eskuinera|hurbil|urrun",ok:["Zuzen","Ezkerrera","Eskuinera"],model:"Zuzen eta ezkerrera."}]},
+l11:{w:[["medikua","el médico"],["euskalduna","vascohablante"],["gazte","joven"]],
+ p:[["Ni medikua naiz","Yo soy médico"],["Zu ikaslea zara","Tú eres estudiante"],["Haiek irakasleak dira","Ellos son profesores"],["Gu euskaldunak gara","Nosotros somos vascohablantes"]],
+ f:[{s:"Ni irakaslea ___",es:"Yo soy profesor",o:["naiz","nago","da"],a:["naiz"],w:"Identidad o profesión: izan, naiz."},{s:"Gu lagunak ___",es:"Nosotros somos amigos",o:["gara","gaude","dira"],a:["gara"],w:"Nosotros somos: gara."},{s:"Haiek ikasleak ___",es:"Ellos son estudiantes",o:["dira","daude","zarete"],a:["dira"],w:"Ellos son: dira."}],
+ tw:[{es:"Yo soy estudiante",ok:["Ni ikaslea naiz","Ikaslea naiz"]},{es:"Tú eres profesor",ok:["Zu irakaslea zara","Irakaslea zara"]},{es:"Nosotros somos amigos",ok:["Gu lagunak gara","Lagunak gara"]}],
+ d:[{bot:"Zer zara zu?",es:"¿Qué eres tú?",re:"naiz$",ok:["Ikaslea naiz","Ni ikaslea naiz","Irakaslea naiz"],model:"Ikaslea naiz."}]},
+l12:{w:[["hemen","aquí"],["han","allí"],["lanean","en el trabajo"]],
+ p:[["Haiek lanean daude","Ellos están en el trabajo"],["Zuek hemen zaudete","Vosotros estáis aquí"]],
+ f:[{s:"Gu hemen ___",es:"Nosotros estamos aquí",o:["gaude","gara","gaudete"],a:["gaude"],w:"Lugar y nosotros: gaude."}],
+ tw:[{es:"Estoy cansado",ok:["Nekatuta nago","Ni nekatuta nago"]}]},
+l13:{w:[["lanera","al trabajo"],["eskolara","a la escuela"],["eskolan","en la escuela"],["lagunarekin","con el amigo"]],
+ p:[["Eskolara noa","Voy a la escuela"],["Lanera noa","Voy al trabajo"],["Eskolan nago","Estoy en la escuela"],["Lagunarekin hirira noa","Voy a la ciudad con el amigo"]],
+ f:[{s:"Ni etxe___ nago",es:"Estoy en casa",o:["an","ra","rekin"],a:["an"],w:"-n = en."},{s:"Ni etxe___ noa",es:"Voy a casa",o:["ra","an","rekin"],a:["ra"],w:"-ra = a."},{s:"Ni ama___ nago",es:"Estoy con mamá",o:["rekin","ra","n"],a:["rekin"],w:"-rekin = con."}],
+ tw:[{es:"Voy a casa",ok:["Etxera noa"]},{es:"En la ciudad",ok:["Hirian"]},{es:"Con papá",ok:["Aitarekin"]}]},
+l14:{w:[["txakurrak","los perros"],["katuak","los gatos"],["oinak","los pies"],["begiak","los ojos"]],
+ p:[["Txakurrak handiak dira","Los perros son grandes"],["Katuak mahaian daude","Los gatos están en la mesa"],["Begiak urdinak dira","Los ojos son azules"]],
+ f:[{s:"Etxe___ handiak dira",es:"Las casas son grandes",o:["ak","a","an"],a:["ak"],w:"Plural: -ak."},{s:"Liburu___ mahaian daude",es:"Los libros están en la mesa",o:["ak","a","ra"],a:["ak"],w:"Plural: -ak."}],
+ tw:[{es:"Las casas",ok:["Etxeak"]},{es:"Los amigos",ok:["Lagunak"]},{es:"Las manzanas son rojas",ok:["Sagarrak gorriak dira"]}]},
+l15:{w:[["hamazazpi","diecisiete"],["hemeretzi","diecinueve"],["hogeita bat","veintiuno"]],
+ p:[["Hamazazpi urte ditut","Tengo diecisiete años"],["Hemeretzi lagun ditut","Tengo diecinueve amigos"],["Hamabi eta zortzi hogei dira","Doce y ocho son veinte"]],
+ f:[{s:"Hogei urte ___",es:"Tengo veinte años",o:["ditut","dut","naiz"],a:["ditut"],w:"Años son varios: ditut."},{s:"Hamar eta hamar ___ dira",es:"Diez y diez son veinte",o:["hogei","hamabost","hemezortzi"],a:["hogei"],w:"10 + 10 = 20: hogei."}],
+ tw:[{es:"Quince",ok:["Hamabost"]},{es:"Tengo veinte años",ok:["Hogei urte ditut"]},{es:"Trece",ok:["Hamahiru"]}],
+ d:[{bot:"Zenbat urte dituzu?",es:"¿Cuántos años tienes?",re:"urte ditut",ok:["Hogei urte ditut","Hogeita bat urte ditut"],model:"Hogei urte ditut."}]},
+l16:{w:[["asteburua","el fin de semana"],["goiza","la mañana"],["arratsaldea","la tarde"],["gaua","la noche"]],
+ p:[["Asteburuan etxean nago","El fin de semana estoy en casa"],["Goizean kafea edaten dut","Por la mañana tomo café"],["Gauean lo egiten dut","Por la noche duermo"],["Gaur ostirala da","Hoy es viernes"]],
+ f:[{s:"Gaur asteartea ___",es:"Hoy es martes",o:["da","dut","nago"],a:["da"],w:"«Gaur ... da» = hoy es ..."},{s:"___ ostirala da",es:"Mañana es viernes",o:["Bihar","Atzo","Gaur"],a:["Bihar"],w:"bihar = mañana."}],
+ tw:[{es:"Lunes",ok:["Astelehena"]},{es:"Hoy es lunes",ok:["Gaur astelehena da"]},{es:"El fin de semana",ok:["Asteburua"]},{es:"Mañana",ok:["Bihar"]}],
+ d:[{bot:"Zer egun da gaur?",es:"¿Qué día es hoy?",re:"da$",ok:["Gaur astelehena da","Astelehena da"],model:"Gaur astelehena da."}]},
+l17:{w:[["ekaitza","la tormenta"],["lainoa","la niebla"],["eguraldia","el tiempo (clima)"]],
+ p:[["Eguraldi ona egiten du","Hace buen tiempo"],["Eguraldi txarra egiten du","Hace mal tiempo"],["Lainoa dago","Hay niebla"]],
+ f:[{s:"Eguraldi ___ egiten du",es:"Hace buen tiempo",o:["ona","txarra","hotza"],a:["ona"],w:"on = bueno."},{s:"Euria ___ du",es:"Está lloviendo",o:["ari","egiten","dago"],a:["ari"],w:"Euria ari du."}],
+ tw:[{es:"Llueve",ok:["Euria ari du"]},{es:"Hace frío",ok:["Hotz egiten du"]},{es:"El sol",ok:["Eguzkia"]},{es:"Hace buen tiempo",ok:["Eguraldi ona egiten du"]}],
+ d:[{bot:"Zer eguraldi egiten du?",es:"¿Qué tiempo hace?",re:"egiten du|ari du",ok:["Hotz egiten du","Euria ari du","Eguraldi ona egiten du"],model:"Euria ari du."}]},
+l18:{w:[["otsaila","febrero"],["apirila","abril"],["maiatza","mayo"],["uztaila","julio"],["iraila","septiembre"],["azaroa","noviembre"],["ederra","bonito"]],
+ p:[["Otsaila hotza da","Febrero es frío"],["Uztaila beroa da","Julio es caluroso"],["Maiatza ederra da","Mayo es bonito"]],
+ f:[{s:"Urtarrila ___ da",es:"Enero es frío",o:["hotza","beroa","ederra"],a:["hotza"],w:"hotz = frío."},{s:"Udaberria ___ da",es:"La primavera es bonita",o:["ederra","hotza","beltza"],a:["ederra"],w:"eder = bonito."}],
+ tw:[{es:"Verano",ok:["Uda"]},{es:"Invierno",ok:["Negua"]},{es:"Otoño",ok:["Udazkena"]},{es:"Primavera",ok:["Udaberria"]}]},
+l19:{w:[["otsoa","el lobo"],["azeria","la zorra"],["untxia","el conejo"],["urtxintxa","la ardilla"]],
+ p:[["Untxia belardian dago","El conejo está en el prado"],["Otsoa handia da","El lobo es grande"],["Azeria txikia da","La zorra es pequeña"]],
+ f:[{s:"Katua mahaian ___",es:"El gato está en la mesa",o:["dago","da","dut"],a:["dago"],w:"Lugar: dago."},{s:"Txakurra ___ da",es:"El perro es grande",o:["handia","txikia","beltza"],a:["handia"],w:"handi = grande."}],
+ tw:[{es:"El perro",ok:["Txakurra"]},{es:"El gato",ok:["Katua"]},{es:"La vaca",ok:["Behia"]},{es:"El conejo",ok:["Untxia"]}]},
+l20:{w:[["ilea","el pelo"],["hortzak","los dientes"],["bizkarra","la espalda"],["hatza","el dedo"]],
+ p:[["Bizkarreko mina dut","Me duele la espalda"],["Ilea beltza da","El pelo es negro"],["Hortzak zuriak dira","Los dientes son blancos"]],
+ f:[{s:"Begiak ___ dira",es:"Los ojos son azules",o:["urdinak","urdina","gorria"],a:["urdinak"],w:"Plural: urdinak."},{s:"Buruko ___ dut",es:"Tengo dolor de cabeza",o:["mina","burua","oina"],a:["mina"],w:"mina = dolor."}],
+ tw:[{es:"La mano",ok:["Eskua"]},{es:"El ojo",ok:["Begia"]},{es:"Me duele la cabeza",ok:["Buruko mina dut"]},{es:"El corazón",ok:["Bihotza"]}]},
+l21:{w:[["gona","la falda"],["bufanda","la bufanda"],["eskularruak","los guantes"],["jantzi","vestir / ponerse"]],
+ p:[["Gona beltza erosi dut","He comprado una falda negra"],["Berokia jantzi behar dut","Tengo que ponerme el abrigo"]],
+ f:[{s:"Zapata ___ ditut",es:"Tengo zapatos negros",o:["beltzak","beltza","beltz"],a:["beltzak"],w:"Plural: beltzak."},{s:"Alkandora ___ da",es:"La camisa es blanca",o:["zuria","zuriak","gorriak"],a:["zuria"],w:"Singular: zuria."}],
+ tw:[{es:"El abrigo",ok:["Berokia"]},{es:"Los zapatos",ok:["Zapatak"]},{es:"La camiseta",ok:["Kamiseta"]},{es:"La falda",ok:["Gona"]}]},
+l22:{w:[["bizi","vivir"],["hitz egin","hablar"],["erosi","comprar"],["jolastu","jugar"],["sartu","entrar"],["irten","salir"]],
+ p:[["Hirian bizi naiz","Vivo en la ciudad"],["Euskaraz hitz egiten dut","Hablo en euskera"],["Dendan erosten dut","Compro en la tienda"],["Parkean jolasten dugu","Jugamos en el parque"]],
+ f:[{s:"Euskaraz hitz ___ dut",es:"Hablo euskera",o:["egiten","egin","egitea"],a:["egiten"],w:"Hábito: egiten dut."},{s:"Liburua ___ dut",es:"Leo el libro",o:["irakurtzen","entzuten","ikusten"],a:["irakurtzen"],w:"irakurri = leer."}],
+ tw:[{es:"Leo un libro",ok:["Liburu bat irakurtzen dut","Liburua irakurtzen dut"]},{es:"Escucho música",ok:["Musika entzuten dut"]},{es:"Vivo en la ciudad",ok:["Hirian bizi naiz"]},{es:"Trabajo",ok:["Lan egiten dut"]}],
+ d:[{bot:"Zer egiten duzu?",es:"¿Qué haces?",re:"dut$",ok:["Lan egiten dut","Euskara ikasten dut","Liburua irakurtzen dut"],model:"Euskara ikasten dut."}]},
+e1:{w:[["triste","triste"],["nongoa?","¿de dónde?"]],
+ p:[["Nongoa zara?","¿De dónde eres?"],["Zergatik zaude triste?","¿Por qué estás triste?"]],
+ f:[{s:"___ zaude?",es:"¿Cómo estás?",o:["Nola","Non","Noiz"],a:["Nola"],w:"nola = cómo."},{s:"___ da hori?",es:"¿Quién es ese?",o:["Nor","Zer","Non"],a:["Nor"],w:"nor = quién."},{s:"___ bizi zara?",es:"¿Dónde vives?",o:["Non","Nola","Zer"],a:["Non"],w:"non = dónde."}],
+ tw:[{es:"¿Dónde estás?",ok:["Non zaude?"]},{es:"¿Cuándo?",ok:["Noiz?"]},{es:"¿Por qué?",ok:["Zergatik?"]},{es:"¿Qué es esto?",ok:["Zer da hau?"]}],
+ d:[{bot:"Non bizi zara?",es:"¿Dónde vives?",re:"bizi naiz",ok:["Hirian bizi naiz","Donostian bizi naiz"],model:"Hirian bizi naiz."}]},
+e2:{p:[["Anek bi lagun ditu","Ane tiene dos amigos"],["Nik liburu asko ditut","Yo tengo muchos libros"]],
+ f:[{s:"Nik txakur bat ___",es:"Yo tengo un perro",o:["dut","naiz","nago"],a:["dut"],w:"Tener uno: dut."},{s:"Zuk bi liburu ___",es:"Tú tienes dos libros",o:["dituzu","duzu","zara"],a:["dituzu"],w:"Varios objetos: dituzu."}],
+ tw:[{es:"Tengo un perro",ok:["Txakur bat dut"]},{es:"Tengo dos perros",ok:["Bi txakur ditut"]},{es:"Ella tiene un coche",ok:["Hark kotxe bat du","Kotxe bat du"]}],
+ d:[{bot:"Zer duzu?",es:"¿Qué tienes?",re:"dut",ok:["Liburu bat dut","Txakur bat dut"],model:"Liburu bat dut."}]},
+e3:{p:[["Ikasi nahi dut","Quiero estudiar"],["Gaur ezin dut lan egin","Hoy no puedo trabajar"]],
+ f:[{s:"Etxera joan ___ dut",es:"Tengo que ir a casa",o:["behar","nahi","ezin"],a:["behar"],w:"behar dut = tengo que."},{s:"Ezin ___ etorri",es:"No puedo venir",o:["naiz","dut","da"],a:["naiz"],w:"Ezin naiz etorri."}],
+ tw:[{es:"Quiero agua",ok:["Ura nahi dut"]},{es:"No puedo venir",ok:["Ezin naiz etorri"]},{es:"Tengo que trabajar",ok:["Lan egin behar dut"]}],
+ d:[{bot:"Zer nahi duzu?",es:"¿Qué quieres?",re:"nahi dut",ok:["Ura nahi dut","Kafea nahi dut"],model:"Kafea nahi dut."}]},
+e4:{w:[["piperra","el pimiento"],["letxuga","la lechuga"],["ilarrak","los guisantes"]],
+ p:[["Letxuga berdea da","La lechuga es verde"],["Piper gorria nahi dut","Quiero un pimiento rojo"]],
+ f:[{s:"Limoia ___ da",es:"El limón es amarillo",o:["horia","gorria","urdina"],a:["horia"],w:"hori = amarillo."},{s:"Tomatea ___ da",es:"El tomate es rojo",o:["gorria","berdea","beltza"],a:["gorria"],w:"gorri = rojo."}],
+ tw:[{es:"La manzana",ok:["Sagarra"]},{es:"La patata",ok:["Patata"]},{es:"El limón",ok:["Limoia"]},{es:"Quiero una naranja",ok:["Laranja bat nahi dut"]}]},
+e5:{w:[["metroa","el metro"],["taxia","el taxi"],["billetea","el billete"]],
+ p:[["Metroz joaten naiz","Voy en metro"],["Billete bat nahi dut","Quiero un billete"],["Taxia garestia da","El taxi es caro"]],
+ f:[{s:"Trenez ___ naiz",es:"He venido en tren",o:["etorri","joan","egin"],a:["etorri"],w:"etorri = venir."}],
+ tw:[{es:"El tren",ok:["Trena"]},{es:"El avión",ok:["Hegazkina"]},{es:"La bicicleta",ok:["Bizikleta"]},{es:"Voy en tren",ok:["Trenez joaten naiz"]}]},
+e6:{w:[["eskailerak","las escaleras"],["balkoia","el balcón"],["garajea","el garaje"]],
+ p:[["Balkoia txikia da","El balcón es pequeño"],["Eskailerak luzeak dira","Las escaleras son largas"]],
+ f:[{s:"Ohea ___ dago",es:"La cama está en el dormitorio",o:["logelan","sukaldean","lorategian"],a:["logelan"],w:"logela = dormitorio."},{s:"Ama ___ dago",es:"Mamá está en la cocina",o:["sukaldean","logelan","komunean"],a:["sukaldean"],w:"sukaldea = cocina."}],
+ tw:[{es:"La cocina",ok:["Sukaldea"]},{es:"El dormitorio",ok:["Logela"]},{es:"El jardín",ok:["Lorategia"]},{es:"Estoy en el salón",ok:["Egongelan nago"]}],
+ d:[{bot:"Non zaude?",es:"¿Dónde estás?",re:"nago",ok:["Sukaldean nago","Egongelan nago","Logelan nago"],model:"Egongelan nago."}]},
+e7:{w:[["goian","arriba"],["behean","abajo"],["zabala","ancho"],["estua","estrecho"]],
+ p:[["Mahaia zabala da","La mesa es ancha"],["Goian dago","Está arriba"],["Behean dago","Está abajo"]],
+ f:[{s:"Handia eta ___ aurkakoak dira",es:"Grande y pequeño son opuestos",o:["txikia","zaharra","berria"],a:["txikia"],w:"handia ↔ txikia."}],
+ tw:[{es:"Grande",ok:["Handia"]},{es:"Nuevo",ok:["Berria"]},{es:"Caro",ok:["Garestia"]},{es:"Fácil",ok:["Erraza"]}]}
+};
+function mergeExt(l){var x=EXT[l.id];if(!x)return;["w","p","f","tw","d"].forEach(function(k){if(x[k])l[k]=(l[k]||[]).concat(x[k])})}
+UNITS.forEach(function(u){u.lv=u.lv||1;u.L.forEach(function(l){mergeExt(l);l.u=u.id;l.c=u.c;l.lv=u.lv;LESSONS.push(l);
   l.w.forEach(function(x){WORDS.push({eu:x[0],es:x[1],em:x[2]||"",lid:l.id})});
   l.p.forEach(function(x){PHR.push({eu:x[0],es:x[1],lid:l.id})});});});
 
@@ -1207,7 +1347,7 @@ function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dayKey(d){var y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();return y+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd}
 
 /* ---------- estado ---------- */
-function def(){return {ms:{},urg:0,gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
+function def(){return {pt:{},pa:{},ms:{},urg:0,gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
 function load(){try{var j=JSON.parse(localStorage.getItem("hitzez1"));if(j&&typeof j==="object"){var d=def();for(var k in j)d[k]=j[k];if(!d.best)d.best={pairs:0,wordle:0};return d}}catch(e){}return def()}
 var S=load();
 
@@ -1755,12 +1895,15 @@ function rLearn(){
       h+='<button class="lsn study'+(sdone?'':reach?' cur':' lock')+'" style="--x:0px" data-act="study" data-u="'+u.id+'" aria-label="Estudio de la unidad"><span class="node">'+(sdone?IC.check:reach?IC.book:IC.lock)+'</span><span class="lt">Estudio previo'+(sdone?'':' ('+ng+'/'+sids.length+')')+'</span>'+(sdone||!reach?'':'<span class="empieza">Empezar</span>')+'</button>';
     }
     u.L.forEach(function(l){
-      var i=LESSONS.indexOf(l),pos=++cnt,done=S.done[l.id],cur=i===ci&&sdone&&!S.urg,lock=(!S.open&&i>ci&&!done)||(!sdone&&!done)||(S.urg&&!done);
-      var x=Math.round(Math.sin(pos*1.15)*56);
-      var inner=lock?IC.lock:(done?IC.check:pos);
-      h+='<button class="lsn '+(lock?'lock':cur?'cur':'')+'" style="--x:'+x+'px" data-act="lesson" data-id="'+l.id+'" aria-label="Lección '+pos+': '+l.t+'"><span class="node">'+inner+'</span><span class="lt">'+l.t+'</span>'
-       +(done?'<span class="stars" aria-hidden="true">'+"★".repeat(done)+"☆".repeat(3-done)+'</span>':'')
-       +(cur?'<span class="empieza">Empezar</span>':'')+'</button>';
+      var i=LESSONS.indexOf(l),done=S.done[l.id],np=npOf(l),pt=ptOf(l);
+      var baseLock=(!S.open&&i>ci&&!done)||(!sdone&&!done)||(S.urg&&!done),baseCur=i===ci&&sdone&&!S.urg;
+      for(var k=0;k<np;k++){
+        var pos=++cnt,dn=done||k<pt,lock=baseLock||(!S.open&&!dn&&k>pt),cur=baseCur&&k===pt&&!lock;
+        var x=Math.round(Math.sin(pos*1.15)*56),inner=lock?IC.lock:(dn?IC.check:pos),lab=k===0?l.t:PNAMES[k]||("Parte "+(k+1));
+        h+='<button class="lsn '+(lock?'lock':cur?'cur':'')+(k>0?' sub':'')+'" style="--x:'+x+'px" data-act="lesson" data-id="'+l.id+'" data-p="'+k+'" aria-label="'+E(l.t)+' parte '+(k+1)+' de '+np+'"><span class="node">'+inner+'</span><span class="lt">'+E(lab)+'</span>'
+         +(done&&k===np-1?'<span class="stars" aria-hidden="true">'+"★".repeat(done)+"☆".repeat(3-done)+'</span>':'')
+         +(cur?'<span class="empieza">Empezar</span>':'')+'</button>';
+      }
     });
     h+='</div>';
     var ud=unitDone(u),op=S.cx[u.id];
@@ -2019,9 +2162,78 @@ function stage(html){$("#stage").innerHTML='<div class="sw">'+html+'</div>';if(h
 function animStage(){var e=document.querySelector("#stage .sw");if(!e)return;e.classList.remove("in");void e.offsetWidth;e.classList.add("in")}
 function topbar(pct){return '<div class="top"><button class="x" data-r="quit" aria-label="Salir">×</button>'+(pct===null?'<div style="flex:1"></div>':'<div class="pb" role="progressbar" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>')+'</div>'}
 
+
+/* ---------- caminos largos: cada lección = varios nodos ---------- */
+var PNAMES=["Aprende","Escucha y escribe","Frases","Reto mixto","Jefe final"];
+function npOf(l){
+  if(l.lv===3)return 5;if(l.lv===2)return 4;
+  var u=UNITS.filter(function(x){return x.L.indexOf(l)>=0})[0];
+  if(u&&u.id==="u1"){return [2,4,2,3,3][u.L.indexOf(l)]||3}
+  return 3;
+}
+function ptOf(l){return S.done[l.id]?npOf(l):((S.pt&&S.pt[l.id])||0)}
+function spread(q,n){if(q.length<=n)return q;var o=[];for(var i=0;i<n;i++)o.push(q[Math.floor(i*q.length/n)]);return o}
+function partQueue(l,k,np){
+  if(k===0){var q0=spread(lessonQueue(l),10),p0=shuffle(PHR.filter(function(p){return p.lid===l.id}));
+    if(!q0.some(function(e){return e.t==="say"})&&p0[0])q0.splice(3+Math.floor(Math.random()*5),0,mkSay(p0[0]));
+    return q0}
+  var ws=shuffle(WORDS.filter(function(w){return w.lid===l.id})),ps=shuffle(PHR.filter(function(p){return p.lid===l.id})),q=[],uw=uniqEs(ws);
+  var prev=shuffle(learnedWords().filter(function(w){return w.lid!==l.id})).slice(0,3);
+  function W(i){return ws[i%ws.length]}
+  if(k===1){
+    for(var i=0;i<4;i++)q.push(mkLis(W(i)));
+    for(i=4;i<7;i++)q.push(mkTy(W(i)));
+    for(i=7;i<10;i++)q.push(mkCh(W(i),"es2eu"));
+    if(uw.length>=4)q.splice(5,0,mkMt(uw.slice(0,4)));
+  }else if(k===2){
+    ps.slice(0,4).forEach(function(p){q.push(mkBd(p))});
+    (l.f||[]).slice(0,3).forEach(function(x){q.push(mkF(x,k>2))});
+    (l.tw||[]).slice(0,2).forEach(function(x){q.push(mkTw(x))});
+    (l.d||[]).slice(0,1).forEach(function(x){q.push(mkDlg(x))});
+    mkRd(l,2).forEach(function(x){q.push(x)});
+    ps.slice(0,1).forEach(function(p){q.push(mkSay(p))});
+    for(var j=0;q.length<10;j++)q.push(mkCh(W(j),"eu2es"));
+  }else if(k===3){
+    for(var a=0;a<4;a++)q.push(mkTy(W(a+2)));
+    ps.slice(0,2).forEach(function(p){q.push(mkBd(p))});
+    for(a=0;a<2;a++)q.push(mkLis(W(a+5)));
+    if(uw.length>=4)q.push(mkMt(shuffle(uw).slice(0,5)));
+    prev.slice(0,2).forEach(function(w,i){q.push(i?mkTy(w):mkCh(w,"es2eu"))});
+    (l.tw||[]).slice(0,1).forEach(function(x){q.push(mkTw(x))});
+    for(var b=0;q.length<10;b++)q.push(mkCh(W(b),"eu2es"));
+  }else{
+    for(var c=0;c<5;c++)q.push(mkTy(W(c)));
+    ps.slice(0,3).forEach(function(p){q.push(mkBd(p))});
+    (l.tw||[]).slice(0,2).forEach(function(x){q.push(mkTw(x))});
+    (l.d||[]).slice(0,1).forEach(function(x){q.push(mkDlg(x))});
+    (l.f||[]).slice(0,2).forEach(function(x){q.push(mkF(x,true))});
+    if(l.cz)q.push(mkCz(l.cz));
+    ps.slice(1,2).forEach(function(p){q.push(mkSay(p))});
+    prev.slice(0,2).forEach(function(w){q.push(mkTy(w))});
+    for(var d=0;q.length<10;d++)q.push(mkLis(W(d)));
+  }
+  var out=shuffle(q).filter(Boolean);
+  if(!out.some(function(e){return e.t==="say"})){var sp=ps[0]?mkSay(ps[0]):(ws[0]?mkSay({eu:ws[0].eu,es:ws[0].es}):null);if(sp)out.splice(2+Math.floor(Math.random()*Math.max(1,out.length-2)),0,sp)}
+  // los dictados y "di en voz alta" mejor repartidos: se deja el orden aleatorio
+  return out.slice(0,12);
+}
+function partDone(l,k,np,acc){
+  if(!S.pt)S.pt={};if(!S.pa)S.pa={};
+  if(S.done[l.id])return;
+  var cur=S.pt[l.id]||0;if(k<cur)return;
+  S.pt[l.id]=k+1;(S.pa[l.id]=S.pa[l.id]||[]).push(acc);
+  if(k+1>=np){var a=S.pa[l.id],av=a.reduce(function(x,y){return x+y},0)/a.length;S.done[l.id]=Math.max(S.done[l.id]||0,av>=.9?3:av>=.7?2:1);delete S.pa[l.id]}
+  touchDay();save();
+}
+function runPart(l,p){
+  var np=npOf(l),last=p>=np-1;
+  startRun({q:mixReview(l,partQueue(l,p,np)),title:last?"¡Lección completada!":"¡Parte "+(p+1)+" de "+np+" hecha!",bonus:last?20:8,xpPer:10,onDone:function(acc){partDone(l,p,np,acc)}});
+}
 /* intro de lección */
-function startLesson(id){
-  var l=LESSONS.find(function(x){return x.id===id});showStage();
+function startLesson(id,p){
+  var l=LESSONS.find(function(x){return x.id===id});
+  if(p>0){runPart(l,p);return}
+  showStage();
   var h=topbar(null)+'<div class="ex"><div class="hello" style="margin:0">'+mascot(72)+'<div class="bubble">'+l.x+'</div></div><h2 class="q">'+l.t+'</h2><div class="card" style="padding:4px 12px">';
   l.w.forEach(function(x){h+='<div class="vrow"><div class="tx"><div class="eu">'+(x[2]?x[2]+" ":"")+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
   h+='</div>';
@@ -2482,12 +2694,13 @@ document.addEventListener("click",function(ev){
   if(a){
     var act=a.getAttribute("data-act");
     if(act==="lesson"){
-      var id=a.getAttribute("data-id"),idx=LESSONS.findIndex(function(l){return l.id===id});
+      var id=a.getAttribute("data-id"),pp=+a.getAttribute("data-p")||0,idx=LESSONS.findIndex(function(l){return l.id===id});
       if(!S.open&&idx>curIdx()&&!S.done[id]){toast("Termina la lección anterior para abrir esta");return}
       if(S.urg&&!S.done[id]){toast("Primero el repaso urgente");V.lv="urg";render();return}
       var lu=UNITS.filter(function(u){return u.L.some(function(x){return x.id===id})})[0];
       if(lu&&!studyDone(lu)&&!S.done[id]){toast("Antes toca el estudio previo de esta unidad");startGrammar(nextStudy(lu));return}
-      startLesson(id);
+      var ll=LESSONS[idx];if(!S.open&&!S.done[id]&&pp>ptOf(ll)){toast("Termina la parte anterior");return}
+      startLesson(id,pp);
     }else if(act==="study"){
       var su=UNITS.filter(function(u){return u.id===a.getAttribute("data-u")})[0];if(!su)return;
       var ng=nextStudy(su);
@@ -2538,7 +2751,7 @@ document.addEventListener("click",function(ev){
   }
   if(k==="stay"){R.quitAsk=false;drawEx();return}
   if(k==="leave"){leave();return}
-  if(k==="go"){var l=R.intro;startRun({q:mixReview(l,lessonQueue(l)),title:"¡Lección completada!",bonus:20,xpPer:10,onDone:function(acc){var st=acc>=.9?3:acc>=.7?2:1;S.done[l.id]=Math.max(S.done[l.id]||0,st);touchDay();save()}});return}
+  if(k==="go"){var l=R.intro;runPart(l,0);return}
   if(k==="again"){if(LAST==="cross")startCross();else if(LAST==="ws")startWS();else startPairs();return}
   if(k==="lshow"){R.st.show=true;drawEx();return}
   if(k==="mic"){micStart();return}
