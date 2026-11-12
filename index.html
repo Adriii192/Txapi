@@ -267,6 +267,41 @@ select.inp{appearance:auto}
 .czp select.ok{border-color:var(--ok)}.czp select.bad{border-color:var(--red)}
 .ta{width:100%;min-height:120px;font:600 17px var(--body);padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical}
 .backlink{background:none;color:var(--blue);font:700 15px var(--body);padding:4px 0;margin-bottom:4px}
+/* cofre 3D y nodos con volumen */
+.node{box-shadow:0 4px 0 var(--ucd),0 8px 0 color-mix(in srgb,var(--ucd) 70%,#000),0 16px 14px rgba(0,0,0,.22),inset 0 -5px 8px rgba(0,0,0,.14),inset 0 5px 7px rgba(255,255,255,.35)!important;border:3px solid color-mix(in srgb,var(--uc) 60%,#fff)}
+.lsn:active .node{transform:translateY(6px);box-shadow:0 1px 0 var(--ucd),0 3px 0 color-mix(in srgb,var(--ucd) 70%,#000),0 6px 8px rgba(0,0,0,.2)!important}
+.lock .node{border-color:transparent}
+.c3w{perspective:620px;display:flex;flex-direction:column;align-items:center;gap:6px;margin:22px auto 4px;width:100%;background:none;padding:0;border:0}
+.c3{width:84px;height:56px;position:relative;transform-style:preserve-3d;transform:rotateX(-22deg) rotateY(-30deg);margin:50px 0 14px;transition:transform .5s}
+.c3 *{position:absolute;box-sizing:border-box}
+.c3 .f{width:84px;height:56px;background:linear-gradient(#b8702c,#8a4c18);border:3px solid #5a300c;border-radius:4px}
+.c3 .f.fr{transform:translateZ(28px)}
+.c3 .f.bk{transform:rotateY(180deg) translateZ(28px)}
+.c3 .f.sd{width:56px;left:14px;background:linear-gradient(#a2601f,#7a4112)}
+.c3 .f.l{transform:rotateY(-90deg) translateZ(42px)}
+.c3 .f.r{transform:rotateY(90deg) translateZ(42px)}
+.c3 .f.bt{transform:rotateX(-90deg) translateZ(28px);top:0;background:#4a2608;border:0}
+.c3 .st{width:12px;height:100%;left:30px;top:0;background:linear-gradient(90deg,#f7d046,#c99a10,#f7d046)}
+.c3 .lk{width:16px;height:18px;left:28px;top:6px;border-radius:4px;background:linear-gradient(#ffe27a,#d29a0c);border:2px solid #7a5300;z-index:2}
+.c3 .lid{width:84px;height:56px;left:0;top:0;transform-origin:50% 0;transform:translateZ(-28px) rotateX(90deg);transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.5,.5,1)}
+.c3 .lid i{display:block;width:84px;height:56px;border:3px solid #5a300c;border-radius:6px 6px 3px 3px;background:repeating-linear-gradient(90deg,#c27a33 0 14px,#a9651f 14px 16px);backface-visibility:visible}
+.c3 .lid b{display:block;width:12px;height:56px;left:36px;top:0;background:linear-gradient(90deg,#f7d046,#c99a10,#f7d046)}
+.c3 .gl{width:70px;height:46px;left:7px;top:5px;background:radial-gradient(circle,#fff6b0,#ffc400 60%,#b87800);transform:rotateX(90deg) translateZ(-4px);opacity:0;border-radius:6px}
+.c3 .gm{width:18px;height:18px;left:33px;top:-14px;background:linear-gradient(135deg,#7fe9ff,#1c8fd0);transform:rotate(45deg);opacity:0;border:2px solid #fff;border-radius:3px}
+.c3sh{width:96px;height:18px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(4px);margin-top:-4px}
+.c3w.lock .c3{filter:grayscale(.85) brightness(.85)}
+.c3w.ready .c3{animation:c3f 1.8s ease-in-out infinite}
+.c3w.ready .c3 .lid{animation:c3l 1.8s ease-in-out infinite}
+.c3w.open .c3 .lid{transform:translateZ(-28px) rotateX(205deg);animation:none}
+.c3w.open .c3 .gl{opacity:1;animation:c3g 1.4s ease-in-out infinite}
+.c3w.open .c3 .gm{opacity:1;animation:c3m 1.4s ease-in-out infinite}
+.c3w span.c3t{font:700 15px var(--body);color:var(--muted)}
+.c3w.ready span.c3t{color:var(--sun-d)}
+@keyframes c3f{0%,100%{transform:rotateX(-22deg) rotateY(-30deg) translateY(0)}50%{transform:rotateX(-22deg) rotateY(-14deg) translateY(-10px)}}
+@keyframes c3l{0%,100%{transform:translateZ(-28px) rotateX(90deg)}50%{transform:translateZ(-28px) rotateX(112deg)}}
+@keyframes c3g{50%{opacity:.6}}
+@keyframes c3m{0%,100%{top:-14px}50%{top:-26px}}
+@media (prefers-reduced-motion:reduce){.c3w.ready .c3,.c3w.ready .c3 .lid,.c3w.open .c3 .gl,.c3w.open .c3 .gm{animation:none}}
 .rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
 .rev svg{width:26px;height:26px;color:var(--blue);flex:none}
 .rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
@@ -1747,7 +1782,7 @@ function rLearn(){
     });
     h+='</div>';
     var ud=unitDone(u),op=S.cx[u.id];
-    h+='<button class="chest'+(op?" open":ud?" ready":"")+'" data-act="chest" data-u="'+u.id+'" aria-label="Cofre de la unidad '+E(u.t)+'">'+IC.chest+'<span>'+(op?"Cofre abierto":ud?"¡Abrir cofre!":"Cofre: termina la unidad")+'</span></button></section>';
+    h+='<button class="c3w '+(op?"open":ud?"ready":"lock")+'" data-act="chest" data-u="'+u.id+'" aria-label="Cofre de la unidad '+E(u.t)+'"><div class="c3"><div class="f bt"></div><div class="f sd l"></div><div class="f sd r"></div><div class="f bk"></div><div class="gl"></div><div class="gm"></div><div class="f fr"><div class="st"></div><div class="lk"></div></div><div class="lid"><i></i><b></b></div></div><div class="c3sh"></div><span class="c3t">'+(op?"Cofre abierto":ud?"¡Abrir cofre!":"Cofre: termina la unidad")+'</span></button></section>';
   });
   return h;
 }
