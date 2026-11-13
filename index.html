@@ -1210,7 +1210,7 @@ function msCount(st){var n=0;for(var k in S.ms)if(S.ms[k].s===st)n++;return n}
 function urgCheck(){
   var n=msCount("s");
   if(!S.urg&&n>=URG_ON){S.urg=1;V.lv="urg";if(typeof toast==="function")toast("Tienes muchas palabras sin dominar: toca repaso urgente")}
-  else if(S.urg&&n<=URG_OFF){S.urg=0;V.lv=0;if(typeof toast==="function")toast("¡Repaso urgente superado! Camino desbloqueado")}
+  else if(S.urg&&n<=URG_OFF){S.urg=0;V.lv=0;if(typeof toast==="function")toast("¡Repaso urgente superado! Aventura desbloqueada")}
 }
 function msPrune(){
   var ks=Object.keys(S.ms);if(ks.length<=450)return;
@@ -1283,13 +1283,13 @@ function startUrgent(i){
   startRun({q:q,title:"¡Repaso urgente hecho!",xpPer:10,need:5,bonus:10});
 }
 function rUrg(){
-  var n=msCount("s"),h='<div class="card" style="border:2px solid var(--red)"><h3>Repaso urgente</h3><p class="hint" style="margin-top:6px">Tienes <b>'+n+'</b> sin dominar. El Camino sigue bloqueado hasta que queden <b>'+URG_OFF+'</b> o menos. Cada palabra, frase o conjugación pasa a dominada cuando aciertas 5 seguidas.</p></div><div class="unit u-red"><div class="uh"><small>Repaso urgente</small><h2>Solo lo que te cuesta</h2><p>Sin material nuevo: lo dominado se mezcla con lo que falla.</p></div><div class="path">';
+  var n=msCount("s"),h='<div class="card" style="border:2px solid var(--red)"><h3>Repaso urgente</h3><p class="hint" style="margin-top:6px">Tienes <b>'+n+'</b> sin dominar. La Aventura sigue bloqueada hasta que queden <b>'+URG_OFF+'</b> o menos. Cada palabra, frase o conjugación pasa a dominada cuando aciertas 5 seguidas.</p></div><div class="unit u-red"><div class="uh"><small>Repaso urgente</small><h2>Solo lo que te cuesta</h2><p>Sin material nuevo: lo dominado se mezcla con lo que falla.</p></div><div class="path">';
   urgNodes().forEach(function(x,i){var px=Math.round(Math.sin((i+1)*1.15)*56);h+='<button class="lsn cur" style="--x:'+px+'px" data-act="urg" data-i="'+i+'"><span class="node">'+(i+1)+'</span><span class="lt">'+x[0]+'</span><span class="empieza" style="position:static;margin-top:2px">'+x[1]+'</span></button>'});
   return h+'</div></div>';
 }
 function rRev(){
   var t=V.rt||"s",ns=msCount("s"),nd=msCount("d"),its=msItems(t).sort(function(a,b){return t==="s"?(b.m.f-a.m.f):(b.m.t-a.m.t)});
-  var h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Repaso</h2><p class="hint" style="margin-bottom:10px">Lo que fallas se guarda en <b>Sin dominar</b>. Con 5 aciertos seguidos en el Camino (o 10 aquí) pasa a <b>Dominado</b>. Si fallas 3 veces seguidas algo, pasa a Sin dominar (también las dominadas).</p>';
+  var h='<button class="backlink" data-tab="prac">← Práctica</button><h2 class="sec-h">Repaso</h2><p class="hint" style="margin-bottom:10px">Lo que fallas se guarda en <b>Sin dominar</b>. Con 5 aciertos seguidos en la Aventura (o 10 aquí) pasa a <b>Dominado</b>. Si fallas 3 veces seguidas algo, pasa a Sin dominar (también las dominadas).</p>';
   h+='<div class="seg"><button class="sg" data-act="rt" data-v="s" aria-pressed="'+(t==="s")+'">Sin dominar ('+ns+')</button><button class="sg" data-act="rt" data-v="d" aria-pressed="'+(t==="d")+'">Dominado ('+nd+')</button></div>';
   h+='<button class="btn" style="margin:12px 0" data-act="msgo" data-v="'+t+'"'+(its.length<2?' disabled':'')+'>'+(t==="s"?'Repasar sin dominar':'Repasar dominadas')+'</button>';
   if(!its.length)h+='<div class="card"><p class="hint">'+(t==="s"?"Ahora mismo no tienes nada sin dominar. ¡Bien!":"Todavía no hay dominadas. Se añaden según practicas.")+'</p></div>';
@@ -2093,7 +2093,7 @@ function rInicio(){
   return h;
 }
 var V={tab:"inicio",vq:"",reset:false};
-var NAV=[["inicio","Inicio",IC.home],["learn","Camino",IC.path],["games","Juegos",IC.pad],["gram","Gramática",IC.book],["vocab","Diccionario",IC.list],["ach","Logros",IC.trophy],["me","Perfil",IC.user]];
+var NAV=[["inicio","Inicio",IC.home],["learn","Aventura",IC.path],["prac","Práctica",IC.loop],["games","Juegos",IC.pad],["gram","Gramática",IC.book],["vocab","Diccionario",IC.list],["ach","Logros",IC.trophy],["me","Perfil",IC.user]];
 function drawBar(){
   $("#bar").innerHTML='<div class="brand">'+mascot(34)+'Txapi</div>'
    +'<div class="chip st" title="Racha">'+IC.flame+dispStreak()+'</div>'
@@ -2101,9 +2101,9 @@ function drawBar(){
    +'<div class="chip gm" title="Gemas">'+IC.gem+(S.gems||0)+'</div>'
    +'<div class="chip lv" title="Nivel">Nv '+level()+'</div>';
   $("#lvfill").style.width=(S.xp%100)+"%";
-  $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games"))+'">'+n[2]+n[1]+'</button>'}).join("");
+  $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games")||(n[0]==="prac"&&(V.tab==="rev"||V.tab==="sim"||V.tab==="verb"||V.tab==="lect")))+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb,lect:rLect})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb,lect:rLect,prac:rPrac})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -2113,20 +2113,16 @@ function lvStats(n){var ls=LESSONS.filter(function(l){return l.lv===n});return {
 function rLearn(){
   var ci=curIdx(),due=dueWords().length;
   if(!V.lv){var cl=LESSONS[ci];V.lv=cl?cl.lv:3}
-  var h='<h2 class="sec-h">Camino</h2>';
-  if(S.urg&&V.lv==="urg")return h+'<div class="lvt"><button data-act="lv" data-n="urg" aria-pressed="true"><span>Urgente</span><small>'+msCount("s")+' sin dominar</small></button><button data-act="lv" data-n="0" aria-pressed="false"><span>Camino</span><small>Bloqueado</small></button></div>'+rUrg();
-  if(learnedWords().length){
-    h+='<button class="rev" data-act="review">'+IC.loop+'<div><b>Repaso inteligente</b><span>'+(due?due+' palabras que conviene repasar':'Todo al día. Practica igualmente')+'</span></div></button>';
-  }else{
-    h+='<button class="rev" disabled>'+IC.loop+'<div><b>Repaso inteligente</b><span>Se activa al terminar tu primera lección</span></div></button>';
+  var h='<h2 class="sec-h">Aventura</h2>';
+  if(S.urg&&V.lv==="urg")return h+'<div class="lvt"><button data-act="lv" data-n="urg" aria-pressed="true"><span>Urgente</span><small>'+msCount("s")+' sin dominar</small></button><button data-act="lv" data-n="0" aria-pressed="false"><span>Aventura</span><small>Bloqueado</small></button></div>'+rUrg();
+  if(!S.urg){
+    var scn=msCount("s"),exn=lvDone(V.lv).length,exe=(S.exams||{})[V.lv],exd=exn>=3&&(exe?exn-(exe.at||0)>=5:exn>=5);
+    if(scn>=2)h+='<button class="rev due" data-act="msgo" data-v="s">'+IC.loop+'<div><b>'+scn+' sin dominar</b><span>Toca para repasarlas ahora</span></div></button>';
+    else if(due>=8)h+='<button class="rev due" data-act="review">'+IC.loop+'<div><b>Repaso inteligente</b><span>'+due+' palabras que conviene repasar</span></div></button>';
+    if(exd)h+='<button class="rev due" data-act="exam" data-n="'+V.lv+'">'+IC.check+'<div><b>Examen de nivel '+LVN[V.lv]+' · ¡toca!</b><span>Compruebas cómo vas con lo aprendido</span></div></button>';
   }
-  if(learnedWords().length||msCount("s")||msCount("d"))h+='<button class="rev" data-act="revpage">'+IC.list+'<div><b>Mis repasos</b><span>'+msCount("s")+' sin dominar · '+msCount("d")+' dominadas</span></div></button>';
-  if(S.urg)h+='<div class="card" style="border:2px solid var(--red)"><h3>Camino bloqueado</h3><p class="hint" style="margin:6px 0 8px">Tienes muchas palabras sin dominar. Hazles un repaso urgente para seguir.</p><button class="btn sm" data-act="lv" data-n="urg">Ir al repaso urgente</button></div>';
+  if(S.urg)h+='<div class="card" style="border:2px solid var(--red)"><h3>Aventura bloqueada</h3><p class="hint" style="margin:6px 0 8px">Tienes muchas palabras sin dominar. Hazles un repaso urgente para seguir.</p><button class="btn sm" data-act="lv" data-n="urg">Ir al repaso urgente</button></div>';
   h+='<div class="lvt">'+[1,2,3].map(function(n){var s=lvStats(n),lk=!S.open&&LESSONS.indexOf(s.first)>ci;return '<button data-act="lv" data-n="'+n+'" aria-pressed="'+(V.lv===n)+'"><span>'+LVN[n]+'</span><small>'+(lk?'Bloqueado':s.d+' / '+s.t)+'</small></button>'}).join("")+'</div>';
-  h+=examCard(V.lv);
-  h+='<button class="rev" data-tab="lect">'+IC.book+'<div><b>Lecturas</b><span>Textos con preguntas, de A1 a B2</span></div></button>';
-  h+='<button class="rev" data-tab="verb">'+IC.book+'<div><b>Entrenador de verbos</b><span>Presente, pasado y futuro con práctica</span></div></button>';
-  h+='<button class="rev" data-tab="sim">'+IC.check+'<div><b>Simulacros de examen A1 a B2</b><span>Lectura, escucha, escritura y habla</span></div></button>';
   var cnt=0,un=0;
   UNITS.forEach(function(u){
     if(u.lv!==V.lv)return;
@@ -2568,7 +2564,7 @@ function finishSim(){
   V.tab="sim";R.finished=true;
 }
 function rSim(){
-  var lv=V.sl||"a1",h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Simulacros de examen</h2><p class="hint" style="margin-bottom:10px">Práctica con las cuatro pruebas de los exámenes de euskera: lectura, escucha, escritura y habla. Son simulacros propios, no oficiales: el formato real puede variar, consulta siempre la convocatoria. Con un 60 % se da la prueba por aprobada (orientativo).</p>';
+  var lv=V.sl||"a1",h='<button class="backlink" data-tab="prac">← Práctica</button><h2 class="sec-h">Simulacros de examen</h2><p class="hint" style="margin-bottom:10px">Práctica con las cuatro pruebas de los exámenes de euskera: lectura, escucha, escritura y habla. Son simulacros propios, no oficiales: el formato real puede variar, consulta siempre la convocatoria. Con un 60 % se da la prueba por aprobada (orientativo).</p>';
   h+='<div class="lvt">'+["a1","a2","b1","b2"].map(function(k){return '<button data-act="simlv" data-l="'+k+'" aria-pressed="'+(lv===k)+'"><span>'+SIMN[k]+'</span></button>'}).join("")+'</div>';
   h+='<button class="rev due" data-act="simfull" data-l="'+lv+'">'+IC.check+'<div><b>Simulacro completo '+SIMN[lv]+'</b><span>Las 4 pruebas seguidas</span></div></button>';
   SIMS.forEach(function(s){
@@ -2605,7 +2601,7 @@ function vQ(t,vs){
   return q;
 }
 function rVerb(){
-  var t=V.vt||"pr",h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Entrenador de verbos</h2><p class="hint" style="margin-bottom:10px">Los verbos más usados en presente, pasado y futuro. Estudia la tabla y practica: lo que falles va a «Sin dominar».</p>';
+  var t=V.vt||"pr",h='<button class="backlink" data-tab="prac">← Práctica</button><h2 class="sec-h">Entrenador de verbos</h2><p class="hint" style="margin-bottom:10px">Los verbos más usados en presente, pasado y futuro. Estudia la tabla y practica: lo que falles va a «Sin dominar».</p>';
   h+='<div class="lvt">'+["pr","pa","fu"].map(function(k){return '<button data-act="vtn" data-t="'+k+'" aria-pressed="'+(t===k)+'"><span>'+VTN[k]+'</span></button>'}).join("")+'</div>';
   h+='<div class="row2" style="margin-bottom:12px"><button class="btn" data-act="vdrill" data-t="'+t+'">Practicar '+VTN[t].toLowerCase()+'</button><button class="btn sec" data-act="vdrill" data-t="all">Practicar todo</button></div>';
   VERBS.forEach(function(v){
@@ -2640,12 +2636,24 @@ function startLect(id){
   startRun({q:q,title:"¡Lectura completada!",xpPer:8,bonus:10,onDone:function(acc){S.lect=S.lect||{};var p=Math.round(acc*100);if(p>(S.lect[id]||0))S.lect[id]=p}});
 }
 function rLect(){
-  var lv=V.ll||"a1",h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Lecturas</h2><p class="hint" style="margin-bottom:10px">Textos cortos con preguntas, de menos a más. Después de contestar verás la traducción al español.</p>';
+  var lv=V.ll||"a1",h='<button class="backlink" data-tab="prac">← Práctica</button><h2 class="sec-h">Lecturas</h2><p class="hint" style="margin-bottom:10px">Textos cortos con preguntas, de menos a más. Después de contestar verás la traducción al español.</p>';
   h+='<div class="lvt">'+["a1","a2","b1","b2"].map(function(k){return '<button data-act="lvl" data-l="'+k+'" aria-pressed="'+(lv===k)+'"><span>'+k.toUpperCase()+'</span></button>'}).join("")+'</div>';
   LECT.filter(function(l){return l.lv===lv}).forEach(function(l){var p=(S.lect||{})[l.id];h+='<button class="rev" data-act="lect" data-id="'+l.id+'">'+IC.book+'<div><b>'+E(l.ti)+'</b><span>'+(p!=null?'Mejor '+p+' %':l.q.length+' preguntas')+'</span></div></button>'});
   return h;
 }
 
+function rPrac(){
+  var due=dueWords().length,h='<h2 class="sec-h">Práctica</h2><p class="hint" style="margin-bottom:10px">Repasos, exámenes, lecturas, verbos y simulacros. La Aventura te avisa cuando toca repasar.</p>';
+  if(learnedWords().length)h+='<button class="rev" data-act="review">'+IC.loop+'<div><b>Repaso inteligente</b><span>'+(due?due+' palabras que conviene repasar':'Todo al día. Practica igualmente')+'</span></div></button>';
+  else h+='<button class="rev" disabled>'+IC.loop+'<div><b>Repaso inteligente</b><span>Se activa al terminar tu primera lección</span></div></button>';
+  h+='<button class="rev" data-act="revpage">'+IC.list+'<div><b>Mis repasos</b><span>'+msCount("s")+' sin dominar · '+msCount("d")+' dominadas</span></div></button>';
+  h+='<h3 class="sec-h" style="font-size:18px;margin-top:14px">Exámenes de nivel</h3>'+examCard(1)+examCard(2)+examCard(3);
+  h+='<h3 class="sec-h" style="font-size:18px;margin-top:14px">Entrenamiento</h3>';
+  h+='<button class="rev" data-tab="lect">'+IC.book+'<div><b>Lecturas</b><span>Textos con preguntas, de A1 a B2</span></div></button>';
+  h+='<button class="rev" data-tab="verb">'+IC.book+'<div><b>Entrenador de verbos</b><span>Presente, pasado y futuro con práctica</span></div></button>';
+  h+='<button class="rev" data-tab="sim">'+IC.check+'<div><b>Simulacros de examen A1 a B2</b><span>Lectura, escucha, escritura y habla</span></div></button>';
+  return h;
+}
 /* ---------- escenario ---------- */
 var R=null,G=null,ST=null,TM=null;
 function showStage(){$("#home").hidden=true;$("#stage").hidden=false;window.scrollTo(0,0);requestAnimationFrame(animStage)}
