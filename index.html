@@ -284,6 +284,16 @@ select.inp{appearance:auto}
 @keyframes c3w{0%,100%{transform:rotate(-3deg) translateY(0)}25%{transform:rotate(3deg) translateY(-8px)}50%{transform:rotate(-2deg) translateY(0)}75%{transform:rotate(2deg) translateY(-5px)}}
 @keyframes c3s{0%{opacity:0;transform:translateY(20px) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-34px) scale(1.1) rotate(25deg)}}
 @media (prefers-reduced-motion:reduce){.c3w.ready .c3img,.c3w.open .sp{animation:none}}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.mc{aspect-ratio:1;border-radius:14px;border:2px solid var(--line);font:700 14px var(--display);color:#ffd45a;background:linear-gradient(135deg,#2a63ad,#173f73);box-shadow:0 4px 0 rgba(0,0,0,.25);padding:2px;display:grid;place-items:center;word-break:break-word;line-height:1.1;font-size:22px}
+.mc.up{background:var(--surface);color:var(--ink);font-size:14px;box-shadow:0 3px 0 var(--line);animation:mflip .25s}
+.mc.em{font-size:34px}.mc.ok{background:var(--green-t,#dff5e1);border-color:var(--green)}
+.mc:disabled{opacity:1}
+@keyframes mflip{from{transform:scaleX(.1)}to{transform:scaleX(1)}}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+.pic{aspect-ratio:1.25;font-size:64px;border-radius:18px;border:2px solid var(--line);background:var(--surface);box-shadow:0 4px 0 var(--line);display:grid;place-items:center;line-height:1}
+.pic.sel{border-color:var(--blue);background:var(--blue-t,#e0f1ff)}.pic.ok{border-color:var(--green);background:var(--green-t,#dff5e1)}.pic.bad{border-color:var(--red);background:var(--red-t,#fde2e0)}
+@media (prefers-reduced-motion:reduce){.mc.up{animation:none}}
 .glh{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
 .glimg{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25));flex:none}
 .glg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:12px;border-radius:20px;background:var(--surface);border:2px solid var(--line)}
@@ -1189,7 +1199,7 @@ var URG_ON=15,URG_OFF=8,WIDX=null;
 function wInfo(eu){if(!WIDX){WIDX={};DICT.forEach(function(d){WIDX[d.eu]=d});WORDS.forEach(function(w){WIDX[w.eu]=w})}return WIDX[eu]||null}
 function msInfo(e){
   if(e.t==="ch"||e.t==="ty"||e.t==="lis")return {k:"w:"+e.w.eu,eu:e.w.eu,es:e.w.es};
-  if(e.t==="img"||e.t==="hang")return {k:"w:"+e.x.eu,eu:e.x.eu,es:e.x.es};
+  if(e.t==="img"||e.t==="hang"||e.t==="lpic")return {k:"w:"+e.x.eu,eu:e.x.eu,es:e.x.es};
   if(e.t==="bd")return {k:"p:"+e.ans,eu:e.ans,es:e.es||"",x:1};
   if(e.t==="f")return {k:"f:"+e.s.replace("___",e.ans),eu:e.s.replace("___",e.ans),es:e.es||"",x:1};
   if(e.t==="tw")return {k:"t:"+e.ok[0],eu:e.ok[0],es:e.es||"",x:1};
@@ -1918,8 +1928,8 @@ function audioCard(){
 var LVT=[[1,"Hasiberri","principiante"],[3,"Ikasle","estudiante"],[5,"Hiztun","hablante"],[8,"Euskaldun berri","nuevo vascohablante"],[12,"Bertsolari","poeta improvisador"],[17,"Txapeldun","campeón"],[25,"Euskaldun zahar","vascohablante de siempre"]];
 function lvTitle(l){var r=LVT[0],v=l||level();LVT.forEach(function(x){if(v>=x[0])r=x});return r}
 function SS(){var s=S.st=S.st||{};["run","best","ok","perf","exP","say","gn","dgn","ms"].forEach(function(k){if(typeof s[k]!=="number")s[k]=0});if(!s.g)s.g={};return s}
-var DGK=["pairs","cross","ws","frases","story","img","hang"],DGXP=25;
-var GN={pairs:["Parejas contrarreloj"],cross:["Crucigrama"],ws:["Sopa de letras"],frases:["Construir frases"],story:["Aventura en Donostia"],img:["Adivina la imagen"],hang:["Ahorcado vasco"],pron:["Pronunciación"]};
+var DGK=["pairs","cross","ws","frases","story","img","hang","mem","tap"],DGXP=25;
+var GN={pairs:["Parejas contrarreloj"],cross:["Crucigrama"],ws:["Sopa de letras"],frases:["Construir frases"],story:["Aventura en Donostia"],img:["Adivina la imagen"],hang:["Ahorcado vasco"],pron:["Pronunciación"],mem:["Memoria"],tap:["Escucha y toca"]};
 function dgKey(){return DGK[dayNum()%DGK.length]}
 function gameDone(kind){
   var ss=SS(),td=dayKey(new Date());ss.gn++;ss.g[kind]=(ss.g[kind]||0)+1;
@@ -1927,9 +1937,53 @@ function gameDone(kind){
   save();return 0;
 }
 
+
+/* ---------- memoria y escucha-toca ---------- */
+var MG=null;
+function startMem(){
+  var n=GL&&GL.g==="mem"?GL.n:8,np=Math.min(10,4+Math.floor(n/4)),mode=n<10?"em":"es",pool,cards=[];
+  if(mode==="em")pool=shuffle(DICT.filter(function(x){return x.eu.indexOf(" ")<0})).slice(0,np);
+  else{var uw=uniqEs(unlockedWords().filter(function(w){return w.eu.indexOf(" ")<0&&w.eu.indexOf("?")<0}));if(uw.length<np)uw=uniqEs(WORDS.slice(0,60));pool=shuffle(uw).slice(0,np)}
+  pool.forEach(function(x,i){cards.push({id:i,t:"a",txt:mode==="em"?x.em:x.es,em:mode==="em",eu:x.eu,es:x.es});cards.push({id:i,t:"b",txt:x.eu,em:false,eu:x.eu,es:x.es})});
+  MG={cards:shuffle(cards),open:[],done:{},moves:0,np:np,lock:false,mode:mode};LAST="mem";showStage();drawMem();
+}
+function drawMem(){
+  var g=MG,h=topbar(null)+'<div class="ex"><div class="hud" style="font-size:16px"><span>Memoria</span><span>'+g.moves+' movimientos</span></div><p class="hint">'+(g.mode==="em"?"Une cada dibujo con su palabra en euskera.":"Une cada palabra en euskera con su traducción.")+'</p><div class="mgrid">';
+  g.cards.forEach(function(c,i){
+    var up=g.open.indexOf(i)>=0||g.done[c.id];
+    h+='<button class="mc'+(up?" up":"")+(g.done[c.id]?" ok":"")+(c.em&&up?" em":"")+'" data-r="mc" data-i="'+i+'" aria-label="'+(up?E(c.txt):"Carta")+'"'+(up?" disabled":"")+'>'+(up?E(c.txt):"★")+'</button>';
+  });
+  stage(h+'</div></div>');
+}
+function memTap(i){
+  var g=MG;if(!g||g.lock||g.open.indexOf(i)>=0||g.done[g.cards[i].id])return;
+  g.open.push(i);var c=g.cards[i];if(c.t==="b")say(c.eu);
+  if(g.open.length===2){
+    g.moves++;var a=g.cards[g.open[0]],b=g.cards[g.open[1]];
+    if(a.id===b.id&&a.t!==b.t){g.done[a.id]=1;g.open=[];say(a.eu);if(Object.keys(g.done).length===g.np){drawMem();return memWin()}}
+    else{g.lock=true;drawMem();setTimeout(function(){if(!MG)return;g.open=[];g.lock=false;drawMem()},900);return}
+  }
+  drawMem();
+}
+function memWin(){
+  var g=MG;g.cards.forEach(function(c){if(c.t==="b")rec(c.eu,true)});
+  var st=g.moves<=g.np*1.4?3:g.moves<=g.np*2.2?2:1;beep(true);
+  endGame("¡Memoria completada!",10+g.np*2,"Movimientos: "+g.moves+" (mínimo "+g.np+")",GL&&GL.g==="mem"?st:null);
+}
+function mkLpic(x,k,hard){
+  var d=DICT.filter(function(y){return y.eu!==x.eu&&y.eu.indexOf(" ")<0}),same=shuffle(d.filter(function(y){return y.cat===x.cat})),oth=shuffle(d.filter(function(y){return y.cat!==x.cat})),ds=(hard?same:oth).slice(0,k-1);
+  if(ds.length<k-1)ds=ds.concat((hard?oth:same).slice(0,k-1-ds.length));
+  var all=shuffle([x].concat(ds));
+  return {t:"lpic",x:x,ans:x.eu,opts:all.map(function(y){return y.eu}),ems:all.map(function(y){return y.em})};
+}
+function startTap(){
+  var n=GL&&GL.g==="tap"?GL.n:null,m=n===null?8:n,tot=6+Math.floor(m/4),k=3+Math.floor(m/8);
+  var pool=shuffle(DICT.filter(function(x){return x.eu.indexOf(" ")<0})).slice(0,tot);
+  startRun({q:pool.map(function(x){return mkLpic(x,k,m>=8)}),title:"¡Escucha completada!",xpPer:10,game:"tap",gl:n!==null});
+}
 /* ---------- niveles con estrellas en los minijuegos ---------- */
-var GL=null,GLN={pairs:25,cross:25,ws:25,frases:25,img:25,hang:25,pron:25,story:3};
-var GLNAME={pairs:"Parejas contrarreloj",cross:"Crucigrama",ws:"Sopa de letras",frases:"Construir frases",story:"Aventura en Donostia",img:"Adivina la imagen",hang:"Ahorcado vasco",pron:"Pronunciación"};
+var GL=null,GLN={pairs:25,cross:25,ws:25,frases:25,img:25,hang:25,pron:25,story:3,mem:25,tap:25};
+var GLNAME={pairs:"Parejas contrarreloj",cross:"Crucigrama",ws:"Sopa de letras",frases:"Construir frases",story:"Aventura en Donostia",img:"Adivina la imagen",hang:"Ahorcado vasco",pron:"Pronunciación",mem:"Memoria",tap:"Escucha y toca"};
 function glSt(g,i){return (S.gl&&S.gl[g]&&S.gl[g][i])||0}
 function glUnlocked(g,i){return S.open||i===0||glSt(g,i-1)>0}
 function glTotal(g){var t=0;for(var i=0;i<GLN[g];i++)t+=glSt(g,i);return t}
@@ -1967,10 +2021,10 @@ function startFrases(){
 }
 function startGameLevel(g,n){
   GL={g:g,n:n,res:null};V.gg=g;
-  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory(n);else if(g==="img")startImg();else if(g==="hang")startHang();else if(g==="pron")startPron();else if(g==="frases")startFrases();
+  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory(n);else if(g==="img")startImg();else if(g==="hang")startHang();else if(g==="pron")startPron();else if(g==="frases")startFrases();else if(g==="mem")startMem();else if(g==="tap")startTap();
 }
 function startGameKey(g){GL=null;
-  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory();else if(g==="img")startImg();else if(g==="hang")startHang();else if(g==="pron")startPron();
+  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory();else if(g==="img")startImg();else if(g==="hang")startHang();else if(g==="pron")startPron();else if(g==="mem")startMem();else if(g==="tap")startTap();
   else if(g==="frases")startFrases();
 }
 var ACH=[
@@ -2114,6 +2168,8 @@ function rGames(){
    ["story","Aventura: un día en Donostia","Una mini historia en tres capítulos. Tú eliges qué decir.",IC.map,"var(--sun-t)","var(--sun-d)",S.story?'<span class="best">Completada</span>':""],
    ["img","Adivina la imagen","Mira el dibujo y di cómo se llama en euskera: unas veces eliges y otras lo escribes.",IC.img,"var(--blue-t)","var(--blue)",""],
    ["hang","Ahorcado vasco","Adivina la palabra letra a letra. Tienes seis fallos.",IC.hang,"var(--red-t)","var(--red)",""],
+   ["mem","Memoria","Voltea cartas y une cada dibujo con su palabra en euskera.",IC.blocks,"var(--sun-t)","var(--sun-d)",""],
+   ["tap","Escucha y toca","Oye la palabra en euskera y toca el dibujo correcto.",IC.spk,"var(--blue-t)","var(--blue)",""],
    ["pron","Pronunciación","Di en voz alta frases y palabras: la app te escucha y te dice cuánto se te entiende.",IC.mic,"var(--green-t)","var(--green)",""]
   ];
   var h='<h2 class="sec-h">Juegos</h2><p class="hint" style="margin-bottom:12px">Usan las palabras de las lecciones que ya tienes desbloqueadas.</p>';
@@ -2343,7 +2399,7 @@ function examsCard(){
 /* ---------- escenario ---------- */
 var R=null,G=null,ST=null,TM=null;
 function showStage(){$("#home").hidden=true;$("#stage").hidden=false;window.scrollTo(0,0);requestAnimationFrame(animStage)}
-function leave(){GL=null;clearInterval(TM);TM=null;R=null;G=null;CW=null;WS=null;ST=null;$("#stage").hidden=true;$("#home").hidden=false;V.anim=true;render();window.scrollTo(0,0)}
+function leave(){GL=null;MG=null;clearInterval(TM);TM=null;R=null;G=null;CW=null;WS=null;ST=null;$("#stage").hidden=true;$("#home").hidden=false;V.anim=true;render();window.scrollTo(0,0)}
 function stage(html){if(GL&&GL.res!=null&&html.indexOf('class="res"')>=0)html=glInject(html);$("#stage").innerHTML='<div class="sw">'+html+'</div>';if(html.indexOf('class="res"')>=0)animStage()}
 function animStage(){var e=document.querySelector("#stage .sw");if(!e)return;e.classList.remove("in");void e.offsetWidth;e.classList.add("in")}
 function topbar(pct){return '<div class="top"><button class="x" data-r="quit" aria-label="Salir">×</button>'+(pct===null?'<div style="flex:1"></div>':'<div class="pb" role="progressbar" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>')+'</div>'}
@@ -2468,6 +2524,9 @@ function drawEx(){
     b='<p class="q">'+(e.typed?"Escribe su nombre en euskera":"¿Cómo se llama en euskera?")+'</p><div class="big" style="font-size:84px;justify-content:center;line-height:1.1">'+e.x.em+'</div>'
      +(e.typed?'<p class="hint" style="text-align:center">Pista: empieza por «'+E(e.x.eu.charAt(0))+'» y tiene '+e.x.eu.length+' letras</p>'+tyInput(st,"Escribe la palabra"):optsHtml(e,st));
     can=e.typed?true:st.sel!==null;
+  }else if(e.t==="lpic"){
+    b='<p class="q">Escucha y toca el dibujo correcto</p><div class="ctx" style="text-align:center;font-size:20px">'+spk(e.x.eu)+'</div><div class="pgrid">'+e.opts.map(function(o,i){var c="";if(st.checked){c=o===e.ans?" ok":(i===st.sel?" bad":"")}else if(i===st.sel)c=" sel";return '<button class="pic'+c+'" data-r="opt" data-i="'+i+'"'+(st.checked?" disabled":"")+' aria-label="Dibujo '+(i+1)+'">'+e.ems[i]+'</button>'}).join("")+'</div>';
+    can=st.sel!==null;
   }else if(e.t==="hang"){
     var hw=e.x.eu.toLowerCase(),hs=st.h,hk=HABC.slice();
     hw.split("").forEach(function(c){if(hk.indexOf(c)<0)hk.push(c)});hk.sort();
@@ -2508,9 +2567,9 @@ function drawEx(){
   var modal=R.quitAsk?'<div class="modal"><div><h3>¿Salir de la lección?</h3><p class="hint">Perderás el progreso de esta sesión.</p><button class="btn" data-r="stay">Seguir</button><button class="btn sec" data-r="leave">Salir</button></div></div>':"";
   stage(topbar(pct)+'<div class="ex">'+b+'</div><div class="foot">'+f+'</div>'+modal);
   if((e.t==="ty"||e.t==="tw"||e.t==="dlg"||(e.t==="img"&&e.typed)||(e.t==="f"&&e.typed))&&!st.checked){var el=$("#ty");if(el)el.focus({preventScroll:true})}
-  if(e.t==="lis"&&!st.checked&&!st.played){st.played=true;say(e.w.eu)}
+  if((e.t==="lis"||e.t==="lpic")&&!st.checked&&!st.played){st.played=true;say(e.t==="lpic"?e.x.eu:e.w.eu)}
 }
-function euOf(e){if(e.t==="img"||e.t==="hang")return e.x.eu;return e.t==="ch"?(e.dir==="es2eu"?e.ans:e.w.eu):e.t==="ty"?e.w.eu:e.t==="bd"?e.ans:e.t==="lis"?e.w.eu:""}
+function euOf(e){if(e.t==="img"||e.t==="hang"||e.t==="lpic")return e.x.eu;return e.t==="ch"?(e.dir==="es2eu"?e.ans:e.w.eu):e.t==="ty"?e.w.eu:e.t==="bd"?e.ans:e.t==="lis"?e.w.eu:""}
 function check(){
   var e=R.cur,st=R.st;if(st.checked)return;var ok=false,ans="";
   if(e.t==="ch"||e.t==="mc"){if(st.sel===null)return;ok=e.opts[st.sel]===e.ans;ans=e.ans;if(e.t==="ch")rec(e.w.eu,ok)}
@@ -2525,6 +2584,7 @@ function check(){
   else if(e.t==="dlg"){var eld=$("#ty"),vd=eld?eld.value:"";if(!vd.trim())return;st.val=vd;var nd=norm(vd);ok=e.ok.some(function(a){return norm(a)===nd})||(e.re?new RegExp(e.re).test(nd):false);ans=e.model}
   else if(e.t==="img"){if(e.typed){var eli=$("#ty"),vi=eli?eli.value:"";if(!vi.trim())return;st.val=vi;ok=norm(vi)===norm(e.x.eu)||norm(vi)===norm(ART(e.x.eu))}else{if(st.sel===null)return;ok=e.opts[st.sel]===e.ans}ans=ART(e.x.eu)+" ("+e.x.es+")";rec(e.x.eu,ok)}
   else if(e.t==="lis"){if(st.sel===null)return;ok=e.opts[st.sel]===e.ans;ans=e.w.eu+" · "+e.ans;rec(e.w.eu,ok)}
+  else if(e.t==="lpic"){if(st.sel===null)return;ok=e.opts[st.sel]===e.ans;ans=ART(e.x.eu)+" ("+e.x.es+")";rec(e.x.eu,ok)}
   else if(e.t==="cz"){var allok=true;for(var cn in e.b){if(st.cz[cn]!==e.b[cn].a)allok=false}ok=allok;ans=e.eu.replace(/\{(\d)\}/g,function(m,n){return e.b[n].a})}
   else if(e.t==="wr"){var elw=$("#wr"),vw=elw?elw.value:"";if(vw.trim().length<6){toast("Escribe algo antes de comprobar");return}st.val=vw;ok=true;ans=e.model}
   st.checked=true;st.ok=ok;st.ans=ans;
@@ -2947,7 +3007,7 @@ document.addEventListener("click",function(ev){
   if(k==="go"){var l=R.intro;runPart(l,0);return}
   if(k==="glnext"&&GL){startGameLevel(GL.g,GL.n+1);return}
   if(k==="glagain"&&GL){startGameLevel(GL.g,GL.n);return}
-  if(k==="again"){if(LAST==="cross")startCross();else if(LAST==="ws")startWS();else startPairs();return}
+  if(k==="again"){if(LAST==="mem")startMem();else if(LAST==="cross")startCross();else if(LAST==="ws")startWS();else startPairs();return}
   if(k==="lshow"){R.st.show=true;drawEx();return}
   if(k==="mic"){micStart();return}
   if(k==="sayok"){R.ok++;R.done++;SS().say++;checkAch();nextEx();return}
@@ -2973,6 +3033,7 @@ document.addEventListener("click",function(ev){
     if(!kk)return;
     var pr=kk.split(",");CW.sel={r:+pr[0],c:+pr[1]};
     CW.inp[kk]=CW.g[kk].ch;CW.hints++;CW.chk=false;toast("Pista: letra «"+CW.g[kk].ch+"»");if(cwComplete())return cwWin();drawCW();return}
+  if(k==="mc"){memTap(+r.getAttribute("data-i"));return}
   if(k==="so"){storyPick(+r.getAttribute("data-i"));return}
   if(k==="tr"){var n=+r.getAttribute("data-i");ST.tr[n]=!ST.tr[n];drawStory();return}
 });
