@@ -284,6 +284,22 @@ select.inp{appearance:auto}
 @keyframes c3w{0%,100%{transform:rotate(-3deg) translateY(0)}25%{transform:rotate(3deg) translateY(-8px)}50%{transform:rotate(-2deg) translateY(0)}75%{transform:rotate(2deg) translateY(-5px)}}
 @keyframes c3s{0%{opacity:0;transform:translateY(20px) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-34px) scale(1.1) rotate(25deg)}}
 @media (prefers-reduced-motion:reduce){.c3w.ready .c3img,.c3w.open .sp{animation:none}}
+.glh{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
+.glimg{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25));flex:none}
+.glg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:12px;border-radius:20px;background:var(--surface);border:2px solid var(--line)}
+.glt{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 22px var(--display);color:#fff;border:0;padding:0;box-shadow:0 4px 0 rgba(0,0,0,.25),inset 0 3px 4px rgba(255,255,255,.35)}
+.glt.done{background:var(--green)}.glt.open{background:var(--blue)}.glt.cur{background:#ffc400;color:#5a3b00;animation:glp 1.4s ease-in-out infinite}.glt.lock{background:#8aa0ad;opacity:.85}
+.glt .gs{font-size:12px;letter-spacing:0;color:#ffe27a;line-height:1;margin-top:2px}.glt.cur .gs{color:#b87800}
+.glt svg{width:20px;height:20px}
+.glt:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.glstars{display:flex;justify-content:center;gap:6px;font-size:50px;line-height:1.1;margin:6px 0}
+.glstars span{color:#cfd8dc;transform:scale(.3);opacity:0;animation:glpop .5s forwards}.glstars span.on{color:#ffc400;text-shadow:0 3px 0 #b87800}
+@keyframes glpop{to{transform:scale(1);opacity:1}}
+@keyframes glp{50%{transform:scale(1.07)}}
+@media (prefers-reduced-motion:reduce){.glt.cur,.glstars span{animation:none;opacity:1;transform:none}}
+.gi.hasimg{background:none!important;width:68px!important;height:68px!important;flex:none}
+.gi.hasimg svg{display:none}
+.gimg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
 .rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
 .rev svg{width:26px;height:26px;color:var(--blue);flex:none}
 .rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
@@ -1005,7 +1021,132 @@ e7:{w:[["goian","arriba"],["behean","abajo"],["zabala","ancho"],["estua","estrec
  f:[{s:"Handia eta ___ aurkakoak dira",es:"Grande y pequeño son opuestos",o:["txikia","zaharra","berria"],a:["txikia"],w:"handia ↔ txikia."}],
  tw:[{es:"Grande",ok:["Handia"]},{es:"Nuevo",ok:["Berria"]},{es:"Caro",ok:["Garestia"]},{es:"Fácil",ok:["Erraza"]}]}
 };
-function mergeExt(l){var x=EXT[l.id];if(!x)return;["w","p","f","tw","d"].forEach(function(k){if(x[k])l[k]=(l[k]||[]).concat(x[k])})}
+var EXT2={
+n11:{p:[["Hirurogei urte ditut","Tengo sesenta años"],["Laurogei euro dira","Son ochenta euros"]],
+ f:[{s:"Hogei eta hogei ___ dira",es:"Veinte y veinte son cuarenta",o:["berrogei","hirurogei","hogeita hamar"],a:["berrogei"],w:"20 + 20 = 40: berrogei."}],
+ tw:[{es:"Cuarenta",ok:["Berrogei"]},{es:"Cien",ok:["Ehun"]},{es:"Mil",ok:["Mila"]},{es:"Ochenta",ok:["Laurogei"]}],
+ d:[{bot:"Zenbat urte dituzu?",es:"¿Cuántos años tienes?",re:"urte ditut$",ok:["Hogei urte ditut","Berrogei urte ditut"],model:"Hogeita bost urte ditut."}]},
+n12:{p:[["Gaur urriaren hogeita bata da","Hoy es veintiuno de octubre"],["Bihar abenduaren bata da","Mañana es uno de diciembre"]],
+ f:[{s:"Gaur ekainaren ___ da",es:"Hoy es cinco de junio",o:["bosta","bost","bosgarrena"],a:["bosta"],w:"Fecha: número + a."}],
+ tw:[{es:"Hoy es diez de noviembre",ok:["Gaur azaroaren hamarra da"]},{es:"La fecha",ok:["Data"]}],
+ d:[{bot:"Zer egun da gaur?",es:"¿Qué día es hoy?",re:"gaur .* da$",ok:["Gaur azaroaren hamarra da"],model:"Gaur azaroaren hamarra da."}]},
+n1:{p:[["Atzo ni nekatuta nengoen","Ayer yo estaba cansado"],["Haiek ikasleak ziren","Ellos eran estudiantes"]],
+ f:[{s:"Atzo etxean ___",es:"Ayer estaba en casa",o:["nengoen","nintzen","nago"],a:["nengoen"],w:"Lugar en pasado: nengoen."},{s:"Ni ikaslea ___",es:"Yo era estudiante",o:["nintzen","nengoen","naiz"],a:["nintzen"],w:"Identidad en pasado: nintzen."}],
+ tw:[{es:"Yo era estudiante",ok:["Ni ikaslea nintzen","Ikaslea nintzen"]},{es:"Ayer estaba en casa",ok:["Atzo etxean nengoen","Etxean nengoen"]}],
+ d:[{bot:"Non zeunden atzo?",es:"¿Dónde estabas ayer?",re:"nengoen$",ok:["Etxean nengoen","Atzo etxean nengoen"],model:"Atzo etxean nengoen."}]},
+n1b:{p:[["Gero etxean egongo naiz","Luego estaré en casa"]],
+ f:[{s:"Bihar etxean ___ naiz",es:"Mañana estaré en casa",o:["egongo","izango","nago"],a:["egongo"],w:"Futuro de egon: egongo."}],
+ tw:[{es:"Mañana estaré en casa",ok:["Bihar etxean egongo naiz"]}]},
+n2:{p:[["Atzo kafea edan nuen","Ayer bebí café"],["Zer ikusi zenuen?","¿Qué viste?"]],
+ f:[{s:"Atzo liburu bat ___ nuen",es:"Ayer leí un libro",o:["irakurri","irakurtzen","irakurriko"],a:["irakurri"],w:"Pasado: participio + nuen."}],
+ tw:[{es:"Ayer comí pan",ok:["Atzo ogia jan nuen"]},{es:"Ayer bebí agua",ok:["Atzo ura edan nuen"]}],
+ d:[{bot:"Zer jan zenuen atzo?",es:"¿Qué comiste ayer?",re:"jan nuen$",ok:["Ogia jan nuen","Arraina jan nuen"],model:"Arraina jan nuen."}]},
+n3:{p:[["Bihar lan egingo dut","Mañana trabajaré"],["Hurrengo astean etorriko naiz","Vendré la semana próxima"]],
+ f:[{s:"Bihar etxera ___ naiz",es:"Mañana iré a casa",o:["joango","joan","joaten"],a:["joango"],w:"Futuro: -ko / -go."},{s:"Gero ogia ___ dut",es:"Luego compraré pan",o:["erosiko","erosi","erosten"],a:["erosiko"],w:"Futuro: erosiko dut."}],
+ tw:[{es:"Mañana trabajaré",ok:["Bihar lan egingo dut"]},{es:"Iré a casa",ok:["Etxera joango naiz"]}],
+ d:[{bot:"Zer egingo duzu bihar?",es:"¿Qué harás mañana?",re:"(ko|go) (dut|naiz)$",ok:["Lan egingo dut","Etxera joango naiz"],model:"Lan egingo dut."}]},
+c1:{p:[["Ni lanetik nator","Vengo del trabajo"],["Zu eskolan zaude","Tú estás en la escuela"]],
+ f:[{s:"Ni eskola___ noa",es:"Voy a la escuela",o:["ra","n","tik"],a:["ra"],w:"-ra = a."},{s:"Ni etxe___ nator",es:"Vengo de casa",o:["tik","ra","an"],a:["tik"],w:"-tik = desde / de."}],
+ tw:[{es:"¿De dónde vienes?",ok:["Nondik zatoz?"]},{es:"Vengo de casa",ok:["Etxetik nator"]},{es:"¿Adónde vas?",ok:["Nora zoaz?"]}],
+ d:[{bot:"Nora zoaz?",es:"¿Adónde vas?",re:"noa$",ok:["Etxera noa","Hirira noa"],model:"Hirira noa."}]},
+c2:{p:[["Hau niretzat da","Esto es para mí"],["Zurekin hitz egin nahi dut","Quiero hablar contigo"]],
+ f:[{s:"Hau ___ da",es:"Esto es para mí",o:["niretzat","nirekin","niri"],a:["niretzat"],w:"-tzat = para."},{s:"___ joango naiz",es:"Iré contigo",o:["Zurekin","Zuretzat","Zuri"],a:["Zurekin"],w:"-rekin = con."}],
+ tw:[{es:"Con mamá",ok:["Amarekin"]},{es:"Para ti",ok:["Zuretzat"]},{es:"Conmigo",ok:["Nirekin"]}],
+ d:[{bot:"Norekin zaude?",es:"¿Con quién estás?",re:"rekin",ok:["Amarekin nago","Lagunarekin nago"],model:"Amarekin nago."}]},
+c3:{p:[["Medikuarengana joan naiz","He ido al médico"],["Lagunarengandik nator","Vengo de casa del amigo"]],
+ f:[{s:"Ama___ noa",es:"Voy donde mamá",o:["rengana","ra","rekin"],a:["rengana"],w:"-rengana = hacia una persona."}],
+ tw:[{es:"Voy donde el médico",ok:["Medikuarengana noa"]},{es:"En euskera",ok:["Euskaraz"]}],
+ d:[{bot:"Norengana zoaz?",es:"¿Adónde (a quién) vas?",re:"rengana noa$",ok:["Medikuarengana noa","Amarengana noa"],model:"Medikuarengana noa."}]},
+n4:{p:[["Goizean dutxatzen naiz","Por la mañana me ducho"],["Gauean oheratzen naiz","Por la noche me acuesto"]],
+ f:[{s:"Goizean ___ naiz",es:"Por la mañana me levanto",o:["jaikitzen","jaiki","jaikiko"],a:["jaikitzen"],w:"Rutina: -tzen."},{s:"Gauean ___ dugu",es:"Por la noche cenamos",o:["afaltzen","afaldu","afalduko"],a:["afaltzen"],w:"Rutina: -tzen."}],
+ tw:[{es:"Me levanto a las siete",ok:["Zazpietan jaikitzen naiz"]},{es:"Desayuno",ok:["Gosaltzen dut"]}],
+ d:[{bot:"Zer ordutan jaikitzen zara?",es:"¿A qué hora te levantas?",re:"jaikitzen naiz$",ok:["Zazpietan jaikitzen naiz","Seietan jaikitzen naiz"],model:"Zazpietan jaikitzen naiz."}]},
+n5:{p:[["Zortziak dira","Son las ocho"],["Ordu bata da","Es la una"]],
+ f:[{s:"Zer ordu ___?",es:"¿Qué hora es?",o:["da","dut","dago"],a:["da"],w:"«Zer ordu da?»"},{s:"Hamarrak ___",es:"Son las diez",o:["dira","da","dut"],a:["dira"],w:"Plural: dira."}],
+ tw:[{es:"Son las tres",ok:["Hiruak dira"]},{es:"¿Qué hora es?",ok:["Zer ordu da?"]}],
+ d:[{bot:"Zer ordu da?",es:"¿Qué hora es?",re:"dira$|da$",ok:["Hiruak dira","Ordu bata da"],model:"Bostak dira."}]},
+n6:{p:[["Ama sukaldaria da","Mi madre es cocinera"],["Aita ingeniaria da","Mi padre es ingeniero"],["Bulegoan lan egiten dut","Trabajo en la oficina"]],
+ f:[{s:"Medikua ospitalean ___ egiten du",es:"El médico trabaja en el hospital",o:["lan","jan","joan"],a:["lan"],w:"lan egin = trabajar."}],
+ tw:[{es:"Soy médico",ok:["Medikua naiz"]},{es:"El camarero",ok:["Zerbitzaria"]},{es:"El abogado",ok:["Abokatua"]}],
+ d:[{bot:"Zer egiten duzu?",es:"¿A qué te dedicas?",re:"naiz$|lan egiten dut",ok:["Medikua naiz","Irakaslea naiz"],model:"Irakaslea naiz."}]},
+n7:{p:[["Zenbat balio du honek?","¿Cuánto cuesta esto?"],["Poltsa bat nahi dut","Quiero una bolsa"],["Dirua behar dut","Necesito dinero"]],
+ f:[{s:"Hau ___ da",es:"Esto es barato",o:["merkea","garestia","handia"],a:["merkea"],w:"merke = barato."},{s:"Zenbat ___ du?",es:"¿Cuánto cuesta?",o:["balio","da","dut"],a:["balio"],w:"balio = valor, costar."}],
+ tw:[{es:"Es caro",ok:["Garestia da","Hau garestia da"]},{es:"Es barato",ok:["Merkea da","Hau merkea da"]},{es:"El dinero",ok:["Dirua"]}],
+ d:[{bot:"Zer nahi duzu?",es:"¿Qué quiere?",re:"nahi dut$",ok:["Hau erosi nahi dut","Poltsa bat nahi dut"],model:"Hau erosi nahi dut."}]},
+n8:{p:[["Farmaziara noa","Voy a la farmacia"],["Atseden hartu behar dut","Tengo que descansar"],["Sendagaia hartu behar dut","Tengo que tomar la medicina"]],
+ f:[{s:"Gaizki ___ naiz",es:"Me siento mal",o:["sentitzen","sentitu","sentituko"],a:["sentitzen"],w:"gaizki sentitzen naiz."},{s:"Buruko ___ dut",es:"Tengo dolor de cabeza",o:["mina","sukarra","dena"],a:["mina"],w:"mina = dolor."}],
+ tw:[{es:"Estoy enfermo",ok:["Gaixo nago"]},{es:"Tengo fiebre",ok:["Sukarra dut"]},{es:"Voy al médico",ok:["Medikuarengana noa"]}],
+ d:[{bot:"Zer duzu?",es:"¿Qué te pasa?",re:"dut$|nago$",ok:["Sukarra dut","Gaixo nago","Buruko mina dut"],model:"Buruko mina dut."}]},
+n9:{p:[["Ez dut ulertzen, mesedez errepikatu","No entiendo, repita por favor"],["Zer esan nahi du?","¿Qué quiere decir?"]],
+ f:[{s:"Poliki hitz ___, mesedez",es:"Habla despacio, por favor",o:["egin","egiten","egingo"],a:["egin"],w:"Petición: hitz egin."},{s:"Ez dut ___",es:"No entiendo",o:["ulertzen","ulertu","ulertuko"],a:["ulertzen"],w:"ez dut ulertzen."}],
+ tw:[{es:"No entiendo",ok:["Ez dut ulertzen"]},{es:"Repite, por favor",ok:["Errepikatu, mesedez","Errepikatu mesedez"]},{es:"Despacio",ok:["Poliki"]}],
+ d:[{bot:"Ulertzen duzu?",es:"¿Entiendes?",re:"ulertzen",ok:["Bai, ulertzen dut","Ez dut ulertzen"],model:"Bai, ulertzen dut."}]},
+n10:{p:[["Niri txakurrak gustatzen zaizkit","Me gustan los perros"],["Zuri zer gustatzen zaizu?","¿Qué te gusta a ti?"]],
+ f:[{s:"Niri kafea ___ zait",es:"Me gusta el café",o:["gustatzen","gustatu","gustuko"],a:["gustatzen"],w:"gustatzen zait = me gusta."},{s:"Niri txakurrak gustatzen ___",es:"Me gustan los perros",o:["zaizkit","zait","zaizu"],a:["zaizkit"],w:"Plural: zaizkit."}],
+ tw:[{es:"Me gusta la música",ok:["Niri musika gustatzen zait"]},{es:"Te quiero",ok:["Maite zaitut"]}],
+ d:[{bot:"Zer gustatzen zaizu?",es:"¿Qué te gusta?",re:"gustatzen zait",ok:["Niri musika gustatzen zait","Kafea gustatzen zait"],model:"Niri musika gustatzen zait."}]},
+m1:{p:[["Hau hori baino merkeagoa da","Esto es más barato que eso"],["Ane ni baino gazteagoa da","Ane es más joven que yo"]],
+ f:[{s:"Etxe hau hori ___ handiagoa da",es:"Esta casa es más grande que esa",o:["baino","bezain","eta"],a:["baino"],w:"más ... que: baino."},{s:"Hau hori ___ polita da",es:"Esto es tan bonito como eso",o:["bezain","baino","eta"],a:["bezain"],w:"tan ... como: bezain."}],
+ tw:[{es:"Más grande",ok:["Handiago","Handiagoa"]},{es:"Yo soy más alto que tú",ok:["Ni zu baino altuagoa naiz"]}],
+ d:[{bot:"Zein da handiagoa?",es:"¿Cuál es más grande?",re:"handiagoa",ok:["Hau handiagoa da","Hori handiagoa da"],model:"Hau handiagoa da."}]},
+m2:{p:[["Eseri, mesedez","Siéntate, por favor"],["Begiratu hemen","Mira aquí"],["Zatoz nirekin","Ven conmigo"]],
+ f:[{s:"___ atea, mesedez",es:"Cierra la puerta, por favor",o:["Itxi","Ireki","Eseri"],a:["Itxi"],w:"itxi = cerrar."},{s:"___ hona",es:"Ven aquí",o:["Etorri","Joan","Eseri"],a:["Etorri"],w:"etorri = venir."}],
+ tw:[{es:"Abre la ventana",ok:["Ireki leihoa"]},{es:"Espera un poco",ok:["Itxaron pixka bat"]},{es:"Vamos a casa",ok:["Goazen etxera"]}]},
+m3:{p:[["Nire izeba Bilbon bizi da","Mi tía vive en Bilbao"],["Nire osabak txakur bat du","Mi tío tiene un perro"]],
+ f:[{s:"Nire aitaren anaia nire ___ da",es:"El hermano de mi padre es mi tío",o:["osaba","izeba","aitona"],a:["osaba"],w:"osaba = tío."}],
+ tw:[{es:"La tía",ok:["Izeba"]},{es:"El tío",ok:["Osaba"]},{es:"Mi abuela",ok:["Nire amona"]}]},
+m4:{p:[["Zer ordutan irteten da autobusa?","¿A qué hora sale el autobús?"],["Maleta handia dut","Tengo una maleta grande"]],
+ f:[{s:"Trena zortzietan ___",es:"El tren llega a las ocho",o:["iristen da","irteten da","joaten da"],a:["iristen da"],w:"iritsi = llegar."},{s:"Gela bat nahi ___",es:"Quiero una habitación",o:["dut","naiz","da"],a:["dut"],w:"nahi dut = quiero."}],
+ tw:[{es:"Quiero un billete",ok:["Txartel bat nahi dut","Billete bat nahi dut"]},{es:"La maleta",ok:["Maleta"]},{es:"La reserva",ok:["Erreserba"]}],
+ d:[{bot:"Zer nahi duzu?",es:"¿Qué desea?",re:"nahi dut$",ok:["Gela bat nahi dut","Txartel bat nahi dut"],model:"Gela bat nahi dut."}]},
+m5:{p:[["Dantzatzea gustatzen zait","Me gusta bailar"],["Aneri kantatzea gustatzen zaio","A Ane le gusta cantar"]],
+ f:[{s:"Aneri dantzatzea gustatzen ___",es:"A Ane le gusta bailar",o:["zaio","zait","zaizu"],a:["zaio"],w:"A él / ella: zaio."}],
+ tw:[{es:"Me gusta cantar",ok:["Kantatzea gustatzen zait"]},{es:"Me gusta viajar",ok:["Bidaiatzea gustatzen zait"]}],
+ d:[{bot:"Zer gustatzen zaizu?",es:"¿Qué te gusta?",re:"tzea gustatzen zait$",ok:["Irakurtzea gustatzen zait","Dantzatzea gustatzen zait"],model:"Irakurtzea gustatzen zait."}]},
+m6:{p:[["Ez dakit zer den","No sé qué es"],["Zuk euskaraz hitz egiten dakizu","Tú sabes hablar euskera"]],
+ f:[{s:"Ni igeri egiten ___",es:"Yo sé nadar",o:["dakit","dut","naiz"],a:["dakit"],w:"saber: dakit."},{s:"Anek sukaldatzen ___",es:"Ane sabe cocinar",o:["daki","dakit","dakizu"],a:["daki"],w:"él / ella: daki."}],
+ tw:[{es:"No sé",ok:["Ez dakit"]},{es:"Sé nadar",ok:["Igeri egiten dakit"]},{es:"Sé hablar euskera",ok:["Euskaraz hitz egiten dakit"]}],
+ d:[{bot:"Euskaraz hitz egiten dakizu?",es:"¿Sabes hablar euskera?",re:"dakit$",ok:["Bai, euskaraz hitz egiten dakit","Pixka bat dakit","Ez dakit"],model:"Bai, pixka bat dakit."}]},
+d1:{p:[["Uste dut euria ari duela","Creo que está lloviendo"],["Badakit zu etxean zaudela","Sé que estás en casa"]],
+ f:[{s:"Uste dut Ane etxean ___",es:"Creo que Ane está en casa",o:["dagoela","dago","dagoen"],a:["dagoela"],w:"-ela = que."}],
+ tw:[{es:"Creo que es difícil",ok:["Uste dut zaila dela"]},{es:"Sé que estás en casa",ok:["Badakit etxean zaudela"]}],
+ d:[{bot:"Zer uste duzu?",es:"¿Qué crees?",re:"uste dut",ok:["Uste dut ondo dagoela","Uste dut zaila dela"],model:"Uste dut zaila dela."}]},
+d2:{p:[["Hemen bizi den gizona","El hombre que vive aquí"],["Ikusi duzun pelikula polita da","La película que has visto es bonita"]],
+ f:[{s:"Hemen bizi ___ gizona",es:"El hombre que vive aquí",o:["den","da","dela"],a:["den"],w:"Relativa: -en."}],
+ tw:[{es:"El libro que he leído",ok:["Irakurri dudan liburua"]},{es:"El hombre que está en casa",ok:["Etxean dagoen gizona"]}]},
+d3:{p:[["Nekatuta nago, baina lanera noa","Estoy cansado, pero voy a trabajar"],["Gaixo nago, beraz etxean geratuko naiz","Estoy enfermo, así que me quedaré en casa"]],
+ f:[{s:"Euskara zaila da, ___ polita da",es:"El euskera es difícil, pero bonito",o:["baina","beraz","ere"],a:["baina"],w:"baina = pero."},{s:"Gaixo nago, ___ etxean nago",es:"Estoy enfermo, así que estoy en casa",o:["beraz","baina","zeren"],a:["beraz"],w:"beraz = así que."}],
+ tw:[{es:"pero",ok:["Baina"]},{es:"así que",ok:["Beraz"]},{es:"además",ok:["Gainera"]}],
+ d:[{bot:"Zergatik zaude etxean?",es:"¿Por qué estás en casa?",re:"lako",ok:["Gaixo nagoelako","Nekatuta nagoelako"],model:"Gaixo nagoelako."}]},
+d4:{p:[["Denbora banu, bidaiatuko nuke","Si tuviera tiempo, viajaría"],["Ur bat nahi nuke, mesedez","Querría un agua, por favor"]],
+ f:[{s:"Kafe bat ___ nuke",es:"Querría un café",o:["nahi","behar","gustatu"],a:["nahi"],w:"nahi nuke = querría."},{s:"Dirua ___, etxea erosiko nuke",es:"Si tuviera dinero, compraría una casa",o:["banu","dut","nuke"],a:["banu"],w:"Condición: banu."}],
+ tw:[{es:"Querría un café",ok:["Kafe bat nahi nuke"]},{es:"Si tuviera dinero",ok:["Dirua banu"]}],
+ d:[{bot:"Zer nahi zenuke?",es:"¿Qué querría?",re:"nuke$",ok:["Kafe bat nahi nuke","Ur bat nahi nuke"],model:"Kafe bat nahi nuke."}]},
+d5:{p:[["Liburu bat eman dizut","Te he dado un libro"],["Laguntzen dizut","Te ayudo"]],
+ f:[{s:"Amari mezua ___ diot",es:"He enviado un mensaje a mamá",o:["bidali","bidaltzen","bidaliko"],a:["bidali"],w:"bidali = enviar."}],
+ tw:[{es:"Te he enviado un mensaje",ok:["Mezu bat bidali dizut"]},{es:"¿Me ayudas?",ok:["Laguntzen didazu?"]}],
+ d:[{bot:"Laguntzen didazu?",es:"¿Me ayudas?",re:"bai|noski",ok:["Bai, noski","Bai","Noski"],model:"Bai, noski."}]},
+a1:{p:[["Hau erosi dezaket","Puedo comprar esto"]],
+ f:[{s:"Euskaraz hitz egin ___",es:"Puedo hablar euskera",o:["dezaket","dut","naiz"],a:["dezaket"],w:"poder: dezaket."},{s:"Atea ireki ___?",es:"¿Puedes abrir la puerta?",o:["dezakezu","dezaket","dezake"],a:["dezakezu"],w:"tú: dezakezu."}],
+ tw:[{es:"Puedo ayudar",ok:["Lagundu dezaket"]},{es:"No puedo",ok:["Ezin dut"]}],
+ d:[{bot:"Lagundu dezaket?",es:"¿Puedo ayudar?",re:"bai|eskerrik asko|mesedez",ok:["Bai, mesedez","Eskerrik asko","Bai"],model:"Bai, mesedez."}]},
+a2:{p:[["Zer egiten ari da?","¿Qué está haciendo?"],["Ikasten ari naiz","Estoy estudiando"]],
+ f:[{s:"Ni lan egiten ___ naiz",es:"Estoy trabajando",o:["ari","egiten","dago"],a:["ari"],w:"ari naiz = estoy (haciendo)."}],
+ tw:[{es:"Estoy estudiando",ok:["Ikasten ari naiz"]},{es:"Estamos comiendo",ok:["Jaten ari gara"]}],
+ d:[{bot:"Zer egiten ari zara?",es:"¿Qué estás haciendo?",re:"ari naiz$",ok:["Lan egiten ari naiz","Ikasten ari naiz"],model:"Euskara ikasten ari naiz."}]},
+a3:{p:[["Ura edatera noa","Voy a beber agua"],["Euskara ikastera etorri naiz","He venido a estudiar euskera"]],
+ f:[{s:"Ogia ___ noa",es:"Voy a comprar pan",o:["erostera","erosteko","erosten"],a:["erostera"],w:"Con joan / etorri: -tzera."}],
+ tw:[{es:"Voy a comprar pan",ok:["Ogia erostera noa"]},{es:"Para estudiar",ok:["Ikasteko"]}],
+ d:[{bot:"Nora zoaz?",es:"¿Adónde vas?",re:"era noa$",ok:["Ogia erostera noa","Lagunak ikustera noa"],model:"Ogia erostera noa."}]},
+a4:{p:[["Afaldu ondoren, telebista ikusten dut","Después de cenar, veo la tele"]],
+ f:[{s:"Jan ___, kafea hartzen dut",es:"Después de comer, tomo café",o:["ondoren","aurretik","bitartean"],a:["ondoren"],w:"ondoren = después."},{s:"Lanera joan ___, gosaltzen dut",es:"Antes de ir al trabajo, desayuno",o:["aurretik","ondoren","naizenean"],a:["aurretik"],w:"aurretik = antes."}],
+ tw:[{es:"Después",ok:["Ondoren"]},{es:"Antes",ok:["Aurretik"]}]},
+a5:{p:[["Ez dut inor ikusi","No he visto a nadie"],["Ez dago ezer","No hay nada"]],
+ f:[{s:"Ez dut ___ ikusi",es:"No he visto nada",o:["ezer","inor","inoiz"],a:["ezer"],w:"ezer = nada."},{s:"Ez dago ___ etxean",es:"No hay nadie en casa",o:["inor","ezer","inon"],a:["inor"],w:"inor = nadie."}],
+ tw:[{es:"Nada",ok:["Ezer ez"]},{es:"Nunca he estado aquí",ok:["Inoiz ez naiz hemen egon"]}],
+ d:[{bot:"Zer ikusi duzu?",es:"¿Qué has visto?",re:"ez dut ezer ikusi|ikusi dut",ok:["Ez dut ezer ikusi","Telebista ikusi dut"],model:"Ez dut ezer ikusi."}]}
+};
+function mergeExt(l){var x=EXT[l.id],y=EXT2[l.id];if(y){x=x||{};var m={};["w","p","f","tw","d"].forEach(function(k){m[k]=(x[k]||[]).concat(y[k]||[])});x=m}if(!x)return;["w","p","f","tw","d"].forEach(function(k){if(x[k])l[k]=(l[k]||[]).concat(x[k])})}
 UNITS.forEach(function(u){u.lv=u.lv||1;u.L.forEach(function(l){mergeExt(l);l.u=u.id;l.c=u.c;l.lv=u.lv;LESSONS.push(l);
   l.w.forEach(function(x){WORDS.push({eu:x[0],es:x[1],em:x[2]||"",lid:l.id})});
   l.p.forEach(function(x){PHR.push({eu:x[0],es:x[1],lid:l.id})});});});
@@ -1278,14 +1419,16 @@ function hangTap(c){
   drawEx();
 }
 function startImg(){
-  var pool=shuffle(DICT.slice()),qs=[];
-  pool.slice(0,5).forEach(function(x){qs.push(mkImg(x,false))});
-  pool.slice(5,10).forEach(function(x){qs.push(mkImg(x,true))});
-  startRun({q:qs,title:"¡Imágenes completadas!",xpPer:10,game:"img"});
+  var n=GL&&GL.g==="img"?GL.n:null,tot=n===null?10:6+Math.floor(n/4),ty=n===null?5:Math.min(tot-1,Math.round(tot*n/30)),pool=shuffle(DICT.slice()),qs=[];
+  pool.slice(0,tot-ty).forEach(function(x){qs.push(mkImg(x,false))});
+  pool.slice(tot-ty,tot).forEach(function(x){qs.push(mkImg(x,true))});
+  startRun({q:n===null?qs:shuffle(qs),title:"¡Imágenes completadas!",xpPer:10,game:"img",gl:n!==null});
 }
 function startHang(){
-  var pool=shuffle(DICT.filter(function(x){return /^[a-zñ]+$/.test(x.eu)&&x.eu.length>=4&&x.eu.length<=9})).slice(0,6);
-  startRun({q:pool.map(mkHang),title:"¡Ahorcado completado!",xpPer:12,game:"hang"});
+  var n=GL&&GL.g==="hang"?GL.n:null,all=DICT.filter(function(x){return /^[a-zñ]+$/.test(x.eu)}),cnt=n===null?6:4+Math.floor(n/6);
+  var mn=n===null?4:Math.min(4+Math.floor(n/8),7),mx=n===null?9:Math.min(5+Math.floor(n/3),12);
+  var pool=all.filter(function(x){return x.eu.length>=mn&&x.eu.length<=mx});if(pool.length<cnt)pool=all.filter(function(x){return x.eu.length>=4&&x.eu.length<=9});
+  startRun({q:shuffle(pool).slice(0,cnt).map(mkHang),title:"¡Ahorcado completado!",xpPer:12,game:"hang",gl:n!==null});
 }
 
 var STORY=[
@@ -1347,7 +1490,7 @@ function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dayKey(d){var y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();return y+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd}
 
 /* ---------- estado ---------- */
-function def(){return {pt:{},pa:{},ms:{},urg:0,gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
+function def(){return {gl:{},pt:{},pa:{},ms:{},urg:0,gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
 function load(){try{var j=JSON.parse(localStorage.getItem("hitzez1"));if(j&&typeof j==="object"){var d=def();for(var k in j)d[k]=j[k];if(!d.best)d.best={pairs:0,wordle:0};return d}}catch(e){}return def()}
 var S=load();
 
@@ -1783,9 +1926,52 @@ function gameDone(kind){
   if(kind===dgKey()&&S.dg!==td){S.dg=td;ss.dgn=(ss.dgn||0)+1;S.xp+=DGXP;save();return DGXP}
   save();return 0;
 }
-function startGameKey(g){
+
+/* ---------- niveles con estrellas en los minijuegos ---------- */
+var GL=null,GLN={pairs:25,cross:25,ws:25,frases:25,img:25,hang:25,pron:25,story:3};
+var GLNAME={pairs:"Parejas contrarreloj",cross:"Crucigrama",ws:"Sopa de letras",frases:"Construir frases",story:"Aventura en Donostia",img:"Adivina la imagen",hang:"Ahorcado vasco",pron:"Pronunciación"};
+function glSt(g,i){return (S.gl&&S.gl[g]&&S.gl[g][i])||0}
+function glUnlocked(g,i){return S.open||i===0||glSt(g,i-1)>0}
+function glTotal(g){var t=0;for(var i=0;i<GLN[g];i++)t+=glSt(g,i);return t}
+function glStars(n){return "★".repeat(n)+"☆".repeat(3-n)}
+function glDone(st){
+  if(!GL)return;GL.res=st;
+  if(!S.gl)S.gl={};if(!S.gl[GL.g])S.gl[GL.g]=[];
+  if(st>(S.gl[GL.g][GL.n]||0))S.gl[GL.g][GL.n]=st;
+  save();
+}
+function glInject(html){
+  var st=GL.res,n=GL.n,N=GLN[GL.g],nxt=st>0&&GL.n+1<N;
+  var sh='<div class="glstars" role="img" aria-label="'+st+' de 3 estrellas">'+[1,2,3].map(function(i){return '<span class="'+(i<=st?"on":"")+'" style="animation-delay:'+(i*.2)+'s">★</span>'}).join("")+'</div><p class="hint">'+GLNAME[GL.g]+' · nivel '+(n+1)+(st===0?' · te faltó poco, inténtalo otra vez':'')+'</p>';
+  html=html.replace(/<\/h[12]>/,function(m){return m+sh});
+  var ft='<div class="foot">'+(nxt?'<button class="btn" data-r="glnext">Siguiente nivel</button><div style="height:10px"></div>':'')+'<button class="btn'+(nxt?' sec':'')+'" data-r="glagain">'+(st>0?'Repetir nivel':'Intentarlo otra vez')+'</button><div style="height:10px"></div><button class="btn sec" data-r="leave">Niveles</button></div>';
+  var i=html.lastIndexOf('<div class="foot">');
+  if(i>=0)html=html.slice(0,i)+ft;
+  return html;
+}
+function rGL(){
+  var g=V.gg||"pairs",N=GLN[g],cur=-1,i,h;
+  for(i=0;i<N;i++)if(glUnlocked(g,i)&&!glSt(g,i)){cur=i;break}
+  h='<button class="backlink" data-tab="games">← Juegos</button><div class="glh"><img class="glimg" src="j-'+g+'.png" alt="" onerror="this.remove()"><div><h2 class="sec-h" style="margin:0">'+GLNAME[g]+'</h2><p class="hint">'+glTotal(g)+' / '+(N*3)+' ★ conseguidas</p></div></div><div class="glg">';
+  for(i=0;i<N;i++){
+    var st=glSt(g,i),un=glUnlocked(g,i);
+    h+='<button class="glt '+(st?"done":un?(i===cur?"cur":"open"):"lock")+'"'+(un?' data-act="glv" data-n="'+i+'"':' disabled')+' aria-label="Nivel '+(i+1)+(st?', '+st+' estrellas':'')+'"><span class="gn">'+(un?(i+1):IC.lock)+'</span>'+(un?'<span class="gs">'+glStars(st)+'</span>':'')+'</button>';
+  }
+  return h+'</div>';
+}
+function startFrases(){
+  var n=GL&&GL.g==="frases"?GL.n:null,ps=unlockedPhr();
+  if(n===null)ps=shuffle(ps).slice(0,8);
+  else{var lim=3+Math.floor(n/5),c=ps.filter(function(p){return p.eu.split(" ").length<=lim});if(c.length<5)c=ps;ps=shuffle(c).slice(0,5+Math.floor(n/5))}
+  startRun({q:ps.map(mkBd),title:"¡Frases construidas!",xpPer:10,game:"frases",gl:n!==null});
+}
+function startGameLevel(g,n){
+  GL={g:g,n:n,res:null};V.gg=g;
+  if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory(n);else if(g==="img")startImg();else if(g==="hang")startHang();else if(g==="pron")startPron();else if(g==="frases")startFrases();
+}
+function startGameKey(g){GL=null;
   if(g==="pairs")startPairs();else if(g==="cross")startCross();else if(g==="ws")startWS();else if(g==="story")startStory();else if(g==="img")startImg();else if(g==="hang")startHang();else if(g==="pron")startPron();
-  else if(g==="frases"){var ps=shuffle(unlockedPhr()).slice(0,8).map(mkBd);startRun({q:ps,title:"¡Frases construidas!",xpPer:10,game:"frases"})}
+  else if(g==="frases")startFrases();
 }
 var ACH=[
  {id:"run",n:"Sin fallar",d:"Acierta {n} respuestas seguidas",t:[5,10,20],v:function(){return SS().best}},
@@ -1861,9 +2047,9 @@ function drawBar(){
    +'<div class="chip gm" title="Gemas">'+IC.gem+(S.gems||0)+'</div>'
    +'<div class="chip lv" title="Nivel">Nv '+level()+'</div>';
   $("#lvfill").style.width=(S.xp%100)+"%";
-  $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0])+'">'+n[2]+n[1]+'</button>'}).join("");
+  $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games"))+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -1931,7 +2117,7 @@ function rGames(){
    ["pron","Pronunciación","Di en voz alta frases y palabras: la app te escucha y te dice cuánto se te entiende.",IC.mic,"var(--green-t)","var(--green)",""]
   ];
   var h='<h2 class="sec-h">Juegos</h2><p class="hint" style="margin-bottom:12px">Usan las palabras de las lecciones que ya tienes desbloqueadas.</p>';
-  g.forEach(function(x){h+='<button class="card game" data-act="game" data-g="'+x[0]+'" style="--gc:'+x[4]+';--gk:'+x[5]+'"><span class="gi">'+x[3]+'</span><span style="min-width:0"><h3>'+x[1]+'</h3><p>'+x[2]+'</p>'+x[6]+'</span></button>'});
+  g.forEach(function(x){h+='<button class="card game" data-act="game" data-g="'+x[0]+'" style="--gc:'+x[4]+';--gk:'+x[5]+'"><span class="gi"><img class="gimg" src="j-'+x[0]+'.png" alt="" width="64" height="64" onload="this.parentNode.classList.add(\'hasimg\')" onerror="this.remove()">'+x[3]+'</span><span style="min-width:0"><h3>'+x[1]+'</h3><p>'+x[2]+'</p>'+x[6]+'</span></button>'});
   return h;
 }
 function rVocab(){
@@ -2049,7 +2235,7 @@ function startPron(){
   var ps=unlockedPhr();var ws=uniqEs(unlockedWords().filter(function(w){return w.eu.indexOf(" ")<0&&w.eu.indexOf("?")<0}));
   var q=shuffle(ps).slice(0,6).map(mkSay).concat(shuffle(ws).slice(0,4).map(function(w){return mkSay({eu:w.eu,es:w.es})}));
   if(q.length<3)q=shuffle(WORDS.slice(0,10)).slice(0,6).map(function(w){return mkSay({eu:w.eu,es:w.es})});
-  startRun({q:q,title:"¡Pronunciación completada!",xpPer:10,game:"pron"});
+  if(GL&&GL.g==="pron")q=q.slice(0,5+Math.floor(GL.n/5));startRun({q:q,title:"¡Pronunciación completada!",xpPer:10,game:"pron",gl:!!(GL&&GL.g==="pron")});
 }
 
 function mkTw(x){return {t:"tw",es:x.es,ok:x.ok}}
@@ -2157,8 +2343,8 @@ function examsCard(){
 /* ---------- escenario ---------- */
 var R=null,G=null,ST=null,TM=null;
 function showStage(){$("#home").hidden=true;$("#stage").hidden=false;window.scrollTo(0,0);requestAnimationFrame(animStage)}
-function leave(){clearInterval(TM);TM=null;R=null;G=null;CW=null;WS=null;ST=null;$("#stage").hidden=true;$("#home").hidden=false;V.anim=true;render();window.scrollTo(0,0)}
-function stage(html){$("#stage").innerHTML='<div class="sw">'+html+'</div>';if(html.indexOf('class="res"')>=0)animStage()}
+function leave(){GL=null;clearInterval(TM);TM=null;R=null;G=null;CW=null;WS=null;ST=null;$("#stage").hidden=true;$("#home").hidden=false;V.anim=true;render();window.scrollTo(0,0)}
+function stage(html){if(GL&&GL.res!=null&&html.indexOf('class="res"')>=0)html=glInject(html);$("#stage").innerHTML='<div class="sw">'+html+'</div>';if(html.indexOf('class="res"')>=0)animStage()}
 function animStage(){var e=document.querySelector("#stage .sw");if(!e)return;e.classList.remove("in");void e.offsetWidth;e.classList.add("in")}
 function topbar(pct){return '<div class="top"><button class="x" data-r="quit" aria-label="Salir">×</button>'+(pct===null?'<div style="flex:1"></div>':'<div class="pb" role="progressbar" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>')+'</div>'}
 
@@ -2367,7 +2553,7 @@ function mtTap(side,v){
 function finishRun(){
   if(R.cfg.exam)return finishExam();
   var tot=R.ok+R.bad,acc=tot?R.ok/tot:1,xp=R.ok*(R.cfg.xpPer||10)+(R.cfg.bonus||0);
-  var up=addXP(xp);if(R.cfg.onDone)R.cfg.onDone(acc);if(R.cfg.title==="¡Lección completada!"&&acc===1)SS().perf++;var gb=R.cfg.game?gameDone(R.cfg.game):0;checkAch();save();
+  var up=addXP(xp);if(R.cfg.onDone)R.cfg.onDone(acc);if(R.cfg.gl)glDone(acc>=.9?3:acc>=.7?2:acc>=.5?1:0);if(R.cfg.title==="¡Lección completada!"&&acc===1)SS().perf++;var gb=R.cfg.game?gameDone(R.cfg.game):0;checkAch();save();
   var pct=Math.round(acc*100),gp=(R.cfg.title==="¡Lección completada!")?goalTick():null,secs=Math.max(1,Math.round((Date.now()-(R.t0||Date.now()))/1000)),tm=Math.floor(secs/60)+":"+("0"+secs%60).slice(-2);
   var mood=acc>=.8?"cheer":acc>=.6?"strong":"sad",ttl=R.cfg.title||"¡Bien hecho!",enc=acc>=.8?"":(acc>=.6?"Buen intento: con otra pasada saldrá mejor.":"Hoy ha costado. Repasa estas palabras y vuelve a intentarlo.");
   stage('<div class="res">'+mascot(130,mood)+'<h1 style="font-size:30px">'+ttl+'</h1>'+(enc?'<p class="hint">'+enc+'</p>':'')+(R.mst?'<p class="q" style="color:var(--ok)">¡'+R.mst+(R.mst>1?' elementos dominados!':' elemento dominado!')+'</p>':'')+(gb?'<p class="q" style="color:var(--sun-d)">Reto del día cumplido: +'+gb+' XP</p>':'')+(up?'<p class="q" style="color:var(--ok)">¡Subes al nivel '+level()+': '+lvTitle()[1]+'!</p>':'')
@@ -2379,18 +2565,19 @@ function finishRun(){
 function startPairs(){
   var pool=uniqEs(unlockedWords().filter(function(w){return w.eu.indexOf(" ")<0&&w.eu.indexOf("?")<0}));
   if(pool.length<5)pool=uniqEs(WORDS.slice(0,10));
-  G={pool:pool,t:60,score:0,combo:0,pairs:0,sl:null,sr:null,fl:null,over:false};
+  var gn=GL&&GL.g==="pairs"?GL.n:null,tt=gn===null?60:Math.max(40,60-2*Math.floor(gn/3));
+  G={pool:pool,t:tt,t0:tt,tgt:gn===null?0:6+Math.floor(gn*.7),score:0,combo:0,pairs:0,sl:null,sr:null,fl:null,over:false};
   newSet();showStage();drawPairs();
   clearInterval(TM);TM=setInterval(function(){
     if(!G||G.over)return;G.t--;
-    var a=$("#tmt"),b=$("#tmb");if(a)a.textContent=G.t+"s";if(b)b.style.width=Math.min(100,G.t/60*100)+"%";
+    var a=$("#tmt"),b=$("#tmb");if(a)a.textContent=G.t+"s";if(b)b.style.width=Math.min(100,G.t/(G.t0||60)*100)+"%";
     if(G.t<=0)endPairs();
   },1000);
 }
 function newSet(){var ws=shuffle(G.pool).slice(0,5);G.ws=ws;G.L=shuffle(ws.map(function(w){return w.eu}));G.R=shuffle(ws.map(function(w){return w.es}));G.dl=[];G.dr=[]}
 function drawPairs(){
   var g=G;
-  var h=topbar(null)+'<div class="ex"><div class="hud"><span>'+g.score+' pts</span><div class="tm"><i id="tmb" style="width:'+Math.min(100,g.t/60*100)+'%"></i></div><span id="tmt">'+g.t+'s</span></div>'
+  var h=topbar(null)+'<div class="ex"><div class="hud"><span>'+g.score+' pts</span><div class="tm"><i id="tmb" style="width:'+Math.min(100,g.t/(g.t0||60)*100)+'%"></i></div><span id="tmt">'+g.t+'s</span></div>'
    +'<p class="hint">Une cada palabra con su traducción. Cada set completo suma 6 segundos. Los combos dan puntos extra.</p><div class="mt"><div class="col">'
    +g.L.map(function(v){var c=g.dl.indexOf(v)>=0?"done":(g.sl===v?"sel":(g.fl&&g.fl[0]===v?"flash":""));return '<button class="opt '+c+'" data-r="pl" data-v="'+E(v)+'">'+E(v)+'</button>'}).join("")
    +'</div><div class="col">'
@@ -2413,7 +2600,7 @@ function pairTap(side,v){
   drawPairs();
 }
 function endPairs(){
-  var g=G;g.over=true;clearInterval(TM);TM=null;
+  var g=G;g.over=true;clearInterval(TM);TM=null;if(GL&&GL.g==="pairs"&&g.tgt)glDone(g.pairs>=g.tgt*1.8?3:g.pairs>=g.tgt*1.4?2:g.pairs>=g.tgt?1:0);
   var xp=Math.min(60,g.pairs*2),rec2=g.score>S.best.pairs;if(rec2)S.best.pairs=g.score;var gb=gameDone("pairs"),up=addXP(xp);checkAch();
   stage('<div class="res">'+mascot(130,"cheer")+'<h1 style="font-size:30px">¡Tiempo!</h1>'+(rec2?'<p class="q" style="color:var(--sun-d)">¡Nuevo récord!</p>':'')+(gb?'<p class="q" style="color:var(--sun-d)">Reto del día cumplido: +'+gb+' XP</p>':'')+(up?'<p class="q" style="color:var(--ok)">¡Subes al nivel '+level()+': '+lvTitle()[1]+'!</p>':'')
    +'<div class="stat"><div><b>'+g.score+'</b><span>puntos</span></div><div><b>'+g.pairs+'</b><span>parejas</span></div><div><b>+'+xp+'</b><span>XP ganados</span></div><div><b>'+S.best.pairs+'</b><span>récord</span></div></div></div><div class="foot"><button class="btn" data-r="again">Jugar otra vez</button><div style="height:10px"></div><button class="btn sec" data-r="leave">Salir</button></div>');
@@ -2421,7 +2608,7 @@ function endPairs(){
 
 /* ---------- fin de juego ---------- */
 var CW=null,WS=null,LAST="";
-function endGame(title,xp,note){
+function endGame(title,xp,note,st){if(GL&&st!=null)glDone(st);
   var gb=gameDone(LAST),up=addXP(xp);checkAch();
   stage('<div class="res">'+mascot(130,"cheer")+'<h1 style="font-size:30px">'+title+'</h1>'+(up?'<p class="q" style="color:var(--ok)">¡Subes al nivel '+level()+': '+lvTitle()[1]+'!</p>':'')+(note?'<p class="hint">'+note+'</p>':'')+(gb?'<p class="q" style="color:var(--sun-d)">Reto del día cumplido: +'+gb+' XP</p>':'')
    +'<div class="stat"><div><b>+'+xp+'</b><span>XP ganados</span></div></div></div><div class="foot"><button class="btn" data-r="again">Jugar otro</button><div style="height:10px"></div><button class="btn sec" data-r="leave">Salir</button></div>');
@@ -2490,7 +2677,7 @@ function genCross(pool,target){
 }
 function startCross(){
   LAST="cross";
-  var pp=gamePool(/^[a-z]{3,9}$/,9),res=genCross(pp.arr,7);
+  var pp=gamePool(/^[a-z]{3,9}$/,9),res=genCross(pp.arr,GL&&GL.g==="cross"?4+Math.floor(GL.n/5):7);
   if(!res||res.placed.length<3){toast("No se pudo crear el crucigrama. Inténtalo otra vez.");return}
   var b=res.b,words=res.placed.map(function(p){return {eu:p.w.eu,es:p.w.es,r:p.r-b.r0,c:p.c-b.c0,d:p.d,len:p.w.eu.length}});
   words.sort(function(x,y){return x.r-y.r||x.c-y.c||(x.d==="a"?-1:1)});
@@ -2566,7 +2753,7 @@ function cwKey(k){
 function cwWin(){
   CW.done=true;CW.words.forEach(function(w){rec(w.eu,true)});
   var xp=Math.max(10,35-CW.hints*5);beep(true);
-  endGame("¡Crucigrama resuelto!",xp,CW.hints?("Pistas usadas: "+CW.hints):"Sin pistas");
+  endGame("¡Crucigrama resuelto!",xp,CW.hints?("Pistas usadas: "+CW.hints):"Sin pistas",CW.hints<1?3:CW.hints<3?2:1);
 }
 
 /* ---------- sopa de letras ---------- */
@@ -2598,7 +2785,7 @@ function genWS(words){
 }
 function startWS(){
   LAST="ws";
-  var pp=gamePool(/^[a-z]{3,8}$/,7),res=genWS(shuffle(pp.arr).slice(0,7));
+  var pp=gamePool(/^[a-z]{3,8}$/,7),res=genWS(shuffle(pp.arr).slice(0,GL&&GL.g==="ws"?5+Math.floor(GL.n/6):7));
   if(!res){toast("No se pudo crear la sopa de letras. Inténtalo otra vez.");return}
   WS={N:res.N,grid:res.grid,words:res.words,fd:{},start:null,end:null,tap:false,drag:false,miss:0,over:false,extra:pp.extra};
   showStage();drawWS();
@@ -2635,7 +2822,7 @@ function wsEval(){
   WS.words.forEach(function(w){if(!w.found&&(w.eu===s||w.eu===rs))hit=w});
   if(hit){
     hit.found=true;p.forEach(function(q){WS.fd[q.r+","+q.c]=1});beep(true);say(hit.eu);rec(hit.eu,true);
-    if(WS.words.every(function(w){return w.found})){WS.over=true;var xp=Math.max(15,35-WS.miss*2);return endGame("¡Sopa completada!",xp,WS.miss?("Intentos fallidos: "+WS.miss):"Sin fallos")}
+    if(WS.words.every(function(w){return w.found})){WS.over=true;var xp=Math.max(15,35-WS.miss*2);return endGame("¡Sopa completada!",xp,WS.miss?("Intentos fallidos: "+WS.miss):"Sin fallos",WS.miss<=1?3:WS.miss<=4?2:1)}
     drawWS();
   }else{WS.miss++;beep(false);wsPaint()}
 }
@@ -2647,15 +2834,20 @@ function wsUp(){
 }
 
 /* ---------- aventura ---------- */
-function startStory(){ST={i:0,log:[],tr:{},wrong:{},pend:null,end:false};showStage();advance();drawStory()}
+function startStory(ch){
+  var st=0,stop=STORY.length;
+  if(ch!=null&&GL&&GL.g==="story"){var caps=[];STORY.forEach(function(x,i){if(x.cap)caps.push(i)});st=caps[ch]||0;stop=caps[ch+1]||STORY.length}
+  ST={i:st,stop:stop,log:[],tr:{},wrong:{},pend:null,end:false,wc:0};showStage();advance();drawStory();
+}
 function advance(){
-  while(ST.i<STORY.length){
+  while(ST.i<(ST.stop||STORY.length)){
     var s=STORY[ST.i];
     if(s.ch){ST.pend={s:s,o:shuffle(s.o)};return}
     ST.log.push(s);ST.i++;
   }
   ST.pend=null;
-  if(!ST.end){ST.end=true;if(!S.story){S.story=1;addXP(30);ST.bonus=true}var gb=gameDone("story");if(gb)toast("Reto del día cumplido: +"+gb+" XP",2600);checkAch();save()}
+  if(!ST.end&&GL&&GL.g==="story"){ST.end=true;glDone(ST.wc===0?3:ST.wc<=2?2:1);if(!S.story&&[0,1,2].every(function(i){return glSt("story",i)>0})){S.story=1;addXP(30);ST.bonus=true}var gb0=gameDone("story");if(gb0)toast("Reto del día cumplido: +"+gb0+" XP",2600);checkAch();save()}
+  else if(!ST.end){ST.end=true;if(!S.story){S.story=1;addXP(30);ST.bonus=true}var gb=gameDone("story");if(gb)toast("Reto del día cumplido: +"+gb+" XP",2600);checkAch();save()}
 }
 function drawStory(){
   var h=topbar(null)+'<div class="ex"><div class="hud" style="font-size:16px"><span>Un día en Donostia</span></div><p class="hint">Toca un mensaje para ver la traducción.</p><div class="log">';
@@ -2671,7 +2863,7 @@ function drawStory(){
       var w=ST.wrong[o.eu];return '<button class="opt'+(w?" bad":"")+'" data-r="so" data-i="'+i+'">'+E(o.eu)+(w?'<span class="t2">'+E(w)+'</span>':(o.es?'':''))+'</button>';
     }).join("")+'</div>';
   }else{
-    h+='<div class="res" style="padding-top:6px">'+mascot(110,"cheer")+'<h2>¡Aventura completada!</h2>'+(ST.bonus?'<p class="q" style="color:var(--ok)">+30 XP</p>':'<p class="hint">Puedes repetirla cuando quieras.</p>')+'</div>';
+    h+='<div class="res" style="padding-top:6px">'+mascot(110,"cheer")+'<h2>'+(GL&&GL.g==="story"&&GL.n<2?"¡Capítulo completado!":"¡Aventura completada!")+'</h2>'+(ST.bonus?'<p class="q" style="color:var(--ok)">+30 XP</p>':'<p class="hint">Puedes repetirla cuando quieras.</p>')+'</div>';
   }
   h+='</div>'+(ST.pend?"":'<div class="foot"><button class="btn" data-r="leave">Volver</button></div>');
   stage(h);
@@ -2680,7 +2872,7 @@ function drawStory(){
 function storyPick(i){
   var o=ST.pend.o[i];
   if(o.ok){beep(true);ST.log.push({who:"Tú",eu:o.eu,es:o.es});addXP(10);ST.i++;ST.wrong={};advance()}
-  else{beep(false);ST.wrong[o.eu]=o.fb||"Esa no encaja."}
+  else{beep(false);ST.wc=(ST.wc||0)+1;ST.wrong[o.eu]=o.fb||"Esa no encaja."}
   drawStory();
 }
 
@@ -2711,7 +2903,8 @@ document.addEventListener("click",function(ev){
     else if(act==="theme"){S.theme=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="pal"){S.pal=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="exam"){startExam(+a.getAttribute("data-n"))}
-    else if(act==="game"){startGameKey(a.getAttribute("data-g"))}
+    else if(act==="game"){V.gg=a.getAttribute("data-g");V.tab="gl";render();window.scrollTo(0,0)}
+    else if(act==="glv"){startGameLevel(V.gg,+a.getAttribute("data-n"))}
     else if(act==="sub"){V.sub=a.getAttribute("data-s");render()}
     else if(act==="chapas"){V.tab="ach";V.sub="chapas";V.anim=true;render();window.scrollTo(0,0)}
     else if(act==="pzsel"){S.pza=+a.getAttribute("data-i");save();render()}
@@ -2752,6 +2945,8 @@ document.addEventListener("click",function(ev){
   if(k==="stay"){R.quitAsk=false;drawEx();return}
   if(k==="leave"){leave();return}
   if(k==="go"){var l=R.intro;runPart(l,0);return}
+  if(k==="glnext"&&GL){startGameLevel(GL.g,GL.n+1);return}
+  if(k==="glagain"&&GL){startGameLevel(GL.g,GL.n);return}
   if(k==="again"){if(LAST==="cross")startCross();else if(LAST==="ws")startWS();else startPairs();return}
   if(k==="lshow"){R.st.show=true;drawEx();return}
   if(k==="mic"){micStart();return}
