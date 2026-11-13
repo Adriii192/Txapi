@@ -2103,7 +2103,7 @@ function drawBar(){
   $("#lvfill").style.width=(S.xp%100)+"%";
   $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games"))+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -2124,6 +2124,8 @@ function rLearn(){
   if(S.urg)h+='<div class="card" style="border:2px solid var(--red)"><h3>Camino bloqueado</h3><p class="hint" style="margin:6px 0 8px">Tienes muchas palabras sin dominar. Hazles un repaso urgente para seguir.</p><button class="btn sm" data-act="lv" data-n="urg">Ir al repaso urgente</button></div>';
   h+='<div class="lvt">'+[1,2,3].map(function(n){var s=lvStats(n),lk=!S.open&&LESSONS.indexOf(s.first)>ci;return '<button data-act="lv" data-n="'+n+'" aria-pressed="'+(V.lv===n)+'"><span>'+LVN[n]+'</span><small>'+(lk?'Bloqueado':s.d+' / '+s.t)+'</small></button>'}).join("")+'</div>';
   h+=examCard(V.lv);
+  h+='<button class="rev" data-tab="verb">'+IC.book+'<div><b>Entrenador de verbos</b><span>Presente, pasado y futuro con práctica</span></div></button>';
+  h+='<button class="rev" data-tab="sim">'+IC.check+'<div><b>Simulacros de examen A1 a B2</b><span>Lectura, escucha, escritura y habla</span></div></button>';
   var cnt=0,un=0;
   UNITS.forEach(function(u){
     if(u.lv!==V.lv)return;
@@ -2332,6 +2334,7 @@ function lessonQueue(l){
 function optsHtml(e,st){return '<div class="opts">'+e.opts.map(function(o,i){var c="";if(st.checked){c=o===e.ans?"ok":(i===st.sel?"bad":"")}else if(i===st.sel)c="sel";return '<button class="opt '+c+'" data-r="opt" data-i="'+i+'"'+(st.checked?" disabled":"")+'>'+E(o)+'</button>'}).join("")+'</div>'}
 function tyInput(st,ph){return '<input id="ty" class="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="'+ph+'" value="'+E(st.val)+'"'+(st.checked?" disabled":"")+'>'}
 function fbHtml(e,st){
+  if(e.t==="sx")return '<div class="fb ok"><h3>Modelo</h3><p>'+E(e.model)+spk(e.model)+'</p><p><b>¿Cumples la lista?</b></p><ul style="margin:0 0 8px;padding-left:20px;color:var(--ink);font-weight:600">'+e.pts.map(function(c){return '<li>'+E(c)+'</li>'}).join("")+'</ul><div class="row2"><button class="btn sec" data-r="sxbad">Me faltan cosas</button><button class="btn" data-r="sxok">Cumplo casi todo</button></div></div>';
   if(e.t==="wr")return '<div class="fb ok"><h3>Modelo</h3><p>'+E(e.model)+spk(e.model)+'</p><p><b>Revisa tu texto:</b></p><ul style="margin:0;padding-left:20px;color:var(--ink);font-weight:600">'+e.check.map(function(c){return '<li>'+E(c)+'</li>'}).join("")+'</ul><button class="btn" data-r="cont">Continuar</button></div>';
   var msg=e.t==="mt"?(st.ok?"¡Todas sin fallar!":"¡Completado! Algunas pedirán repaso."):(st.ok?["¡Muy bien!","¡Eso es!","¡Correcto!"][R.done%3]:"Respuesta correcta"),extra="";
   if(e.t==="hang")msg=st.ok?"¡Salvado!":"Te has quedado sin intentos";
@@ -2394,6 +2397,221 @@ function examsCard(){
   var ex=S.exams||{},rows=[1,2,3].filter(function(n){return ex[n]});
   if(!rows.length)return '';
   return '<div class="card"><h3 style="margin-bottom:6px">Exámenes</h3>'+rows.map(function(n){return '<div class="exr"><span>'+LVN[n]+'</span><span>última '+ex[n].last+' · mejor '+ex[n].best+' · '+ex[n].n+' intento'+(ex[n].n>1?'s':'')+'</span></div>'}).join("")+'</div>';
+}
+
+/* ---------- simulacros de examen B1 / B2 ---------- */
+var SIMN={b1:"B1",b2:"B2"},SIMS=[["rd","Comprensión lectora","Irakurmena","Lee los textos y contesta."],["lis","Comprensión auditiva","Entzumena","Escucha los audios y contesta."],["wr","Expresión escrita","Idazmena","Redacta dos textos con la lista de puntos."],["sp","Expresión oral","Mintzamena","Habla en voz alta y valórate con el modelo."]];
+var SIM={
+b1:{
+ rd:[
+  {t:"Aiora Donostian bizi da, eta gimnasio batean lan egiten du. Goizean goiz jaikitzen da, zazpietan, eta bizikletaz joaten da lanera; hogei minutu behar ditu. Arratsaldeetan euskaltegira joaten da, astean hiru egunetan, euskara ikasteko. Aurten B1 maila lortu nahi du, baina gramatika zaila iruditzen zaio, batez ere aditzak. Asteburuetan lagunekin mendira joaten da, eta horrela euskaraz hitz egiteko aukera gehiago izaten du.",
+   es:"Aiora vive en Donostia y trabaja en un gimnasio. Va en bici al trabajo, va al euskaltegi tres días a la semana, quiere el B1 y le cuesta la gramática (los verbos). Los fines de semana va al monte con amigos para practicar euskera.",
+   q:[{q:"Zer garraiobide erabiltzen du Aiorak lanera joateko?",o:["Bizikleta","Autobusa","Trena","Oinez"]},
+      {q:"Zenbat egunetan joaten da euskaltegira?",o:["Hiru","Bi","Lau","Bost"]},
+      {q:"Zer iruditzen zaio Aiorari zailena?",o:["Aditzak","Ahoskera","Hiztegia","Idaztea"]},
+      {q:"Zergatik joaten da lagunekin mendira?",o:["Euskaraz hitz egiteko aukera gehiago dituelako","Lanetik urrun egon nahi duelako","Kirola gustatzen ez zaiolako","Euskaltegia itxita dagoelako"]}]},
+  {t:"Udal liburutegiak ordutegi berria izango du urritik aurrera. Astelehenetik ostiralera goizeko 9:00etatik gaueko 21:00etara egongo da zabalik. Larunbatetan 10:00etatik 14:00etara irekiko da. Igandeetan eta jaiegunetan itxita egongo da. Liburuak hamabost egunez uzten dira, eta behin berritu daitezke, beste inork eskatu ez badu. Epea gainditzen bada, egunean 20 zentimo ordaindu behar da. Izena ematea doakoa da, nortasun agiria aurkeztuta.",
+   es:"La biblioteca municipal tiene nuevo horario desde octubre: L-V 9:00-21:00, sábados 10:00-14:00, domingos y festivos cerrada. Préstamo de 15 días, renovable una vez si nadie lo pide; 20 céntimos al día de retraso; inscripción gratuita con DNI.",
+   q:[{q:"Zein da liburutegiaren ordutegia larunbatetan?",o:["10:00etatik 14:00etara","9:00etatik 21:00etara","Itxita dago","16:00etatik 20:00etara"]},
+      {q:"Zenbat egunez uzten dira liburuak?",o:["Hamabost egunez","Zazpi egunez","Hogei egunez","Hilabetez"]},
+      {q:"Zer gertatzen da liburua berandu itzultzen bada?",o:["Egunean 20 zentimo ordaindu behar da","Ezin da berriz liburutegira joan","Liburua galdutzat ematen da","Ez da ezer gertatzen"]},
+      {q:"Zer behar da izena emateko?",o:["Nortasun agiria","20 zentimo","Eskaera idatzia","Bi argazki"]}]}
+ ],
+ lis:[
+  {a:"— Kaixo, egun on. Osasun-zentroa da.\n— Egun on. Medikuarekin hitz egin nahi dut hitzordu baterako.\n— Bai, noski. Zein egunetarako nahi duzu?\n— Ahal bada, asteazkenerako, goizean.\n— Asteazkenean ez dago hutsunerik goizean. Ostegunean, 10:30ean, balio al dizu?\n— Bai, ondo dago.\n— Zure izena, mesedez?\n— Maite Etxeberria.\n— Eskerrik asko, Maite. Ostegunean, 10:30ean, zain izango zaitugu. Ekarri osasun-txartela, mesedez.\n— Bai, ez da ahaztuko. Agur!",
+   es:"Maite pide cita con el médico. Quiere miércoles por la mañana, pero no hay hueco; le dan el jueves a las 10:30. Debe llevar la tarjeta sanitaria.",
+   q:[{q:"Zein egunetarako eskatzen du hitzordua Maitek?",o:["Asteazkenerako","Ostegunerako","Astelehenerako","Ostiralerako"]},
+      {q:"Zergatik ez dute asteazkenean hitzordua ematen?",o:["Ez dagoelako hutsunerik","Medikua gaixo dagoelako","Zentroa itxita dagoelako","Maitek ez duelako txartela"]},
+      {q:"Noiz izango du azkenean hitzordua?",o:["Ostegunean 10:30ean","Asteazkenean 10:30ean","Ostegunean 13:00etan","Ostiralean 10:30ean"]},
+      {q:"Zer eraman behar du Maitek?",o:["Osasun-txartela","Analisiak","Dirua","Medikuaren gutuna"]}]},
+  {a:"Gaur goizean hodei ugari egongo dira Euskal Herri osoan, eta arratsaldean euria egingo du kostaldean. Tenperaturak jaitsi egingo dira: Bilbon 14 gradu, Donostian 13 eta Gasteizen 9. Bihar eguraldi hobea egongo da: eguzkia aterako du goizetik, eta tenperatura 18 gradura iritsiko da. Asteburuan, berriz, euria itzuliko da.",
+   es:"Hoy nublado y por la tarde lluvia en la costa; temperaturas 14 (Bilbao), 13 (Donostia), 9 (Vitoria). Mañana sol y 18 grados. El fin de semana vuelve la lluvia.",
+   q:[{q:"Noiz egingo du euria gaur?",o:["Arratsaldean, kostaldean","Goizean, barrualdean","Egun osoan","Gauean bakarrik"]},
+      {q:"Zenbat gradu egingo du Gasteizen?",o:["Bederatzi","Hamahiru","Hamalau","Hemezortzi"]},
+      {q:"Nolako eguraldia egingo du bihar?",o:["Eguzkitsua","Euritsua","Haizetsua","Elurra"]},
+      {q:"Zer gertatuko da asteburuan?",o:["Euria itzuliko da","Eguzkia aterako du","Tenperatura igoko da","Elurra egingo du"]}]}
+ ],
+ wr:[
+  {p:"Lagun bati gutuna idatzi (60-80 hitz). Kontatu zer egingo duzun datorren asteburuan eta gonbidatu zurekin etortzera.",min:45,pts:["Agurra eta amaiera ondo (Kaixo..., Laster arte)","Zer egingo duzun (etorkizuna: joango naiz, egingo dut...)","Non eta noiz","Gonbidapena (Etorri nahi al duzu...?)","Hitz kopurua: 60-80"],model:"Kaixo, Jon! Zer moduz zaude? Datorren asteburuan Gasteizera joango naiz, nire familia bisitatzera. Larunbatean goizean erosketak egingo ditut, eta arratsaldean lagunekin ibiliko naiz Zaldiaran parkean. Igandean senideekin bazkalduko dut etxean. Zu ere etorri nahi al duzu? Oso ondo pasatuko dugu! Esan iezadazu laster zerbait, mesedez. Besarkada handi bat, Miren."},
+  {p:"Zure auzoa deskribatu (60-80 hitz): non dagoen, zer dagoen bertan, zer gustatzen zaizun eta zer ez, eta zergatik.",min:45,pts:["Non dagoen auzoa","Zer dagoen (dendak, parkea, garraioa...)","Zer gustatzen zaizun eta zergatik","Zer hobetuko zenukeen","Hitz kopurua: 60-80"],model:"Nire auzoa Donostiaren erdialdean dago, itsasotik gertu. Oso auzo bizia da: denda asko, kafetegi politak eta parke handi bat daude. Metroa ez dugu, baina autobus asko igarotzen dira. Gehien gustatzen zaidana lasaitasuna da, gauean ez dagoelako zaratarik. Aldiz, ez zait gustatzen aparkatzea hain zaila izatea. Nire ustez, aparkaleku gehiago egin beharko lituzkete, baina, hala ere, ez nuke inoiz auzoz aldatuko."}
+ ],
+ sp:[
+  {p:"Aurkeztu zeure burua minutu batez: nor zaren, non bizi zaren, zer egiten duzun eta zer gustatzen zaizun egitea.",pts:["Izena, adina eta jatorria","Non bizi zaren eta norekin","Lana edo ikasketak","Zaletasunak (2 gutxienez)","Zergatik ikasten duzun euskara"],model:"Kaixo, nire izena Mikel da, eta Espainiakoa naiz. Gaur egun herri txiki batean bizi naiz, familiarekin. Lanean ari naiz, eta euskaltegian euskara ikasten ere ari naiz. Asteburuetan, kirola egitea eta musika entzutea gustatzen zait. Euskara ikasten dut hizkuntza polita delako eta, gainera, titulua behar dudalako."},
+  {p:"Deskribatu zure ohiko eguna, goizetik gauera arte (1 minutu).",pts:["Ordutegia: zer ordutan jaiki eta zer ordutan joan","Lanean edo ikasten","Bazkaria eta arratsaldea","Aisialdia","Lokarrak: gero, ondoren, azkenik"],model:"Normalean zazpietan jaikitzen naiz, gosaldu eta lanera joaten naiz. Zortzietan hasten naiz lanean, eta ordu bietan amaitzen dut. Ondoren, etxera itzuli eta bazkaltzen dut. Arratsaldean euskara ikasten dut edo kirola egiten dut. Gero, afaltzen dut, telebista pixka bat ikusten dut, eta, azkenik, hamaiketan lotara joaten naiz."}
+ ]
+},
+b2:{
+ rd:[
+  {t:"Etxetik lan egiteak gero eta jarraitzaile gehiago ditu, baina ez da dirudien bezain erraza. Inkesta baten arabera, langileen % 62k telelana hobetzat jotzen du, bidaiatzeko denbora aurrezten dutelako eta familiarekin denbora gehiago izaten dutelako. Hala ere, herena baino gehiagok aitortu du lanaren eta bizitza pertsonalaren arteko muga lausotu egiten dela: batzuek ordu gehiago egiten dituzte, eta ezin dute deskonektatu. Enpresek, bestalde, kezkatuta daude lan-taldeen arteko elkarrekintza galtzeko arriskuagatik. Horregatik, aditu askok lan-eredu mistoa gomendatzen dute: astean bi edo hiru egun bulegoan eta gainerakoak etxean.",
+   es:"El teletrabajo gana adeptos: el 62% lo valora mejor por el tiempo de desplazamiento y la familia. Más de un tercio dice que se difumina el límite trabajo/vida personal. Las empresas temen perder interacción. Los expertos recomiendan un modelo mixto.",
+   q:[{q:"Zergatik jotzen dute telelana hobetzat langileen % 62k?",o:["Bidaiatzeko denbora aurrezten dutelako eta familiarekin gehiago egoten direlako","Gehiago irabazten dutelako","Lan gutxiago egiten dutelako","Bulegoa gustatzen ez zaielako"]},
+      {q:"Zer arazo aipatzen du herena baino gehiagok?",o:["Lana eta bizitza pertsonala bereiztea zaila dela","Ordenagailu egokirik ez dutela","Soldata jaisten dela","Ezin dutela etxean lan egin"]},
+      {q:"Zer kezka dute enpresek?",o:["Taldeen arteko elkarrekintza galtzea","Gastu gehiago izatea","Langile gutxi aurkitzea","Teknologia zaharkitzea"]},
+      {q:"Zer gomendatzen dute adituek?",o:["Bulegoan eta etxean txandakatzea","Beti etxetik lan egitea","Bulegora itzultzea","Lanaldia murriztea"]}]},
+  {t:"Ikerketek erakusten dutenez, gazteek euskaraz ikasten dute eskolan, baina kalean gaztelaniaz aritzeko joera dute. Zergatik? Batetik, kontsumitzen dituzten edukiak —telesailak, bideojokoak, sare sozialak— gehienbat gaztelaniaz edo ingelesez daudelako. Bestetik, lagun-taldeetan hizkuntza ohitura bihurtzen delako: talde bat gaztelaniaz hasten bada, zaila da aldatzea. Hala ere, esperantza-zantzuak badaude: euskarazko podcastak eta sorkuntza digitalak gora doaz, eta horietako askok arrakasta handia dute gazteen artean. Adituen iritziz, gakoa ez da derrigortzea, baizik eta euskaraz bizitzea erakargarri egitea.",
+   es:"Los jóvenes estudian en euskera pero fuera hablan castellano, por los contenidos que consumen y por la costumbre del grupo. Hay esperanza: podcasts y creación digital en euskera. La clave no es obligar sino hacer atractivo vivir en euskera.",
+   q:[{q:"Zein da gazteen joera kalean?",o:["Gaztelaniaz aritzea","Euskaraz soilik aritzea","Ingelesez aritzea","Isilik egotea"]},
+      {q:"Zergatik gertatzen da hori, testuaren arabera? (bi arrazoi daude)",o:["Edukiak gaztelaniaz edo ingelesez daudelako eta taldean ohitura delako","Eskolan ez dutelako euskara ikasten","Euskara zaila delako eta ez dutelako ulertzen","Gurasoek debekatzen dietelako"]},
+      {q:"Zer esperantza-zantzu aipatzen dira?",o:["Euskarazko podcastak eta sorkuntza digitala","Eskola gehiago irekitzea","Diru-laguntza berriak","Telesail gehiago gaztelaniaz"]},
+      {q:"Zer da gakoa adituen iritziz?",o:["Euskaraz bizitzea erakargarri egitea","Euskara derrigortzea","Ingelesa debekatzea","Eskolako orduak gehitzea"]}]}
+ ],
+ lis:[
+  {a:"— Kaixo, Ane. Zer da zehazki zuen elkartearen proiektua?\n— Auzoko lorategi komunitarioa sortu dugu. Hamar bat bizilagunek hasitako ekimena izan zen, eta gaur egun berrogeita hamar familia inguru ari dira parte hartzen. Orain arte hondakin-lur bat zen, eta udalarekin hitz egin ondoren lur hori erabiltzeko baimena lortu genuen.\n— Eta zer lortu nahi duzue?\n— Lehenik eta behin, bertako barazkiak hazi, baina, batez ere, bizilagunen arteko harremanak indartu. Lehen ez genuen elkar ezagutzen, eta orain lorategian egiten ditugu elkarrekin lanak eta bazkariak.\n— Zailtasunik izan duzue?\n— Bai, hasieran uraren arazoa izan genuen, ez baitzegoen iturririk. Hori konpondu da, baina oraindik diru-laguntza falta dugu tresnak erosteko.",
+   es:"Ane explica el huerto comunitario del barrio: lo iniciaron unos diez vecinos, ahora participan unas 50 familias; era un solar. Objetivo: verduras locales y, sobre todo, reforzar relaciones. Problema del agua resuelto; faltan subvenciones para herramientas.",
+   q:[{q:"Nork hasi zuen ekimena?",o:["Hamar bat bizilagunek","Udalak","Berrogeita hamar familiak","Enpresa batek"]},
+      {q:"Zer zen lursaila lehen?",o:["Hondakin-lur bat","Parke bat","Eskola bat","Merkatu bat"]},
+      {q:"Zein da helburu nagusia?",o:["Bizilagunen arteko harremanak indartzea","Barazkiak saltzea","Diru-laguntzak lortzea","Udalarekin borrokatzea"]},
+      {q:"Zer arazo dute oraindik?",o:["Tresnak erosteko diru-laguntza falta","Ur falta","Lur falta","Parte-hartzaile falta"]}]},
+  {a:"Arreta, mesedez. Metroko erabiltzaileei jakinarazten diegu astelehenean eta asteartean greba egongo dela. Gutxieneko zerbitzuak ezarri dira: hamabost minutuko tarteak ordu zehatzetan, hau da, goizeko seietatik bederatzietara eta arratsaldeko bostetatik zortzietara. Gainerako orduetan, tren bakarra igaroko da ordu erdi bakoitzean. Bidaiariei gomendatzen zaie aurrera begiratzea eta, ahal bada, autobusa edo bizikleta erabiltzea. Greba egunetan tarifak ez dira aldatuko.",
+   es:"Huelga de metro lunes y martes. Servicios mínimos: cada 15 min de 6 a 9 y de 17 a 20; el resto del día, un tren cada media hora. Se recomienda anticiparse y usar autobús o bici. Tarifas sin cambios.",
+   q:[{q:"Zein egunetan egongo da greba?",o:["Astelehenean eta asteartean","Asteazkenean eta ostegunean","Ostiralean eta larunbatean","Asteburu osoan"]},
+      {q:"Noiz egongo dira hamabost minutuko tarteak?",o:["6:00-9:00 eta 17:00-20:00","9:00-17:00","20:00-23:00","Egun osoan"]},
+      {q:"Zer gertatuko da gainerako orduetan?",o:["Tren bat igaroko da ordu erdiro","Ez da trenik ibiliko","Tren bat ordubetero","Metroa doakoa izango da"]},
+      {q:"Zer gomendatzen zaie bidaiariei?",o:["Aurrera begiratzea eta autobusa edo bizikleta erabiltzea","Etxean geratzea","Taxia hartzea","Txartela itzultzea"]}]}
+ ],
+ wr:[
+  {p:"Iritzi-artikulua idatzi (100-150 hitz): «Gazteek sare sozialetan denbora gehiegi ematen dute». Zer deritzozu? Eman arrazoiak eta adibideak.",min:70,pts:["Sarrera: gaia aurkeztu eta zure iritzia","Gutxienez bi arrazoi (batetik..., bestetik...)","Adibide bat","Kontrako iritzia aipatu eta erantzun (hala ere, dena den...)","Ondorioa","Hitz kopurua: 100-150"],model:"Nire ustez, gazte askok denbora gehiegi ematen dute sare sozialetan, eta horrek ondorio txarrak ditu. Batetik, arreta galtzen dute: ikasketak edo lana egiten ari direnean, mugikorra begiratzeko tentazioa etengabea da. Bestetik, sare sozialek errealitate faltsua erakusten dute, eta horrek, batez ere nerabeen artean, autoestimua kaltetu dezake. Adibidez, nire lehengusuak egunean lau ordu ematen ditu pantailaren aurrean, eta oso nekatuta egoten da. Hala ere, ez da dena txarra: sare sozialek lagunekin harremanetan jartzen laguntzen dute, eta informazio asko eskaintzen dute. Dena den, hori ez da arrazoi nahikoa erabilera mugarik ez jartzeko. Ondorioz, uste dut gazteek, eta baita helduek ere, denbora kontrolatzen ikasi behar dutela."},
+  {p:"Kexa-gutuna idatzi dendari (100 hitz inguru): interneten ordenagailu-poltsa bat erosi duzu eta hondatuta iritsi da. Azaldu arazoa eta eskatu konponbidea.",min:70,pts:["Agur formala (Jaun-andre horiek:, Adeitasunez...)","Zer erosi duzun, noiz eta zenbat","Arazoa zehatz-mehatz","Zer eskatzen duzun (dirua itzuli edo ordezkatu)","Epea eta kontaktua","Hitz kopurua: 100 inguru"],model:"Jaun-andre horiek: Joan den hilaren 12an zuen webgunean ordenagailu-poltsa bat erosi nuen (eskaera-zenbakia: 4587), 45 euroan. Atzo jaso nuen paketea, baina poltsak urradurak ditu, eta zipa apurtuta dago. Argazkiak gaineratzen ditut frogatzeko. Poltsa hori lanerako behar dut, eta, beraz, ezin dut erabili. Horregatik, eskatzen dut edo poltsa berri bat bidaltzea, edo diru guztia itzultzea. Hamar eguneko epean erantzuten ez badidazue, kontsumo-erakundeetara jotzera behartuta egongo naiz. Zuen erantzunaren zain, adeitasunez, Maria Zubiri. Telefonoa: 600 000 000."}
+ ],
+ sp:[
+  {p:"Eman zure iritzia (2 minutu): etxetik lan egitea hobea da ala bulegoan lan egitea? Zergatik?",pts:["Zure iritzia argi esan (Nire ustez..., Uste dut...)","Gutxienez bi arrazoi","Kontrako iritzia aipatu (Hala ere...)","Adibide pertsonal bat","Ondorioa"],model:"Nire ustez, lan-eredurik onena mistoa da. Batetik, etxetik lan egiteak denbora aurrezten du, eta lasaiago lan egin daiteke. Bestetik, bulegoan lankideekin harremana izaten da, eta hori garrantzitsua da talde-lanerako. Hala ere, batzuek etxean ezin dute deskonektatu, eta hori arazoa izan daiteke. Nik, esaterako, hobeto lan egiten dut goizean etxean eta arratsaldean lankideekin. Beraz, astean bi egun etxean eta gainerakoak bulegoan lan egitea egokiena iruditzen zait."},
+  {p:"Konparatu hirian eta herri txikian bizitzea (2 minutu): abantailak, desabantailak eta zein nahiago duzun.",pts:["Hiriaren abantailak eta desabantailak","Herriaren abantailak eta desabantailak","Konparazio-egiturak (baino... gehiago, bezain)","Zure hobespena eta zergatik","Ondorioa"],model:"Hirian zerbitzu gehiago dago: ospitaleak, kultura, garraio publikoa eta lan aukera gehiago. Aldiz, bizitza garestiagoa da eta zarata gehiago dago. Herri txikian, berriz, giroa lasaiagoa da eta jendea elkarrekin harreman estuagoa du, baina aukera gutxiago daude lana aurkitzeko. Nik herria nahiago dut, natura eta lasaitasuna gehiago estimatzen ditudalako. Hala ere, ulertzen dut gazte askok hiria aukeratzea, aukera gehiago dituztelako."}
+ ]
+}};
+SIMN.a1="A1";SIMN.a2="A2";
+SIM.b1.wl=[{p:"Idatzi iritzi-testu bat (140 hitz inguru): hobe al da herrian ala hirian bizitzea? Eman zure iritzia eta arrazoiak, eta aipatu abantailak eta desabantailak.",min:112,pts:["Sarrera eta zure iritzia","Abantailak (lehenik eta behin, gainera...)","Desabantailak (hala ere, aldiz...)","Adibide bat","Ondorioa","Hitz kopurua: 140 inguru (112 baino gutxiago bada, ez-gai)"],model:"Hirian bizitzearen eta herrian bizitzearen artean, nik herria hobesten dut. Lehenik eta behin, herrian giroa lasaiagoa da: ez dago zarata handirik, eta jendeak elkar ezagutzen du. Horri esker, bizitza nahiko erraza eta atsegina da. Bestalde, natura oso gertu dago, eta asteburuetan mendira edo ibaira joan gaitezke. Hala ere, herriak desabantaila batzuk ere baditu. Adibidez, garraio publikoa ez da oso ona, eta kasu askotan autoa behar da edozein lekutara joateko. Gainera, lan aukera gutxiago daude, eta gazte askok hirira joan behar izaten dute. Hirian, aldiz, zerbitzu gehiago dago: ospitaleak, kultur ekitaldiak, denda handiak eta garraio ona. Hala ere, bizitza garestiagoa da eta jendea presaka ibiltzen da. Nire ustez, bizitza lasaia eta osasuntsua nahi duenak herrian bizi beharko luke."}];
+SIM.a1={
+ rd:[
+  {t:"Kaixo! Ni Ane naiz. Hamar urte ditut eta Donostian bizi naiz. Nire familian lau gara: aita, ama, nire anaia eta ni. Nire anaia Jon da, eta zazpi urte ditu. Etxean txakur bat dugu. Txakurra Txuri da, eta oso handia da.",
+   es:"Soy Ane, tengo diez años y vivo en Donostia. En mi familia somos cuatro. Mi hermano Jon tiene siete años. Tenemos un perro grande, Txuri.",
+   q:[{q:"Zenbat urte ditu Anek?",o:["Hamar","Zazpi","Lau","Hamabi"]},{q:"Non bizi da Ane?",o:["Donostian","Bilbon","Gasteizen","Iruñean"]},{q:"Zenbat lagun dira Anen familian?",o:["Lau","Hiru","Bost","Sei"]},{q:"Nola du izena txakurrak?",o:["Txuri","Jon","Ane","Handia"]}]},
+  {t:"Gaur astelehena da. Goizean, zortziretan, eskolara noa. Eskolan euskara eta matematika ditut. Bazkaltzeko etxera itzultzen naiz. Arratsaldean futbolean jokatzen dut lagunekin.",
+   es:"Hoy es lunes. A las ocho voy a la escuela, tengo euskera y matemáticas, como en casa y por la tarde juego al fútbol con amigos.",
+   q:[{q:"Zer egun da gaur?",o:["Astelehena","Asteartea","Larunbata","Igandea"]},{q:"Zer ordutan doa eskolara?",o:["Zortzietan","Bederatzietan","Zazpietan","Hamarretan"]},{q:"Non bazkaltzen du?",o:["Etxean","Eskolan","Parkean","Jatetxean"]},{q:"Zer egiten du arratsaldean?",o:["Futbolean jokatzen du","Euskara ikasten du","Telebista ikusten du","Lo egiten du"]}]}
+ ],
+ lis:[
+  {a:"— Kaixo, zer moduz?\n— Ondo, eta zu?\n— Ni ere ondo. Nola duzu izena?\n— Mikel naiz. Eta zu?\n— Nik Lore dut izena.\n— Zer moduz, Lore! Zenbat urte dituzu?\n— Hamabi urte ditut.",
+   es:"Mikel y Lore se presentan. Lore tiene doce años.",
+   q:[{q:"Nola du izena mutilak?",o:["Mikel","Lore","Jon","Ander"]},{q:"Nola du izena neskak?",o:["Lore","Mikel","Ane","Miren"]},{q:"Zenbat urte ditu Lorek?",o:["Hamabi","Hamar","Hamaika","Hamahiru"]}]},
+  {a:"— Egun on! Zer nahi duzu?\n— Ogi bat eta esne bat, mesedez.\n— Hemen daukazu. Hiru euro dira.\n— Hartu, hemen daukazu.\n— Eskerrik asko. Agur!\n— Agur!",
+   es:"En la tienda compra pan y leche; son tres euros.",
+   q:[{q:"Zer erosten du?",o:["Ogia eta esnea","Ogia eta ura","Esnea eta fruta","Arroza eta ogia"]},{q:"Zenbat balio du?",o:["Hiru euro","Bi euro","Lau euro","Bost euro"]},{q:"Zer esaten dute bukaeran?",o:["Agur","Kaixo","Egun on","Ez dut ulertzen"]}]}
+ ],
+ wr:[
+  {p:"Aurkeztu zeure burua (20-30 hitz): izena, adina, non bizi zaren eta zer gustatzen zaizun.",min:15,pts:["Izena (… naiz)","Adina (… urte ditut)","Non bizi zaren (… bizi naiz)","Zer gustatzen zaizun (… gustatzen zait)"],model:"Kaixo, Laura naiz. Hogeita bost urte ditut eta Bilbon bizi naiz. Ogia eta fruta gustatzen zaizkit. Euskara ikasten ari naiz."},
+  {p:"Deskribatu zure familia (20-30 hitz): zenbat zareten eta nor diren.",min:15,pts:["Zenbat zareten (… gara)","Familiakoen izenak","Adina edo lana","Animaliarik baduzun"],model:"Nire familian hiru gara: ama, aita eta ni. Aita Jon da, eta ama Ane. Etxean katu bat dugu."}
+ ],
+ sp:[
+  {p:"Aurkeztu zeure burua (30 segundo).",pts:["Kaixo eta izena","Adina","Non bizi zaren","Zer gustatzen zaizun"],model:"Kaixo, Mikel naiz. Hogei urte ditut eta Madrilen bizi naiz. Kirola eta musika gustatzen zaizkit."},
+  {p:"Esan zer gustatzen zaizun: janaria, kolorea, animalia (30 segundo).",pts:["Janari bat","Kolore bat","Animalia bat","Gustatzen zait / gustatzen zaizkit"],model:"Ogia eta fruta gustatzen zaizkit. Nire kolore gogokoena urdina da. Txakurrak asko gustatzen zaizkit."}
+ ]
+};
+SIM.a2={
+ rd:[
+  {t:"Maider joan den astean Bilbora joan zen trenez bere lagun Irantzurekin. Goizean museora joan ziren, eta gero jatetxe batean bazkaldu zuten. Arratsaldean erosketak egin zituzten Alde Zaharrean. Maiderrek bere amari oparia erosi zion, hurrengo egunean urtebetetzea zuelako. Hamarretan etxera itzuli ziren, nekatuta baina pozik.",
+   es:"Maider y Irantze fueron en tren a Bilbao: museo, comida, compras en el casco viejo. Maider compró un regalo a su madre porque al día siguiente era su cumpleaños. Volvieron a las diez, cansadas pero contentas.",
+   q:[{q:"Nola joan ziren Bilbora?",o:["Trenez","Autobusez","Autoz","Bizikletaz"]},{q:"Non egin zituzten erosketak?",o:["Alde Zaharrean","Museoan","Jatetxean","Etxean"]},{q:"Zergatik erosi zion Maiderrek oparia amari?",o:["Hurrengo egunean urtebetetzea zuelako","Gaixorik zegoelako","Bidaian zegoelako","Eguberriak zirelako"]},{q:"Nolakoak ziren etxera itzultzean?",o:["Nekatuta baina pozik","Haserre","Triste","Lotan"]}]},
+  {t:"Gaztelekua apirilaren 5ean irekiko da. 12 eta 17 urte arteko gazteentzat da. Astelehenetik ostiralera, arratsaldeko 17:00etatik 20:00etara egongo da zabalik. Jarduerak: ping-ponga, mahai-jokoak, zinema eta tailerrak. Izena emateko, arduradunarekin hitz egin behar da. Jarduera guztiak doakoak dira.",
+   es:"El gazteleku abre el 5 de abril para jóvenes de 12 a 17 años, L-V 17:00-20:00. Actividades gratuitas; inscripción hablando con el responsable.",
+   q:[{q:"Noiz irekiko da gaztelekua?",o:["Apirilaren 5ean","Maiatzaren 5ean","Apirilaren 15ean","Martxoaren 5ean"]},{q:"Zein adinetako gazteentzat da?",o:["12 eta 17 urte artekoentzat","18 urtetik gorakoentzat","10 urtetik beherakoentzat","Edozein adinekoentzat"]},{q:"Zer ordutan egongo da zabalik?",o:["17:00etatik 20:00etara","10:00etatik 14:00etara","20:00etatik 23:00etara","9:00etatik 17:00etara"]},{q:"Zenbat balio dute jarduerek?",o:["Doakoak dira","Bost euro","Hamar euro","Hilean 20 euro"]}]}
+ ],
+ lis:[
+  {a:"— Egun on. Mahai bat nahi dut bi lagunentzat.\n— Bai, noski. Hemen eseri zaitezkete. Hona hemen karta.\n— Eskerrik asko. Zer gomendatzen duzu?\n— Gaurko menua oso ona da: lehenengo platera zopa da, eta bigarrena arraina.\n— Primeran. Bi menu, mesedez. Eta edatekoa, ura.\n— Ondo da. Postrerako, gazta edo fruta?\n— Nik gazta, eta nire lagunak fruta.",
+   es:"En un restaurante: mesa para dos, menú del día (sopa y pescado), agua; postre queso y fruta.",
+   q:[{q:"Zenbat lagunentzat nahi du mahaia?",o:["Biren","Hiruren","Lauren","Bakarraren"]},{q:"Zein da bigarren platera?",o:["Arraina","Zopa","Haragia","Ensalada"]},{q:"Zer edango dute?",o:["Ura","Ardoa","Garagardoa","Esnea"]},{q:"Zer hartuko du lagunak postrerako?",o:["Fruta","Gazta","Izozkia","Ezer ez"]}]},
+  {a:"Arreta, mesedez. Donostiarako trena hogei minutu atzeratuta dago. Trena 14:30ean aterako da, hirugarren andeletik. Bidaiariei barkamena eskatzen diegu eragozpenengatik.",
+   es:"El tren a Donostia lleva 20 minutos de retraso; saldrá a las 14:30 del andén 3.",
+   q:[{q:"Zein hiritara doa trena?",o:["Donostiara","Bilbora","Gasteizera","Iruñera"]},{q:"Zenbat atzeratuta dago?",o:["Hogei minutu","Hamar minutu","Ordubete","Ordu erdi"]},{q:"Zein ordutan aterako da?",o:["14:30ean","13:30ean","15:30ean","14:00etan"]},{q:"Zein andeletik aterako da?",o:["Hirugarrenetik","Bigarrenetik","Lehenengotik","Laugarrenetik"]}]}
+ ],
+ wr:[
+  {p:"Lagun bati mezua idatzi (50-60 hitz): zure urtebetetzea ospatuko duzu. Gonbidatu eta esan non eta noiz izango den.",min:30,pts:["Agurra","Zer ospatuko duzun","Non eta noiz","Gonbidapena","Amaiera"],model:"Kaixo, Iker! Zer moduz? Larunbatean nire urtebetetzea ospatuko dut. Festa nire etxean izango da, arratsaldeko zazpietan. Lagun asko etorriko dira, eta tarta ere egingo dut. Zu ere etorri nahi duzu? Esan iezadazu laster. Laster arte!"},
+  {p:"Idatzi zer egin zenuen joan den asteburuan (50-60 hitz).",min:30,pts:["Iraganeko aditzak (joan nintzen, ikusi nuen...)","Non egon zinen","Norekin","Zer egin zenuen","Iritzia"],model:"Joan den larunbatean Donostiara joan nintzen lagunekin. Goizean hondartzan ibili ginen, eta gero tabernan bazkaldu genuen. Arratsaldean zinemara joan ginen eta pelikula polita ikusi genuen. Igandean etxean egon nintzen, atseden hartzen eta liburu bat irakurtzen. Oso asteburu polita izan zen."}
+ ],
+ sp:[
+  {p:"Hitz egin zure familiaz eta zure etxeaz (1 minutu).",pts:["Zenbat zareten eta nor","Etxe mota","Gela batzuk","Zer gustatzen zaizun etxean"],model:"Nire familian bost gara: gurasoak, nire bi anai-arrebak eta ni. Pisu batean bizi gara, hiru logela ditu. Sukaldea handia da eta egongela argitsua. Nire gelan ordenagailua eta liburu asko ditut."},
+  {p:"Kontatu zer egin zenuen atzo (1 minutu).",pts:["Goizean zer egin zenuen","Arratsaldean zer","Norekin","Iraganeko aditzak"],model:"Atzo goizean lanera joan nintzen. Bazkaltzeko, etxera itzuli nintzen. Arratsaldean lagun batekin ibili nintzen parkean, eta gero afaldu genuen. Gauean telebista pixka bat ikusi nuen eta lotara joan nintzen."}
+ ]
+};
+function simSecQ(lv,sec){
+  var D=SIM[lv][sec],q=[];
+  if(sec==="rd")D.forEach(function(x){shuffle(x.q).forEach(function(k){q.push({t:"mc",q:k.q,opts:shuffle(k.o),ans:k.o[0],why:"",txt:x.t,ctxEs:x.es})})});
+  else if(sec==="lis")D.forEach(function(x){shuffle(x.q).forEach(function(k){q.push({t:"mc",q:k.q,opts:shuffle(k.o),ans:k.o[0],why:"",aud:x.a,ctxEs:x.es})})});
+  else D.forEach(function(x){q.push({t:"sx",kind:sec==="sp"?"sp":"wr",p:x.p,pts:x.pts,min:x.min||0,model:x.model})});
+  return q;
+}
+function simNm(sec){return SIMS.filter(function(s){return s[0]===sec})[0]||["wl","Redacción de 140 palabras","Idazmena"]}
+var SIMREAL={rd:{b1:35},lis:{b1:25},wr:{b1:60},wl:{b1:60}};
+function simClock(){
+  var st=$("#stage");if(!st||!R||!R.cfg||!R.cfg.sim)return;
+  var c=R.cfg.sim,s=Math.floor((Date.now()-V.simT0)/1000),re=(SIMREAL[c.sec]||{})[c.lv],b=$("#simt");
+  if(!b){b=document.createElement("div");b.id="simt";b.style.cssText="position:fixed;top:8px;right:10px;z-index:30;background:var(--card,#fff);border:2px solid var(--line,#ddd);border-radius:12px;padding:3px 9px;font:700 13px var(--body);pointer-events:none";st.appendChild(b)}
+  b.textContent=("0"+Math.floor(s/60)).slice(-2)+":"+("0"+s%60).slice(-2)+(re?" · real: "+re+" min":"");
+  if(re&&s>re*60)b.style.color="var(--red)";
+}
+function simGet(lv,sec){return (S.sim&&S.sim[lv]&&S.sim[lv][sec])||null}
+function startSim(lv,sec){
+  var nm=simNm(sec);
+  startRun({q:simSecQ(lv,sec),exam:true,sim:{lv:lv,sec:sec},title:nm[1]});
+  V.simT0=Date.now();clearInterval(TM);TM=setInterval(simClock,1000);simClock();
+}
+function finishSim(){
+  var c=R.cfg.sim,tot=R.ok+R.bad,acc=tot?R.ok/tot:0,pct=Math.round(acc*100),pass=acc>=.6;
+  S.sim=S.sim||{};var o=S.sim[c.lv]=S.sim[c.lv]||{},e=o[c.sec]=o[c.sec]||{best:0,n:0};
+  e.n++;e.last=pct;if(pct>e.best)e.best=pct;
+  var xp=R.ok*6+(pass?20:0),up=addXP(xp);checkAch();save();
+  var secs=Math.round((Date.now()-V.simT0)/1000),tmx=Math.floor(secs/60)+" min "+("0"+secs%60).slice(-2)+" s";clearInterval(TM);TM=null;
+  var nm=simNm(c.sec),seq=V.simSeq||[],nx=seq.length?seq[0]:null;
+  stage('<div class="res">'+mascot(130,pass?"cheer":"sad")+'<h1 style="font-size:28px">'+nm[1]+' · '+SIMN[c.lv]+'</h1><p class="q" style="font-size:44px;font-weight:800;color:var(--'+(pass?"ok":"red")+')">'+pct+' %</p><p class="hint">'+(pass?"Apto en esta prueba (orientativo: 60 %).":"No apto todavía (orientativo: 60 %). Repasa y vuelve a intentarlo.")+'</p>'
+   +(up?'<p class="q" style="color:var(--ok)">¡Subes al nivel '+level()+'!</p>':'')
+   +'<div class="stat"><div><b>'+R.ok+' / '+tot+'</b><span>aciertos</span></div><div><b>'+tmx+'</b><span>tiempo</span></div><div><b>+'+xp+'</b><span>XP</span></div></div></div><div class="foot">'+(nx?'<button class="btn" data-r="simnext">Siguiente prueba</button><div style="height:10px"></div><button class="btn sec" data-r="leave">Salir</button>':'<button class="btn" data-r="leave">Continuar</button>')+'</div>');
+  V.tab="sim";R.finished=true;
+}
+function rSim(){
+  var lv=V.sl||"a1",h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Simulacros de examen</h2><p class="hint" style="margin-bottom:10px">Práctica con las cuatro pruebas de los exámenes de euskera: lectura, escucha, escritura y habla. Son simulacros propios, no oficiales: el formato real puede variar, consulta siempre la convocatoria. Con un 60 % se da la prueba por aprobada (orientativo).</p>';
+  h+='<div class="lvt">'+["a1","a2","b1","b2"].map(function(k){return '<button data-act="simlv" data-l="'+k+'" aria-pressed="'+(lv===k)+'"><span>'+SIMN[k]+'</span></button>'}).join("")+'</div>';
+  h+='<button class="rev due" data-act="simfull" data-l="'+lv+'">'+IC.check+'<div><b>Simulacro completo '+SIMN[lv]+'</b><span>Las 4 pruebas seguidas</span></div></button>';
+  SIMS.forEach(function(s){
+    var e=simGet(lv,s[0]);
+    h+='<button class="rev" data-act="simgo" data-l="'+lv+'" data-s="'+s[0]+'">'+IC.book+'<div><b>'+s[1]+' <small>('+s[2]+')</small></b><span>'+(e?'Última '+e.last+' % · mejor '+e.best+' %'+(e.best>=60?' · apto':''):s[3])+'</span></div></button>';
+  });
+  if(lv==="b1"){var ew=simGet("b1","wl");h+='<button class="rev" data-act="simgo" data-l="b1" data-s="wl">'+IC.book+'<div><b>Redacción de 140 palabras <small>(como el B1 real)</small></b><span>'+(ew?'Última '+ew.last+' % · mejor '+ew.best+' %':'Un solo texto, con contador de palabras. Menos de 112 = no apto')+'</span></div></button>'}
+  return h+'<p class="hint" style="margin-top:12px">Los textos están escritos por Claude: pásalos por una persona nativa antes de fiarte de ellos para el examen real.</p>';
+}
+
+/* ---------- entrenador de verbos ---------- */
+var VPER=[["Ni","yo"],["Zu","tú"],["Hura","él / ella"],["Gu","nosotros"],["Zuek","vosotros"],["Haiek","ellos"]];
+var VTN={pr:"Presente",pa:"Pasado",fu:"Futuro"};
+function vmk(a,b,c){return {pr:a,pa:b,fu:c}}
+var VERBS=[
+ {eu:"izan",es:"ser",n:"«Ni ikaslea naiz»: identidad, profesión, origen.",f:vmk(["naiz","zara","da","gara","zarete","dira"],["nintzen","zinen","zen","ginen","zineten","ziren"],["izango naiz","izango zara","izango da","izango gara","izango zarete","izango dira"])},
+ {eu:"egon",es:"estar",n:"«Ni ondo nago»: estados y lugares. No uses «naiz» para estar.",f:vmk(["nago","zaude","dago","gaude","zaudete","daude"],["nengoen","zeunden","zegoen","geunden","zeundeten","zeuden"],["egongo naiz","egongo zara","egongo da","egongo gara","egongo zarete","egongo dira"])},
+ {eu:"ukan",es:"tener / auxiliar",n:"Son los auxiliares de los verbos con objeto: «egiten dut», «ikusi nuen». El sujeto es quien hace la acción.",f:vmk(["dut","duzu","du","dugu","duzue","dute"],["nuen","zenuen","zuen","genuen","zenuten","zuten"],["izango dut","izango duzu","izango du","izango dugu","izango duzue","izango dute"])},
+ {eu:"joan",es:"ir",n:"Presente sintético: noa, zoaz, doa... Pasado y futuro con «joan» + auxiliar de izan.",f:vmk(["noa","zoaz","doa","goaz","zoazte","doaz"],["joan nintzen","joan zinen","joan zen","joan ginen","joan zineten","joan ziren"],["joango naiz","joango zara","joango da","joango gara","joango zarete","joango dira"])},
+ {eu:"etorri",es:"venir",n:"Presente sintético: nator, zatoz, dator...",f:vmk(["nator","zatoz","dator","gatoz","zatozte","datoz"],["etorri nintzen","etorri zinen","etorri zen","etorri ginen","etorri zineten","etorri ziren"],["etorriko naiz","etorriko zara","etorriko da","etorriko gara","etorriko zarete","etorriko dira"])},
+ {eu:"egin",es:"hacer",n:"Presente: egiten + auxiliar. Pasado: egin + auxiliar pasado. Futuro: egingo + auxiliar.",f:vmk(["egiten dut","egiten duzu","egiten du","egiten dugu","egiten duzue","egiten dute"],["egin nuen","egin zenuen","egin zuen","egin genuen","egin zenuten","egin zuten"],["egingo dut","egingo duzu","egingo du","egingo dugu","egingo duzue","egingo dute"])},
+ {eu:"ikusi",es:"ver",n:"Presente: ikusten + auxiliar. Pasado: ikusi + auxiliar pasado. Futuro: ikusiko + auxiliar.",f:vmk(["ikusten dut","ikusten duzu","ikusten du","ikusten dugu","ikusten duzue","ikusten dute"],["ikusi nuen","ikusi zenuen","ikusi zuen","ikusi genuen","ikusi zenuten","ikusi zuten"],["ikusiko dut","ikusiko duzu","ikusiko du","ikusiko dugu","ikusiko duzue","ikusiko dute"])},
+ {eu:"jakin",es:"saber",n:"Presente sintético: dakit, dakizu... Pasado sintético: nekien, zenekien...",f:vmk(["dakit","dakizu","daki","dakigu","dakizue","dakite"],["nekien","zenekien","zekien","genekien","zenekiten","zekiten"],["jakingo dut","jakingo duzu","jakingo du","jakingo dugu","jakingo duzue","jakingo dute"])}
+];
+function vQ(t,vs){
+  var q=[];
+  var combos=[];VERBS.forEach(function(v){if(vs&&vs.indexOf(v.eu)<0)return;[0,1,2,3,4,5].forEach(function(p){(t==="all"?["pr","pa","fu"]:[t]).forEach(function(tt){combos.push({v:v,p:p,t:tt})})})});
+  shuffle(combos).slice(0,12).forEach(function(c,i){
+    var f=c.v.f[c.t],ans=f[c.p],s=VPER[c.p][0]+" ___ ("+c.v.eu+", "+VTN[c.t].toLowerCase()+")",es=VPER[c.p][1]+" · "+c.v.eu+" ("+c.v.es+") · "+VTN[c.t].toLowerCase();
+    var typed=i%2===0;
+    var opts=shuffle(f.slice()).slice(0,4);if(opts.indexOf(ans)<0)opts[0]=ans;
+    q.push(mkF({s:s,es:es,o:typed?[ans]:shuffle(opts),a:[ans],w:c.v.n},typed));
+  });
+  return q;
+}
+function rVerb(){
+  var t=V.vt||"pr",h='<button class="backlink" data-tab="learn">← Camino</button><h2 class="sec-h">Entrenador de verbos</h2><p class="hint" style="margin-bottom:10px">Los verbos más usados en presente, pasado y futuro. Estudia la tabla y practica: lo que falles va a «Sin dominar».</p>';
+  h+='<div class="lvt">'+["pr","pa","fu"].map(function(k){return '<button data-act="vtn" data-t="'+k+'" aria-pressed="'+(t===k)+'"><span>'+VTN[k]+'</span></button>'}).join("")+'</div>';
+  h+='<div class="row2" style="margin-bottom:12px"><button class="btn" data-act="vdrill" data-t="'+t+'">Practicar '+VTN[t].toLowerCase()+'</button><button class="btn sec" data-act="vdrill" data-t="all">Practicar todo</button></div>';
+  VERBS.forEach(function(v){
+    h+='<div class="card"><h3 style="margin-bottom:2px">'+v.eu+' <small style="font-weight:600">· '+v.es+'</small></h3><p class="hint" style="margin-bottom:6px">'+E(v.n)+'</p>'
+     +VPER.map(function(p,i){return '<div class="exr"><span>'+p[0]+' <small>('+p[1]+')</small></span><span><b>'+E(v.f[t][i])+'</b> '+spk(v.f[t][i])+'</span></div>'}).join("")+'</div>';
+  });
+  return h;
 }
 
 /* ---------- escenario ---------- */
@@ -2538,8 +2756,14 @@ function drawEx(){
   }else if(e.t==="wr"){
     b='<p class="q">Escritura guiada</p><div class="ctx" style="font-family:var(--body);font-weight:700">'+E(e.p)+'</div><textarea id="wr" class="ta" placeholder="Escribe aquí en euskera" autocapitalize="off" spellcheck="false"'+(st.checked?" disabled":"")+'>'+E(st.val)+'</textarea>';
     can=true;
+  }else if(e.t==="sx"){
+    b='<p class="q">'+(e.kind==="wr"?"Expresión escrita":"Expresión oral")+'</p><div class="ctx" style="font-family:var(--body);font-weight:700;text-align:left">'+E(e.p)+'</div><ul style="margin:8px 0;padding-left:20px;font-weight:600">'+e.pts.map(function(c){return '<li>'+E(c)+'</li>'}).join("")+'</ul>'
+     +(e.kind==="wr"?'<textarea id="wr" class="ta" style="min-height:220px" placeholder="Escribe aquí en euskera" autocapitalize="off" spellcheck="false"'+(st.checked?" disabled":"")+'>'+E(st.val)+'</textarea><div id="wc" class="hint" style="text-align:right">0 palabras · mínimo '+e.min+'</div>':'<p class="hint">Habla en voz alta durante 1-2 minutos (si quieres, grábate con el móvil). Al terminar, pulsa «Ver modelo» y compárate con la lista.</p>');
+    can=true;
   }else if(e.t==="mc"){
-    b=(e.ctx?'<div class="ctx"><div class="eu">'+E(e.ctx)+spk(e.ctx)+'</div></div>':'')+'<p class="q">'+E(e.q)+'</p>'+optsHtml(e,st);
+    b=(e.txt?'<div class="ctx" style="font-family:var(--body);font-weight:600;line-height:1.55;text-align:left">'+E(e.txt)+'</div>':'')
+     +(e.aud?'<button class="lbig" data-say="'+E(e.aud)+'" aria-label="Escuchar">'+IC.spk+'</button><div style="text-align:center"><button class="btn sec sm" data-say="'+E(e.aud)+'" data-slow="1">Escuchar despacio</button></div>'+(st.show||st.checked?'<div class="ctx" style="font-family:var(--body);font-weight:600;line-height:1.55;text-align:left">'+E(e.aud).replace(/\n/g,"<br>")+'</div>':'<div style="text-align:center"><button class="btn sec sm" data-r="lshow">Mostrar texto</button></div>'):'')
+     +(e.ctx?'<div class="ctx"><div class="eu">'+E(e.ctx)+spk(e.ctx)+'</div></div>':'')+'<p class="q">'+E(e.q)+'</p>'+optsHtml(e,st);
     can=st.sel!==null;
   }else if(e.t==="ty"){
     b='<p class="q">Escríbelo en euskera</p><div class="big">'+E((e.w.em?e.w.em+" ":"")+e.w.es)+'</div><input id="ty" class="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Escribe aquí" value="'+E(st.val)+'"'+(st.checked?" disabled":"")+'>';
@@ -2562,16 +2786,21 @@ function drawEx(){
   }else if(e.t==="say"){
     f='<div class="row2"><button class="btn sec" data-r="saybad">Repetir luego</button><button class="btn" data-r="sayok">'+(R.st.mic&&R.st.mic.s==="done"&&R.st.mic.sc>=.85?"Continuar":"Me ha salido bien")+'</button></div>';
   }else if(e.t!=="mt"&&e.t!=="hang"){
-    f='<button class="btn" data-r="check"'+(can?"":" disabled")+'>Comprobar</button>';
+    f='<button class="btn" data-r="check"'+(can?"":" disabled")+'>'+(e.t==="sx"&&e.kind==="sp"?"Ver modelo":"Comprobar")+'</button>';
   }
   var modal=R.quitAsk?'<div class="modal"><div><h3>¿Salir de la lección?</h3><p class="hint">Perderás el progreso de esta sesión.</p><button class="btn" data-r="stay">Seguir</button><button class="btn sec" data-r="leave">Salir</button></div></div>':"";
   stage(topbar(pct)+'<div class="ex">'+b+'</div><div class="foot">'+f+'</div>'+modal);
   if((e.t==="ty"||e.t==="tw"||e.t==="dlg"||(e.t==="img"&&e.typed)||(e.t==="f"&&e.typed))&&!st.checked){var el=$("#ty");if(el)el.focus({preventScroll:true})}
+  if(e.t==="mc"&&e.aud&&!st.checked&&!st.played){st.played=true;say(e.aud)}
   if((e.t==="lis"||e.t==="lpic")&&!st.checked&&!st.played){st.played=true;say(e.t==="lpic"?e.x.eu:e.w.eu)}
 }
 function euOf(e){if(e.t==="img"||e.t==="hang"||e.t==="lpic")return e.x.eu;return e.t==="ch"?(e.dir==="es2eu"?e.ans:e.w.eu):e.t==="ty"?e.w.eu:e.t==="bd"?e.ans:e.t==="lis"?e.w.eu:""}
 function check(){
   var e=R.cur,st=R.st;if(st.checked)return;var ok=false,ans="";
+  if(e.t==="sx"){
+    if(e.kind==="wr"){var elx=$("#wr"),vx=elx?elx.value:"";var nw=vx.trim()?vx.trim().split(/\s+/).length:0;if(nw<e.min){toast("Escribe al menos "+e.min+" palabras (llevas "+nw+")");return}st.val=vx}
+    st.checked=true;st.ok=false;drawEx();return;
+  }
   if(e.t==="ch"||e.t==="mc"){if(st.sel===null)return;ok=e.opts[st.sel]===e.ans;ans=e.ans;if(e.t==="ch")rec(e.w.eu,ok)}
   else if(e.t==="ty"){var el=$("#ty"),v=el?el.value:"";if(!v.trim())return;st.val=v;ok=norm(v)===norm(e.w.eu);ans=e.w.eu;rec(e.w.eu,ok)}
   else if(e.t==="bd"){if(!st.used.length)return;ok=st.used.map(function(i){return e.tiles[i]}).join(" ")===e.ans;ans=e.ans}
@@ -2611,7 +2840,7 @@ function mtTap(side,v){
   drawEx();
 }
 function finishRun(){
-  if(R.cfg.exam)return finishExam();
+  if(R.cfg.sim)return finishSim();if(R.cfg.exam)return finishExam();
   var tot=R.ok+R.bad,acc=tot?R.ok/tot:1,xp=R.ok*(R.cfg.xpPer||10)+(R.cfg.bonus||0);
   var up=addXP(xp);if(R.cfg.onDone)R.cfg.onDone(acc);if(R.cfg.gl)glDone(acc>=.9?3:acc>=.7?2:acc>=.5?1:0);if(R.cfg.title==="¡Lección completada!"&&acc===1)SS().perf++;var gb=R.cfg.game?gameDone(R.cfg.game):0;checkAch();save();
   var pct=Math.round(acc*100),gp=(R.cfg.title==="¡Lección completada!")?goalTick():null,secs=Math.max(1,Math.round((Date.now()-(R.t0||Date.now()))/1000)),tm=Math.floor(secs/60)+":"+("0"+secs%60).slice(-2);
@@ -2963,6 +3192,11 @@ document.addEventListener("click",function(ev){
     else if(act==="theme"){S.theme=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="pal"){S.pal=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="exam"){startExam(+a.getAttribute("data-n"))}
+    else if(act==="vtn"){V.vt=a.getAttribute("data-t");render()}
+    else if(act==="vdrill"){startRun({q:vQ(a.getAttribute("data-t")),title:"¡Verbos practicados!",xpPer:8,bonus:10})}
+    else if(act==="simlv"){V.sl=a.getAttribute("data-l");render()}
+    else if(act==="simgo"){V.simSeq=[];startSim(a.getAttribute("data-l"),a.getAttribute("data-s"))}
+    else if(act==="simfull"){V.simSeq=["lis","wr","sp"];startSim(a.getAttribute("data-l"),"rd")}
     else if(act==="game"){V.gg=a.getAttribute("data-g");V.tab="gl";render();window.scrollTo(0,0)}
     else if(act==="glv"){startGameLevel(V.gg,+a.getAttribute("data-n"))}
     else if(act==="sub"){V.sub=a.getAttribute("data-s");render()}
@@ -3015,6 +3249,8 @@ document.addEventListener("click",function(ev){
   if(k==="opt"){if(R.st.checked)return;R.st.sel=+r.getAttribute("data-i");drawEx();return}
   if(k==="check"){check();return}
   if(k==="cont"){R.done++;nextEx();return}
+  if(k==="sxok"||k==="sxbad"){if(k==="sxok")R.ok++;else R.bad++;R.done++;nextEx();return}
+  if(k==="simnext"){var nxs=(V.simSeq||[]).shift();if(nxs)startSim(R.cfg.sim.lv,nxs);return}
   if(k==="tile"){if(R.st.checked)return;var i=+r.getAttribute("data-i");if(R.st.used.indexOf(i)<0){R.st.used.push(i);drawEx()}return}
   if(k==="untile"){if(R.st.checked)return;R.st.used.splice(+r.getAttribute("data-k"),1);drawEx();return}
   if(k==="hk"){hangTap(r.getAttribute("data-c"));return}
@@ -3038,6 +3274,7 @@ document.addEventListener("click",function(ev){
   if(k==="tr"){var n=+r.getAttribute("data-i");ST.tr[n]=!ST.tr[n];drawStory();return}
 });
 document.addEventListener("input",function(ev){
+  if(ev.target.id==="wr"){var wc=$("#wc"),tv=ev.target.value.trim();if(wc){var nw2=tv?tv.split(/\s+/).length:0;wc.textContent=nw2+" palabras"+(R&&R.cur&&R.cur.min?" · mínimo "+R.cur.min:"")}}
   if(ev.target.id==="vq"){V.vq=ev.target.value;var l=$("#vlist");if(l)l.innerHTML=vlist()}
 });
 document.addEventListener("keydown",function(ev){
