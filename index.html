@@ -310,6 +310,7 @@ select.inp{appearance:auto}
 .gi.hasimg{background:none!important;width:68px!important;height:68px!important;flex:none}
 .gi.hasimg svg{display:none}
 .gimg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
+.brk{background:var(--soft,#eef6f0);border-radius:12px;padding:8px 12px;margin:4px 0 8px;text-align:left}.brkbox{margin:0 0 6px}.mdet{margin:10px 0;text-align:left}.mdet summary{cursor:pointer;font-weight:700;color:var(--green);padding:6px 0}.brkr{padding:3px 0;font-size:15px}.brkr b{color:var(--green)}.brkr i{opacity:.6;font-size:13px}.brkd{margin:8px 0;text-align:left}.brkd summary{cursor:pointer;font-weight:700}
 .rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
 .rev svg{width:26px;height:26px;color:var(--blue);flex:none}
 .rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
@@ -1184,6 +1185,20 @@ var UINTRO={
  u12:["Poder, estar haciendo algo, finalidad, «cuando / antes / después» y negaciones. Son la base de las frases largas de los exámenes.",["g21"]]
 };
 
+(function(){var X={u1:["g1","g7","g12","g2","g19"],u2:["g3"],u3:["g8","g9"],u4:["g4","g5","g6"],u5:[],u6:["g6","g10","g11"],u6c:["g12","g10"],u6d:["g6"],u6b:[],u7:["g13","g14","g21","g38","g39"],u7b:["g8","g20","g24","g27"],u8:["g10","g11","g26"],u9:["g15","g25"],u8b:["g23"],u8c:["g12","g24"],u8d:["g15"],u10:["g16","g17","g28","g29","g30","g31"],u11:["g18","g32","g22","g36","g37"],u12:["g33","g34","g35"]};for(var k in X)if(UINTRO[k])UINTRO[k][1]=X[k]})();
+var LGM={l2:["g1","g7","g12"],l2b:["g2","g19"]};
+function lgr(l){
+  if(LGM[l.id])return LGM[l.id].filter(function(id){return GR.some(function(g){return g.id===id})});
+  if(l.lv===1&&l.u==="u1")return [];
+  var u=UNITS.filter(function(x){return x.L.indexOf(l)>=0})[0];if(!u)return [];
+  var ids=ugr(u),n=u.L.length,i=u.L.indexOf(l);
+  return ids.filter(function(id,j){return Math.floor(j*n/ids.length)<=i});
+}
+function lessonGate(l){if(S.open||S.done[l.id])return "";var a=lgr(l).filter(function(id){return !gOk(id)});return a[0]||""}
+function snK(s){return norm(String(s||"").replace(/[¿?¡!.,;:]/g,"")).trim()}
+function snHas(s){return !!(S.sn&&S.sn[snK(s)])}
+function snAdd(s){if(!S.sn)S.sn={};var k=snK(s);if(k)S.sn[k]=1}
+function snLesson(l){(l.w||[]).forEach(function(x){snAdd(x[0])});(l.p||[]).forEach(function(x){snAdd(x[0])});if(Object.keys(S.sn||{}).length>1500)S.sn={}}
 /* ---------- estudio previo de cada unidad (puerta) y mezcla de repaso ---------- */
 function ugr(u){var x=UINTRO[u.id];return x?x[1].filter(function(id){return GR.some(function(g){return g.id===id})}):[]}
 function gOk(id){return (S.gram[id]||0)>=2}
@@ -1216,19 +1231,33 @@ function msPrune(){
   var ks=Object.keys(S.ms);if(ks.length<=450)return;
   ks.filter(function(k){return S.ms[k].s==="d"}).sort(function(a,b){return S.ms[a].t-S.ms[b].t}).slice(0,ks.length-450).forEach(function(k){delete S.ms[k]});
 }
+function kindOf(e){
+  if(!e)return "e";
+  if(e.t==="ty"||e.t==="tw"||e.t==="bd"||e.t==="dlg"||e.t==="wr"||(e.t==="img"&&e.typed)||(e.t==="f"&&e.typed))return "w";
+  if(e.t==="lis")return "l";
+  if(e.t==="say")return "h";
+  return "e";
+}
+function msReq(k){return k.charAt(0)==="w"?["e","w","l"].concat(SR?["h"]:[]):null}
+function sayRec(e,ok){
+  if(!e||e.t!=="say")return;
+  var m0=R&&R.st&&R.st.mic,hear=m0&&m0.s==="done";
+  if(ok&&SR&&!(hear&&m0.sc>=.85))ok=false;
+  if(e.eu.indexOf(" ")<0&&e.eu.indexOf("?")<0)rec(e.eu,ok);else msRec("p:"+e.eu,e.eu,e.es,ok,null);
+}
 function msRec(k,eu,es,ok,ex){
   if(!S.ms)S.ms={};
   var m=S.ms[k];if(!m){m=S.ms[k]={eu:eu,es:es||"",f:0,sr:0,s:"n",t:0}}
   if(es&&!m.es)m.es=es;
   if(ex&&!m.x){try{m.x=JSON.parse(JSON.stringify(ex))}catch(e){}}
-  var need=(typeof R!=="undefined"&&R&&R.cfg&&R.cfg.need)||5;m.t=Date.now();
+  var kind=kindOf(typeof R!=="undefined"&&R?R.cur:null);m.t=Date.now();
+  m.kr=m.kr||{};
+  if(ok){m.sr++;m.f=0;m.kr[kind]=(m.kr[kind]||0)+1}else{m.f++;m.sr=0;m.kr[kind]=0}
+  var req=msReq(k),met=req?req.every(function(q){return (m.kr[q]||0)>=3}):m.sr>=3;
   if(ok){
-    m.sr++;m.f=0;
-    if(m.s==="s"&&m.sr>=need){m.s="d";m.f=0;m.sr=0;if(R)R.mst=(R.mst||0)+1}
-    else if(m.s==="n"&&m.sr>=3){m.s="d";m.f=0}
-    else if(m.s==="d"&&m.sr>=5)m.f=0;
+    if(met&&m.s!=="d"){if(m.s==="s"&&typeof R!=="undefined"&&R)R.mst=(R.mst||0)+1;m.s="d";m.f=0}
   }else{
-    m.f++;m.sr=0;
+    if(m.s==="d")m.s="n";
     if(m.s!=="s"&&m.f>=3){m.s="s";if(ex&&!m.x){try{m.x=JSON.parse(JSON.stringify(ex))}catch(e2){}}}
   }
   msPrune();urgCheck();
@@ -1240,7 +1269,9 @@ function msEx(it){
     w=wInfo(m.eu);if(!w)return null;
     var tw=WORDS.filter(function(x){return x.eu===m.eu})[0];
     if(!tw)return mkImg?{t:"ty",w:w}:null;
-    var r=Math.random();return r<.34?mkCh(tw,"es2eu"):r<.67?mkCh(tw,"eu2es"):r<.85?mkLis(tw):mkTy(tw);
+    var kr=m.kr||{},ord=shuffle(["e","w","l"].concat(SR?["h"]:[])).sort(function(x,y){return (kr[x]||0)-(kr[y]||0)}),kd=ord[0];
+    if(kd==="w")return mkTy(tw);if(kd==="l")return mkLis(tw);if(kd==="h")return mkSay({eu:tw.eu,es:tw.es});
+    return Math.random()<.5?mkCh(tw,"es2eu"):mkCh(tw,"eu2es");
   }
   if(t==="p"){var p=PHR.filter(function(x){return x.eu===m.eu})[0];return p?mkBd(p):(m.x?JSON.parse(JSON.stringify(m.x)):null)}
   if(!m.x)return null;
@@ -1289,11 +1320,11 @@ function rUrg(){
 }
 function rRev(){
   var t=V.rt||"s",ns=msCount("s"),nd=msCount("d"),its=msItems(t).sort(function(a,b){return t==="s"?(b.m.f-a.m.f):(b.m.t-a.m.t)});
-  var h='<button class="backlink" data-tab="prac">← Estudio</button><h2 class="sec-h">Repaso</h2><p class="hint" style="margin-bottom:10px">Lo que fallas se guarda en <b>Sin dominar</b>. Con 5 aciertos seguidos en la Aventura (o 10 aquí) pasa a <b>Dominado</b>. Si fallas 3 veces seguidas algo, pasa a Sin dominar (también las dominadas).</p>';
+  var h='<button class="backlink" data-tab="prac">← Estudio</button><h2 class="sec-h">Repaso</h2><p class="hint" style="margin-bottom:10px">Lo que fallas se guarda en <b>Sin dominar</b>. Una palabra pasa a <b>Dominado</b> cuando la aciertas <b>3 veces seguidas en cada modalidad</b>: elegir, escribir, escuchar y hablar. Frases y conjugaciones: 3 aciertos seguidos. Si fallas 3 veces seguidas algo, pasa a Sin dominar.</p>';
   h+='<div class="seg"><button class="sg" data-act="rt" data-v="s" aria-pressed="'+(t==="s")+'">Sin dominar ('+ns+')</button><button class="sg" data-act="rt" data-v="d" aria-pressed="'+(t==="d")+'">Dominado ('+nd+')</button></div>';
   h+='<button class="btn" style="margin:12px 0" data-act="msgo" data-v="'+t+'"'+(its.length<2?' disabled':'')+'>'+(t==="s"?'Repasar sin dominar':'Repasar dominadas')+'</button>';
   if(!its.length)h+='<div class="card"><p class="hint">'+(t==="s"?"Ahora mismo no tienes nada sin dominar. ¡Bien!":"Todavía no hay dominadas. Se añaden según practicas.")+'</p></div>';
-  else{h+='<div class="card" style="padding:4px 12px">';its.slice(0,120).forEach(function(it){h+='<div class="vrow"><span class="dot '+(t==="d"?"l3":"")+'"></span><div class="tx"><div class="eu">'+E(it.m.eu)+'</div><div class="es">'+E(it.m.es||"")+(t==="s"?' · racha '+it.m.sr+'/5':'')+'</div></div>'+spk(it.m.eu)+'</div>'});h+='</div>'}
+  else{h+='<div class="card" style="padding:4px 12px">';its.slice(0,120).forEach(function(it){h+='<div class="vrow"><span class="dot '+(t==="d"?"l3":"")+'"></span><div class="tx"><div class="eu">'+E(it.m.eu)+'</div><div class="es">'+E(it.m.es||"")+(it.k.charAt(0)==="w"?' · '+msReq(it.k).map(function(q){return {e:"Elegir",w:"Escribir",l:"Escuchar",h:"Hablar"}[q]+' '+Math.min(3,(it.m.kr&&it.m.kr[q])||0)+'/3'}).join(' · '):(t==="s"?' · racha '+it.m.sr+'/3':''))+'</div></div>'+spk(it.m.eu)+'</div>'});h+='</div>'}
   return h;
 }
 function uintro(u){
@@ -1503,6 +1534,8 @@ function dayKey(d){var y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();return 
 function def(){return {gl:{},pt:{},pa:{},ms:{},urg:0,gems:0,pz:{},pza:"",gl:{d:"",n:0,got:[0,0,0]},cx:{},xp:0,streak:0,last:"",done:{},words:{},story:0,best:{pairs:0},sound:true,gram:{},daily:"",open:false,st:{},ach:{},dg:""}}
 function load(){try{var j=JSON.parse(localStorage.getItem("hitzez1"));if(j&&typeof j==="object"){var d=def();for(var k in j)d[k]=j[k];if(!d.best)d.best={pairs:0,wordle:0};return d}}catch(e){}return def()}
 var S=load();
+(function(){if(S.snv)return;try{LESSONS.forEach(function(l){if(S.done[l.id]||(S.pt&&S.pt[l.id]))snLesson(l)})}catch(e){}S.snv=1})();
+(function(){if(S.msv===2)return;try{for(var k in (S.ms||{})){var m=S.ms[k];if(m.s==="d"&&!m.kr&&k.charAt(0)==="w"){m.s="n";m.sr=0}}}catch(e){}S.msv=2})();
 
 /* ---------- tema: claro/oscuro/auto y paleta de color ---------- */
 var PALS={
@@ -1890,13 +1923,13 @@ function dailyQueue(){
   return shuffle(q);
 }
 GR.push(
-{id:"g20",t:"El pasado",s:"Participio + auxiliar en pasado",
+{id:"g38",t:"El pasado",s:"Participio + auxiliar en pasado",
  x:"El pasado se forma con el <b>participio</b> (egin, joan, ikusi) y el <b>auxiliar en pasado</b>.<br><br>• Verbos de «ir/venir/ser» (tipo <b>naiz</b>): <b>joan nintzen</b> (fui), <b>etorri zen</b> (vino), <b>joan ziren</b> (fueron).<br>• Verbos con objeto (tipo <b>dut</b>): <b>egin nuen</b> (hice), <b>ikusi zuen</b> (vio), <b>jan genuen</b> (comimos).<br>• Auxiliares de pasado: nintzen, zinen, zen, ginen, zineten, ziren / nuen, zenuen, zuen, genuen, zenuten, zuten.<br><br>Palabras útiles: <b>atzo</b> (ayer), <b>joan den astean</b> (la semana pasada), <b>iaz</b> (el año pasado).",
  ex:[["Atzo Bilbora joan nintzen","Ayer fui a Bilbao"],["Zer egin zenuen?","¿Qué hiciste?"],["Ogia jan genuen","Comimos pan"],["Anek filma ikusi zuen","Ane vio la película"],["Joan den astean etorri ziren","La semana pasada vinieron"]],
  q:[{q:"¿Cómo se dice «yo hice»?",o:["egin nuen","egin dut","egingo dut"],a:"egin nuen",w:"Participio egin + auxiliar de pasado nuen."},
     {q:"Completa: Atzo etxera joan ___ (fui)",o:["nintzen","nuen","naiz"],a:"nintzen",w:"Joan va con el auxiliar tipo naiz: joan nintzen."},
     {q:"¿Qué significa «iaz»?",o:["el año pasado","ayer","mañana"],a:"el año pasado",w:"Iaz = el año pasado; atzo = ayer."}]},
-{id:"g21",t:"El futuro",s:"Participio + -ko / -go",
+{id:"g39",t:"El futuro",s:"Participio + -ko / -go",
  x:"El futuro es el <b>participio + -ko</b> y el auxiliar en presente: <b>etorriko naiz</b> (vendré), <b>ikusiko dut</b> (veré).<br>Tras <b>n</b> se usa <b>-go</b>: <b>egin → egingo</b>, <b>joan → joango</b>, <b>izan → izango</b>, <b>egon → egongo</b>.<br><br>Palabras útiles: <b>bihar</b> (mañana), <b>etzi</b> (pasado mañana), <b>datorren astean</b> (la semana que viene), <b>noizbait</b> (algún día).",
  ex:[["Bihar etorriko naiz","Mañana vendré"],["Datorren astean Bilbora joango gara","La semana que viene iremos a Bilbao"],["Zer egingo duzu?","¿Qué harás?"],["Euria egingo du","Lloverá"],["Etxean egongo naiz","Estaré en casa"]],
  q:[{q:"¿Futuro de «egin» (hacer)?",o:["egingo","egiko","egiten"],a:"egingo",w:"Tras n se usa -go: egin → egingo."},
@@ -2005,10 +2038,66 @@ function rGram(){
   GR.forEach(function(g,i){var d=S.gram[g.id];h+='<button class="card gcard'+(d?' done':'')+'" data-act="gopen" data-id="'+g.id+'"><span class="gn">'+(d?IC.check:(i+1))+'</span><span style="min-width:0"><h3>'+g.t+'</h3><p>'+g.s+'</p></span></button>'});
   return h;
 }
+/* ---------- desglose de frases ---------- */
+var GLX=null;
+var FUNCW=[["ni","yo"],["zu","tú"],["hura","él / ella / aquello"],["gu","nosotros"],["zuek","vosotros"],["haiek","ellos"],["hau","este / esto"],["hori","ese / eso"],["hauek","estos"],["horiek","esos"],["eta","y"],["baina","pero"],["edo","o"],["ez","no"],["bai","sí"],["ere","también"],["zer","qué"],["nor","quién"],["non","dónde"],["nora","adónde"],["noiz","cuándo"],["nola","cómo"],["zergatik","¿por qué?"],["zenbat","cuánto"],["zein","cuál"],["nongoa","de dónde (non + -koa)"],["nongo","de dónde"],["al","(partícula de pregunta)"],["oso","muy"],["asko","mucho"],["gutxi","poco"],["ondo","bien"],["gaizki","mal"],["gaur","hoy"],["atzo","ayer"],["bihar","mañana"],["hemen","aquí"],["hor","ahí"],["han","allí"],["orain","ahora"],["beti","siempre"],["inoiz","nunca / alguna vez"],["ezer","nada / algo"],["inor","nadie / alguien"],["nahi","querer"],["behar","necesitar / tener que"],["dezaket","puedo"],["mesedez","por favor"],["eskerrik asko","muchas gracias"],["kaixo","hola"],["agur","adiós"],["egun on","buenos días"],["arratsalde on","buenas tardes"],["gabon","buenas noches"],["baino","que (comparativo)"],["bezain","tan... como"],["gehiago","más"],["-ago","más (comparativo)"],["nire","mi"],["zure","tu"],["bere","su"],["gure","nuestro"],["zuen","vuestro"],["haien","su (de ellos)"],["niri","a mí"],["zuri","a ti"],["hari","a él / ella"],["guri","a nosotros"],["zuei","a vosotros"],["haiei","a ellos"],["nik","yo (sujeto de verbo con objeto)"],["zuk","tú (sujeto)"],["hark","él / ella (sujeto)"],["guk","nosotros (sujeto)"],["zuek","vosotros"],["haiek","ellos"],["bat","un / una"],["bi","dos"],["hiru","tres"],["lau","cuatro"],["bost","cinco"],["urte","años"],["ditut","tengo (varios) / auxiliar"],["dut","lo tengo / auxiliar (yo)"],["duzu","lo tienes / auxiliar (tú)"],["du","lo tiene / auxiliar (él)"],["dugu","lo tenemos / auxiliar (nosotros)"],["duzue","lo tenéis / auxiliar (vosotros)"],["dute","lo tienen / auxiliar (ellos)"],["gustatzen","gustar"],["zait","me (le a mí) / auxiliar"],["zaizu","te / auxiliar"],["zaio","le / auxiliar"],["zaigu","nos / auxiliar"],["zaizkit","(varios) me / auxiliar"],["etorriko","vendrá / venir (futuro)"],["joango","ir (futuro)"],["egingo","hacer (futuro)"],["izango","ser (futuro)"],["egongo","estar (futuro)"],["ikusiko","ver (futuro)"],["ari","(estar haciendo)"],["hona","hacia aquí"],["edan","beber"],["edaten","bebiendo / bebe"],["edango","beberá"],["uste","creer / opinión"],["geratu","quedarse"],["deitu","llamar"],["filma","película"],["astean","en la semana"],["aste","semana"],["daukazu","tienes"],["dauka","tiene"],["daukat","tengo"],["badago","hay (o ¿hay?)"],["euskara","euskera"],["jende","gente"],["altu","alto"],["dela","que es / que está (-(e)la)"],["diot","a él/ella lo digo/doy (auxiliar)"],["dio","auxiliar (a él/ella)"],["dizut","te lo (yo a ti)"],["didazu","me lo (tú a mí)"],["dit","me lo (él/ella a mí)"],["diogu","le lo (nosotros a él/ella)"],["ur","agua"],["etxe","casa"],["lagun","amigo"],["lan","trabajo"],["ama","madre"],["aita","padre"]];
+var VESP={izan:{pr:["soy","eres","es","somos","sois","son"],pa:["era / fui","eras / fuiste","era / fue","éramos / fuimos","erais / fuisteis","eran / fueron"]},egon:{pr:["estoy","estás","está","estamos","estáis","están"],pa:["estaba","estabas","estaba","estábamos","estabais","estaban"]}};
+function glossInit(){
+  if(GLX)return GLX;
+  GLX={};
+  function add(k,v){k=norm(k);if(k&&!GLX[k])GLX[k]=v}
+  FUNCW.forEach(function(f){add(f[0],f[1])});
+  VERBS.forEach(function(v){["pr","pa","fu"].forEach(function(t){v.f[t].forEach(function(form,i){
+    var es=(VESP[v.eu]&&VESP[v.eu][t])?VESP[v.eu][t][i]:(VPER[i][1]+" · "+v.es);
+    add(form,es+" ("+v.eu+", "+VTN[t].toLowerCase()+")");
+    var parts=form.split(" ");if(parts.length>1){add(parts[0],v.es+" (forma verbal: "+v.eu+")")}
+  })})});
+  WORDS.forEach(function(w){add(w.eu,w.es);add(w.eu.replace(/a$/,""),w.es)});
+  DICT.forEach(function(d){add(d.eu,d.es);add(ART(d.eu),d.es)});
+  VOCT.forEach(function(t){t.w.forEach(function(a){add(a[0],a[1]);add(a[0].replace(/a$/,""),a[1])})});
+  return GLX;
+}
+var SUFX=[["rekin","con"],["ekin","con"],["rentzat","para"],["entzat","para"],["gatik","por"],["tik","desde / de"],["ra","a (destino)"],["ri","a (a alguien)"],["ren","de (posesión)"],["en","de / del"],["koa","el/la de (origen)"],["ko","de (lugar o tiempo)"],["an","en (el/la)"],["rik","(partitivo: negación/pregunta)"],["ik","(partitivo)"],["ei","a los (dativo plural)"],["ak","los / las (o sujeto)"],["ek","(sujeto plural)"],["k","(sujeto de verbo con objeto)"],["n","en"],["z","con / por medio de"],["a","el / la"]];
+function glossTok(t){
+  var G=glossInit(),k=norm(t);if(!k)return null;
+  if(/^\d+$/.test(k))return {g:k+" (número)"};
+  if(G[k])return {g:G[k]};
+  for(var i=0;i<SUFX.length;i++){
+    var s=SUFX[i][0];if(k.length>s.length+2&&k.slice(-s.length)===s){
+      var b=k.slice(0,-s.length);
+      var c=[b,b+"a",b+"e",b.replace(/a$/,""),b.replace(/r$/,"")];
+      for(var j=0;j<c.length;j++){if(G[c[j]])return {g:G[c[j]]+" + «-"+s+"» = "+SUFX[i][1]}}
+    }
+  }
+  return null;
+}
+function brkHtml(sent){
+  var s=String(sent).split(" → ")[0].replace(/[¿?¡!.,;:«»"]/g," ").replace(/\s+/g," ").trim();
+  if(!s)return "";
+  var toks=s.split(" "),rows=[],i=0,G=glossInit();
+  while(i<toks.length){
+    var two=i+1<toks.length?norm(toks[i]+" "+toks[i+1]):"";
+    if(two&&G[two]){rows.push([toks[i]+" "+toks[i+1],G[two]]);i+=2;continue}
+    var r=glossTok(toks[i]),tk=toks[i];
+    if(!r&&/^[A-ZÁÉÍÓÚÑ]/.test(tk)){var low=norm(tk),sf2="";for(var q=0;q<SUFX.length;q++){var sx=SUFX[q][0];if(low.length>sx.length+1&&low.slice(-sx.length)===sx){sf2=" + «-"+sx+"» = "+SUFX[q][1];break}}r={g:"nombre propio"+sf2}}
+    rows.push([tk,r?r.g:null]);i++;
+  }
+  return '<div class="brk">'+rows.map(function(r){return '<div class="brkr"><b>'+E(r[0])+'</b> <span>'+(r[1]?'= '+E(r[1]):'<i>(sin glosa: mira el diccionario)</i>')+'</span></div>'}).join("")+'</div>';
+}
+function sentOf(e){
+  if(e.t==="bd")return e.ans;
+  if(e.t==="f")return e.s.replace("___",e.ans);
+  if(e.t==="tw")return e.ok[0];
+  if(e.t==="dlg")return e.model;
+  if(e.t==="cz")return e.eu.replace(/\{(\d)\}/g,function(m,n){return e.b[n].a});
+  if(e.t==="say")return e.eu;
+  return "";
+}
+var GM={"g1": "<b>Cómo se construye una frase</b><br>\nOrden habitual: <b>quién – qué / dónde / cuándo – verbo</b>. Ejemplo: <b>Amak ogia jaten du</b> = «mamá (sujeto) · el pan (lo que come) · come». El verbo cierra la frase.<br><br>\n<b>Verbos «sueltos» y verbos «en dos piezas»</b><br>\n• Unos pocos verbos se conjugan solos: <b>naiz</b> (soy), <b>nago</b> (estoy), <b>noa</b> (voy).<br>\n• La mayoría llevan <b>dos piezas</b>: el verbo con el significado (participio) + un <b>auxiliar</b> que dice quién lo hace: <b>jaten dut</b> = «comer + yo lo hago». Primero va el significado y después el auxiliar.<br><br>\n<b>Lo que quieres destacar va justo antes del verbo</b><br>\n<b>Ane etxean dago</b> (Ane está EN CASA) / <b>Etxean Ane dago</b> (es ANE quien está en casa). Las palabras interrogativas también van justo antes del verbo: <b>Non dago Ane?</b><br><br>\n<b>En negativo</b>, <b>ez</b> se coloca delante del auxiliar y el significado queda detrás: <b>Ez dut ogia jaten</b> (no como pan). Con izan/egon: <b>Ez naiz ikaslea</b>.<br><br>\n<b>Duda frecuente:</b> «¿Y si cambio el orden?» Se entiende, pero cambia el énfasis. Para empezar, sigue el orden de los ejemplos y no te equivocarás.", "g2": "<b>Letras que no suenan como en español</b><br>\n• <b>h</b>: es muda. <b>hitz</b> (palabra) se lee «itz»; <b>hamar</b> se lee «amar».<br>\n• <b>z</b>: suena como una «s», no como la «z» de «zapato»: <b>zu</b> se lee «su».<br>\n• <b>s</b>: «s» más cerrada y gruesa, parecida a la «s» de «sol» de España.<br>\n• <b>x</b>: «sh» (<b>xake</b>, ajedrez); <b>tx</b>: «ch» (<b>txakur</b>, perro).<br>\n• <b>j</b>: depende de la zona (como una «j» suave o como una «y»): <b>jan</b>, <b>joan</b>.<br>\n• <b>g</b>: siempre dura, como en «gato»: <b>gizon</b> = «guizon». <b>gu</b> se lee «gu».<br>\n• <b>ñ</b>, <b>ll</b>, <b>tt</b> y <b>dd</b> aparecen en nombres y diminutivos (<b>ttipi</b>); no te preocupes por ellos al empezar.<br>\n• <b>rr</b> es una «r» fuerte vibrante (<b>erre</b>); <b>r</b> entre vocales es suave.<br><br>\n<b>Vocales:</b> a, e, i, o, u se pronuncian siempre igual, sin reducirse. <b>Duda frecuente:</b> «¿Cómo sé dónde va el acento?» Se aprende escuchando; usa el altavoz de las frases y repítelas en voz alta con el micro.", "g3": "<b>Cómo se forma cada versión</b><br>\n• Palabra sola: <b>etxe</b> (casa, en general).<br>\n• Con artículo: <b>etxea</b> (la casa). Si acaba en consonante se añade <b>-a</b>: <b>gizon → gizona</b>. Si ya acaba en -a no cambia: <b>ama → ama</b>.<br>\n• Un/una: <b>etxe bat</b> (la palabra va sin -a).<br>\n• Plural con artículo: <b>-ak</b>: <b>etxeak</b>, <b>gizonak</b>, <b>amak</b>.<br>\n• Algunos/as: <b>etxe batzuk</b>.<br><br>\n<b>Con números, el nombre va en singular sin artículo:</b> <b>bi etxe</b> (dos casas), <b>hiru liburu</b> (tres libros), <b>hamar euro</b>. Nunca «bi etxeak».<br><br>\n<b>Duda frecuente:</b> «<b>etxeak</b> ¿son las casas o es otra cosa?» Puede ser «las casas» y también «la casa» como sujeto de verbos tipo <b>du</b> (<b>Etxeak ura behar du</b>, lo verás luego). El verbo lo aclara: <b>da/dago</b> = un solo sujeto, <b>dira/daude</b> = varios. Lo verás en «El sujeto con -k».", "g4": "<b>Tabla de izan (presente)</b><br>\nni <b>naiz</b> · zu <b>zara</b> · hura <b>da</b> · gu <b>gara</b> · zuek <b>zarete</b> · haiek <b>dira</b><br><br>\n<b>Negativo:</b> <b>ez naiz</b>, <b>ez zara</b>, <b>ez da</b>, <b>ez gara</b>, <b>ez zarete</b>, <b>ez dira</b>. Ejemplo: <b>Ez naiz irakaslea</b>.<br>\n<b>Pregunta:</b> sube la entonación o añade <b>al</b>: <b>Ikaslea zara?</b> / <b>Ikaslea al zara?</b><br><br>\n<b>Qué se dice con izan</b><br>\n• Identidad y profesión: <b>Ane naiz</b>, <b>Irakaslea da</b>.<br>\n• Origen: <b>Espainiakoa naiz</b> (de España), <b>Bilbokoa da</b> (es de Bilbao).<br>\n• Cómo es algo: <b>Etxea handia da</b>.<br>\n• Eventos: <b>Kontzertua Donostian da</b> (aunque haya lugar, un evento «es», no «está»).<br><br>\n<b>El predicado lleva artículo:</b> <b>ikaslea naiz</b>, <b>irakaslea da</b> (no «ikasle naiz»).<br>\n<b>Con plural:</b> <b>Ikasleak gara</b>, <b>Lagunak dira</b>.<br><br>\n<b>Duda frecuente:</b> «¿Siempre tengo que decir <b>ni</b>, <b>zu</b>?» No. El verbo ya indica la persona: <b>Ikaslea naiz</b> basta. Los pronombres se usan para contrastar: <b>Ni ikaslea naiz, eta zu?</b>", "g5": "<b>Tabla de egon (presente)</b><br>\nni <b>nago</b> · zu <b>zaude</b> · hura <b>dago</b> · gu <b>gaude</b> · zuek <b>zaudete</b> · haiek <b>daude</b><br><br>\n<b>Negativo:</b> <b>ez nago</b>, <b>ez zaude</b>, <b>ez dago</b>, <b>ez gaude</b>, <b>ez zaudete</b>, <b>ez daude</b>.<br><br>\n<b>Dónde y cómo se está</b><br>\n• Lugar: <b>Ane Bilbon dago</b>, <b>Non zaude?</b> (¿dónde estás?).<br>\n• Estado: <b>ondo nago</b>, <b>nekatuta nago</b> (cansado), <b>pozik nago</b> (contento), <b>gaixo nago</b> (enfermo).<br>\n• Tiempo: <b>Hotz dago</b> (hace frío), <b>Eguraldi ona dago</b> (hace buen tiempo).<br><br>\n<b>Izan o egon — regla rápida:</b> si es <b>quién/qué es</b> (identidad, profesión, origen, cómo es) → <b>izan</b>. Si es <b>dónde está</b> o <b>cómo se encuentra ahora</b> → <b>egon</b>.<br>\n<b>Duda frecuente:</b> «¿Y para decir ‘hay’?» También con <b>egon</b>: <b>Mahaian liburu bat dago</b> (hay un libro en la mesa), <b>Mahaian liburuak daude</b> (hay libros).", "g6": "<b>Dos usos distintos del adjetivo</b><br>\n• Dentro de la expresión (detrás del nombre, con artículo): <b>etxe handia</b> (la casa grande). Aquí el artículo va en el adjetivo.<br>\n• Con el verbo ser: <b>Etxea handia da</b> (la casa es grande): aquí los dos llevan -a.<br><br>\n<b>Plural:</b> <b>etxe handiak</b> (las casas grandes) · <b>Etxeak handiak dira</b> (las casas son grandes).<br>\n<b>Con «un/una»:</b> <b>etxe handi bat</b> (una casa grande): el adjetivo va entre el nombre y <b>bat</b>, sin -a.<br><br>\n<b>Este / ese / aquel</b><br>\n<b>hau</b> (este, cerca de mí) · <b>hori</b> (ese, cerca de ti) · <b>hura</b> (aquel, lejos de los dos).<br>\nPlural: <b>hauek</b>, <b>horiek</b>, <b>haiek</b>. Se colocan detrás del nombre sin artículo: <b>etxe hau</b>, <b>etxe hauek</b>.<br><br>\n<b>Duda frecuente:</b> «¿<b>hau</b> también significa ‘esto’?» Sí: <b>Hau Ane da</b> (esta es Ane), <b>Hau zer da?</b> (¿qué es esto?).", "g7": "<b>Tabla de pronombres</b><br>\nni (yo) · zu (tú) · hura (él/ella) · gu (nosotros) · zuek (vosotros) · haiek (ellos)<br><br>\n<b>Posesivos (van delante del nombre)</b><br>\nnire (mi) · zure (tu) · bere (su, de él/ella) · gure (nuestro) · zuen (vuestro) · haien (su, de ellos)<br><br>\n<b>«Mío», «tuyo»...</b> cuando no hay nombre: <b>nirea</b>, <b>zurea</b>, <b>berea</b>, <b>gurea</b>, <b>zuena</b>, <b>haiena</b>. <b>Liburu hau nirea da</b> (este libro es mío).<br><br>\n<b>De alguien con nombre:</b> se añade <b>-(r)en</b> al nombre y va delante: <b>Aneren etxea</b> (la casa de Ane), <b>amaren liburua</b> (el libro de mamá).<br><br>\n<b>Zu y hi:</b> <b>zu</b> es el «tú» normal y educado. Existe <b>hi</b> (tú muy confiado, de uso informal en algunas zonas); para estudiar y para el examen usa siempre <b>zu</b>.<br>\n<b>Duda frecuente:</b> «¿Qué es <b>bere</b>?» Es «su» de una sola persona (él o ella), y también «su» propio: <b>Ane bere etxean dago</b> (Ane está en su casa).", "g8": "<b>Ideas clave</b><br>\nEl euskera no usa preposiciones sueltas: añade una <b>terminación al final de la palabra</b>. Con <b>etxe</b>:<br>\n• <b>etxean</b> en la casa · <b>etxera</b> a la casa · <b>etxetik</b> desde la casa · <b>etxeko</b> de la casa (que está en ella) · <b>etxerantz</b> hacia la casa · <b>etxeraino</b> hasta la casa.<br><br>\n<b>Pequeñas variaciones</b><br>\n• Palabras que acaban en vocal + <b>a</b> (artículo): <b>etxe+a+n → etxean</b>.<br>\n• Palabras que acaban en consonante: <b>gizon → gizonean</b> (en el hombre), <b>mendi → mendian</b> (en el monte).<br>\n• Nombres propios de lugar: <b>Bilbon</b>, <b>Donostian</b>, <b>Gasteizen</b>, <b>Bilbora</b>, <b>Bilbotik</b>, <b>Bilboko</b>.<br><br>\n<b>Con personas</b> lugar y dirección usan <b>-ren + gan/gana/gandik</b>: <b>Anerengana noa</b> (voy hacia Ane / a donde está Ane). Lo verás más adelante.<br><br>\n<b>Duda frecuente:</b> «¿Cómo sé si es <b>-n</b> o <b>-an</b>?» Con el artículo, siempre <b>-an</b> (<b>etxean</b>). En nombres propios sin artículo, <b>-n</b> (<b>Bilbon</b>) o <b>-an</b> si acaban en -a (<b>Donostian</b>).", "g9": "<b>Joan (ir) y etorri (venir) conjugados</b><br>\n<b>noa</b> voy · <b>zoaz</b> vas · <b>doa</b> va · <b>goaz</b> vamos · <b>zoazte</b> vais · <b>doaz</b> van<br>\n<b>nator</b> vengo · <b>zatoz</b> vienes · <b>dator</b> viene · <b>gatoz</b> venimos · <b>zatozte</b> venís · <b>datoz</b> vienen<br><br>\n<b>Preguntas de movimiento</b><br>\n<b>Nora zoaz?</b> (¿adónde vas?) → <b>Etxera noa</b>.<br>\n<b>Nondik zatoz?</b> (¿de dónde vienes?) → <b>Eskolatik nator</b>.<br><br>\n<b>Con -ra y -tik:</b> destino <b>-ra</b> (<b>Bilbora noa</b>) y origen <b>-tik</b> (<b>Bilbotik nator</b>).<br>\n<b>Negativo:</b> <b>ez noa</b>, <b>ez dator</b>.<br><br>\n<b>Duda frecuente:</b> «¿Por qué <b>noa</b> y no <b>naiz joaten</b>?» <b>Noa</b> es la forma conjugada de joan y la normal en el presente; <b>joaten naiz</b> sirve para el hábito: <b>Egunero eskolara joaten naiz</b> (voy a la escuela cada día).", "g10": "<b>Tabla de ukan: el auxiliar con objeto singular</b><br>\nnik <b>dut</b> · zuk <b>duzu</b> · hark <b>du</b> · guk <b>dugu</b> · zuek <b>duzue</b> · haiek <b>dute</b><br>\n<b>Con objeto plural:</b> <b>ditut</b>, <b>dituzu</b>, <b>ditu</b>, <b>ditugu</b>, <b>dituzue</b>, <b>dituzte</b>. <b>Liburua dut</b> (tengo el libro) / <b>Liburuak ditut</b> (tengo los libros).<br><br>\n<b>Dos piezas:</b> participio + auxiliar. Presente habitual con <b>-ten / -tzen</b>: <b>jan → jaten</b>, <b>edan → edaten</b>, <b>ikusi → ikusten</b>, <b>ikasi → ikasten</b>, <b>irakurri → irakurtzen</b>. Lo más fiable: aprende cada verbo con su forma.<br><br>\n<b>Con nahi y behar:</b> <b>Kafea nahi dut</b> (quiero un café), <b>Ikasi nahi dut</b> (quiero estudiar), <b>Lan egin behar dut</b> (tengo que trabajar).<br><br>\n<b>Negativo y pregunta:</b> <b>Ez dut ogia jaten</b> · <b>Ogia jaten duzu?</b><br>\n<b>Duda frecuente:</b> «¿Por qué <b>dut</b> y no <b>naiz</b>?» Porque el verbo es «transitivo» (hay algo que se hace sobre un objeto): se conjuga con ukan (<b>dut</b>). Para ser/estar se usan izan/egon.", "g11": "<b>Cuándo se pone -k al sujeto</b><br>\nCon verbos cuyo auxiliar es <b>du, dut, duzu, dugu, dute, ditu...</b> (los de «hacer algo a algo») el sujeto lleva <b>-k</b>. Con <b>da, naiz, dago, doa...</b> no lleva.<br><br>\n<b>Ejemplos</b><br>\n• <b>Ane etorri da</b> (sin -k) · <b>Anek ogia jaten du</b> (con -k).<br>\n• <b>Gizona etorri da</b> · <b>Gizonak liburua irakurtzen du</b>.<br>\n• Plural: <b>umeek ogia jaten dute</b> (los niños comen pan): <b>-ek</b>.<br><br>\n<b>Pronombres con -k:</b> <b>nik</b>, <b>zuk</b>, <b>hark</b>, <b>guk</b>, <b>zuek</b>, <b>haiek</b>.<br><br>\n<b>Nombres propios:</b> <b>Ane → Anek</b>, <b>Jon → Jonek</b>, <b>Miren → Mirenek</b>.<br>\n<b>Truco:</b> mira el verbo final. Si lleva <b>-u-</b> (<b>du, dute, dugu</b>), el sujeto lleva <b>-k</b>.<br>\n<b>Duda frecuente:</b> «¿Y si no lo pongo?» Se entiende, pero no es correcto para el examen.", "g12": "<b>Palabras interrogativas</b><br>\n<b>zer</b> qué · <b>nor</b> quién · <b>non</b> dónde · <b>nora</b> adónde · <b>nondik</b> de dónde (vengo) · <b>nongoa</b> de dónde (eres, de qué lugar) · <b>noiz</b> cuándo · <b>nola</b> cómo · <b>zergatik</b> por qué · <b>zenbat</b> cuánto · <b>zein</b> cuál.<br><br>\n<b>Nongoa zara?</b> = «¿de dónde eres?»; respuesta con <b>-koa</b>: <b>Espainiakoa naiz</b>, <b>Bilbokoa naiz</b>. Aquí <b>zara</b> es «eres».<br><br>\n<b>Dónde van:</b> la palabra interrogativa va justo antes del verbo: <b>Non bizi zara?</b> (¿dónde vives?).<br><br>\n<b>Preguntas de sí/no:</b> entonación + «?» o con <b>al</b> justo delante del verbo: <b>Euskaraz hitz egiten al duzu?</b><br>\n<b>Respuestas:</b> <b>bai</b> (sí) y <b>ez</b> (no). <b>Ez dakit</b> (no lo sé), <b>Ez dut ulertzen</b> (no entiendo).<br><br>\n<b>Negación:</b> <b>ez</b> + auxiliar: <b>Ez dut nahi</b>, <b>Ez naiz etorriko</b>, <b>Ez dago</b>.", "g13": "<b>Pasado de izan (era / fui)</b><br>\n<b>nintzen</b> · <b>zinen</b> · <b>zen</b> · <b>ginen</b> · <b>zineten</b> · <b>ziren</b><br>\n<b>Pasado de egon (estaba / estuve)</b><br>\n<b>nengoen</b> · <b>zeunden</b> · <b>zegoen</b> · <b>geunden</b> · <b>zeundeten</b> · <b>zeuden</b><br><br>\n<b>Negativo:</b> <b>ez nintzen</b>, <b>ez zegoen</b>.<br>\n<b>Ejemplos:</b> <b>Atzo etxean nengoen</b> (ayer estaba en casa) · <b>Txikia nintzenean...</b> (cuando era pequeño...).<br><br>\n<b>Duda frecuente:</b> «¿Distingue el euskera entre imperfecto y indefinido?» Con izan/egon usa una sola forma; el contexto (<b>atzo</b>, <b>orain dela bi urte</b>...) indica el momento.", "g14": "<b>Pasado con auxiliar:</b> participio + <b>nuen, zenuen, zuen, genuen, zenuten, zuten</b>: <b>Ogia jan nuen</b> (comí pan). Objeto plural: <b>nituen, zenituen, zituen, genituen, zenituzten, zituzten</b>.<br><br>\n<b>Futuro:</b> participio + <b>-ko</b> (tras vocal) o <b>-go</b> (tras -n): <b>ikusiko</b>, <b>etorriko</b>, <b>joango</b>, <b>jango</b>, <b>egingo</b>. Después va el auxiliar de presente: <b>Bihar ogia jango dut</b>, <b>Etorriko naiz</b>.<br><br>\n<b>Marcadores de tiempo:</b> <b>atzo</b> (ayer), <b>gaur</b> (hoy), <b>bihar</b> (mañana), <b>joan den astean</b> (la semana pasada), <b>datorren astean</b> (la semana que viene).<br><br>\n<b>Duda frecuente:</b> «¿Cómo distingo el participio del presente habitual?» Presente: <b>jaten dut</b> (habitual, hago). Pasado: <b>jan dut</b> (he comido, ya hecho). Futuro: <b>jango dut</b> (comeré).", "g15": "<b>Cómo funciona «gustar»</b><br>\nEn euskera se dice «a mí me gusta» literalmente: <b>niri gustatzen zait</b> (a mí gustándome-es). Lo que gusta es el sujeto; la persona va en dativo.<br><br>\n<b>Pronombres en dativo:</b> <b>niri</b> · <b>zuri</b> · <b>hari</b> · <b>guri</b> · <b>zuei</b> · <b>haiei</b>.<br>\n<b>Una sola cosa:</b> <b>zait, zaizu, zaio, zaigu, zaizue, zaie</b>: <b>Niri kafea gustatzen zait</b>.<br>\n<b>Varias cosas:</b> <b>zaizkit, zaizkizu, zaizkio, zaizkigu, zaizkizue, zaizkie</b>: <b>Niri liburuak gustatzen zaizkit</b>.<br><br>\n<b>Negativo:</b> <b>Ez zait gustatzen</b>.<br>\n<b>Duda frecuente:</b> «¿Tengo que decir <b>niri</b>?» Se puede omitir: <b>Kafea gustatzen zait</b> también vale, pero con <b>niri</b> suena más natural al contrastar."};
 function startGrammar(id){
   var g=GR.find(function(x){return x.id===id});if(!g)return;showStage();
-  var h=topbar(null)+'<div class="ex"><h2 class="q" style="font-size:26px">'+g.t+'</h2><div class="xbox">'+g.x+'</div><div class="exs">'
-   +g.ex.map(function(x){return '<div class="exrow"><div class="tx"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0].split(" → ")[0])+'</div>'}).join("")
+  var h=topbar(null)+'<div class="ex"><h2 class="q" style="font-size:26px">'+g.t+'</h2><div class="xbox">'+g.x+'</div>'+(GM[id]?'<details class="mdet" open><summary>Más detalle y dudas frecuentes</summary><div class="xbox">'+GM[id]+'</div></details>':'')+'<div class="exs">'
+   +g.ex.map(function(x){return '<div class="exrow"><div class="tx" data-act="brk" data-s="'+E(x[0])+'" style="cursor:pointer"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div><div class="es" style="font-size:12px;opacity:.7">Toca para desglosar</div></div>'+spk(x[0].split(" → ")[0])+'</div>'}).join("")
    +'</div></div><div class="foot"><button class="btn" data-r="gpr" data-id="'+id+'">Practicar</button></div>';
   stage(h);R={intro:1};
 }
@@ -2245,7 +2334,7 @@ function rLearn(){
     }
     u.L.forEach(function(l){
       var i=LESSONS.indexOf(l),done=S.done[l.id],np=npOf(l),pt=ptOf(l);
-      var baseLock=(!S.open&&i>ci&&!done)||(!sdone&&!done)||(S.urg&&!done),baseCur=i===ci&&sdone&&!S.urg;
+      var baseLock=(!S.open&&i>ci&&!done)||(S.urg&&!done),baseCur=i===ci&&!S.urg;
       for(var k=0;k<np;k++){
         var pos=++cnt,dn=done||k<pt,lock=baseLock||(!S.open&&!dn&&k>pt),cur=baseCur&&k===pt&&!lock;
         var x=Math.round(Math.sin(pos*1.15)*56),inner=lock?IC.lock:(dn?IC.check:pos),lab=k===0?l.t:PNAMES[k]||("Parte "+(k+1));
@@ -2374,26 +2463,59 @@ function simScore(target,heard){
   var sc=tot/T.length;if(H.length>T.length)sc*=Math.pow(T.length/H.length,.5);return sc;
 }
 function micVerdict(sc){return sc>=.85?"¡Muy bien! Se te entiende perfectamente":sc>=.6?"Casi. Escúchala otra vez y repítela":"No te he entendido bien. Inténtalo de nuevo"}
+var RECO=null;
+function dedupeHeard(t){
+  var w=String(t).trim().split(/\s+/).filter(Boolean),n=w.length;
+  for(var k=1;k<=Math.floor(n/2);k++){
+    if(n%k)continue;var ok=true;
+    for(var i=k;i<n;i++){if(norm(w[i])!==norm(w[i%k])){ok=false;break}}
+    if(ok)return w.slice(0,k).join(" ");
+  }
+  return w.join(" ");
+}
 function micStart(){
   var e=R&&R.cur,st=R&&R.st;if(!e||!st||e.t!=="say"||st.checked)return;
   if(!SR){st.mic={s:"na"};drawEx();return}
+  if(st.mic&&st.mic.s==="on"){try{if(RECO)RECO.stop()}catch(x){}return}
+  if(RECO){try{RECO.abort()}catch(x){}RECO=null}
   var rec;try{rec=new SR()}catch(x){st.mic={s:"na"};drawEx();return}
-  rec.lang="eu-ES";rec.interimResults=false;rec.maxAlternatives=5;rec.continuous=false;
-  st.mic={s:"on"};var got=false;
+  rec.lang="eu-ES";rec.interimResults=true;rec.maxAlternatives=5;rec.continuous=false;
+  RECO=rec;st.mic={s:"on",t0:Date.now()};var done=false,lastInterim="";
+  function finish(cands){
+    if(done)return;done=true;if(RECO===rec)RECO=null;
+    if(!(R&&R.st===st))return;
+    var best=-1,h="";
+    cands.forEach(function(c){var d=dedupeHeard(c),sc=simScore(e.eu,d);if(sc>best){best=sc;h=d}});
+    if(best<0){st.mic={s:"err",e:"no-speech"};drawEx();return}
+    st.mic={s:"done",heard:h,sc:best,n:(st.mic&&st.mic.n||0)+1};
+    if(best>=.85){try{SS().mic=(SS().mic||0)+1}catch(x){}}
+    drawEx();
+  }
   rec.onresult=function(ev){
-    got=true;var res=ev.results[0],best=-1,h="";
-    for(var i=0;i<res.length;i++){var sc=simScore(e.eu,res[i].transcript);if(sc>best){best=sc;h=res[i].transcript}}
-    if(R&&R.st===st){st.mic={s:"done",heard:h,sc:best,n:(st.mic&&st.mic.n||0)+1};if(best>=.85){try{SS().mic=(SS().mic||0)+1}catch(x){}}drawEx()}
+    var r=ev.results[ev.results.length-1];
+    if(!r)return;
+    var alts=[];for(var i=0;i<r.length;i++)alts.push(r[i].transcript);
+    if(alts.length)lastInterim=alts.join("|");
+    if(r.isFinal){finish(alts)}
   };
-  rec.onerror=function(ev){got=true;if(R&&R.st===st){st.mic={s:"err",e:ev.error||""};drawEx()}};
-  rec.onend=function(){if(!got&&R&&R.st===st&&st.mic&&st.mic.s==="on"){st.mic={s:"err",e:"no-speech"};drawEx()}};
-  try{rec.start()}catch(x){st.mic={s:"err",e:"start"}}
+  rec.onerror=function(ev){
+    if(done)return;
+    if(ev.error==="no-speech"||ev.error==="aborted"){if(lastInterim)finish(lastInterim.split("|"));else if(ev.error==="no-speech"){done=true;if(R&&R.st===st){st.mic={s:"err",e:"no-speech"};drawEx()}}return}
+    done=true;if(RECO===rec)RECO=null;if(R&&R.st===st){st.mic={s:"err",e:ev.error||""};drawEx()}
+  };
+  rec.onend=function(){
+    if(done)return;
+    if(lastInterim){finish(lastInterim.split("|"));return}
+    done=true;if(RECO===rec)RECO=null;
+    if(R&&R.st===st&&st.mic&&st.mic.s==="on"){st.mic={s:"err",e:"no-speech"};drawEx()}
+  };
+  try{rec.start()}catch(x){RECO=null;st.mic={s:"err",e:"start"}}
   drawEx();
 }
 function micHtml(e,st){
   var m=st.mic||{s:"idle"},h='<div class="mic">';
   if(m.s==="na")return '<p class="hint">Tu navegador no permite reconocer la voz. Usa Chrome en Android, o valora tú mismo cómo te ha salido.</p>';
-  h+='<button class="micb'+(m.s==="on"?" on":"")+'" data-r="mic" aria-label="Hablar">'+IC.mic+'</button><div class="micl">'+(m.s==="on"?"Te escucho… di la frase":m.s==="done"?"Pulsa para intentarlo otra vez":"Pulsa y di la frase en voz alta")+'</div>';
+  h+='<button class="micb'+(m.s==="on"?" on":"")+'" data-r="mic" aria-label="Hablar">'+IC.mic+'</button><div class="micl">'+(m.s==="on"?"Te escucho… di la frase y pulsa de nuevo si quieres terminar":m.s==="done"?"Pulsa para intentarlo otra vez":"Pulsa y di la frase en voz alta")+'</div>';
   if(m.s==="done"){var c=m.sc>=.85?"ok":m.sc>=.6?"mid":"bad";h+='<div class="micr '+c+'"><b>'+Math.round(m.sc*100)+'%</b> '+E(micVerdict(m.sc))+'<div class="heard">He oído: «'+E(m.heard)+'»</div></div>'}
   if(m.s==="err"){var t=m.e==="not-allowed"||m.e==="service-not-allowed"?"Falta el permiso del micrófono. Actívalo en los ajustes del sitio y vuelve a probar.":m.e==="network"?"Necesito conexión a internet para escucharte.":m.e==="no-speech"?"No he oído nada. Acércate al micro y prueba otra vez.":"No he podido usar el micrófono. Valora tú mismo cómo te ha salido.";h+='<div class="micr bad">'+E(t)+'</div>'}
   return h+'</div>';
@@ -2452,6 +2574,7 @@ function fbHtml(e,st){
   if(e.t==="mc"&&e.ctxEs)extra+='<p>'+E(e.ctxEs)+'</p>';
   if(e.t==="f"&&e.w)extra+='<p>'+E(e.w)+'</p>';
   if(e.t==="dlg"&&st.ok)extra+='<p>Ejemplo: '+E(e.model)+'</p>';
+  var sf=sentOf(e);if(sf&&sf.indexOf(" ")>0)extra+='<details class="brkd"><summary>Ver desglose de la frase</summary>'+brkHtml(sf)+'</details>';
   return '<div class="fb '+(st.ok?"ok":"no")+'"><div class="fbh">'+mascot(46,st.ok?"happy":"sad")+'<h3>'+msg+'</h3></div>'+extra+'<button class="btn'+(st.ok?"":" bad")+'" data-r="cont">Continuar</button></div>';
 }
 function reviewQueue(){
@@ -3000,10 +3123,29 @@ function rLect(){
 }
 
 function rPrac(){
-  var es=V.es||"p",seg='<div class="lvt">'+[["p","Práctica"],["g","Gramática"],["d","Diccionario"]].map(function(x){return '<button data-act="es" data-v="'+x[0]+'" aria-pressed="'+(es===x[0])+'"><span>'+x[1]+'</span></button>'}).join("")+'</div>';
+  var es=V.es||"p",seg='<div class="lvt">'+[["p","Práctica"],["g","Gramática"],["v","Vocabulario"],["d","Buscar"]].map(function(x){return '<button data-act="es" data-v="'+x[0]+'" aria-pressed="'+(es===x[0])+'"><span>'+x[1]+'</span></button>'}).join("")+'</div>';
   if(es==="g")return '<h2 class="sec-h">Estudio</h2>'+seg+rGram().replace('<h2 class="sec-h">Gramática</h2>',"");
+  if(es==="v")return '<h2 class="sec-h">Estudio</h2>'+seg+rVoc();
   if(es==="d")return '<h2 class="sec-h">Estudio</h2>'+seg+rVocab().replace('<h2 class="sec-h">Diccionario</h2>',"");
   return rPrac2(seg);
+}
+function rVoc(){
+  var ci=Math.max(curIdx(),0),h='<p class="hint" style="margin-bottom:10px">Todo el vocabulario y las frases de las lecciones que ya tienes abiertas, ordenado por unidad. Toca el altavoz para oír cada palabra, o una frase para ver su desglose.</p>';
+  h+='<button class="rev" data-tab="vtm">'+IC.list+'<div><b>Vocabulario por temas</b><span>Palabras B1-B2 agrupadas por tema, con práctica</span></div></button>';
+  var any=0;
+  UNITS.forEach(function(u){
+    var ls=u.L.filter(function(l){return S.open||S.done[l.id]||LESSONS.indexOf(l)<=ci});
+    if(!ls.length)return;any=1;
+    h+='<h3 class="sec-h" style="font-size:18px;margin-top:14px">'+E(u.t)+'</h3>';
+    ls.forEach(function(l){
+      h+='<details class="mdet"><summary>'+E(l.t)+' · '+(l.w||[]).length+' palabras</summary><div class="card" style="padding:4px 12px">';
+      (l.w||[]).forEach(function(x){h+='<div class="vrow"><div class="tx"><div class="eu">'+(x[2]?x[2]+" ":"")+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
+      (l.p||[]).forEach(function(x){h+='<div class="vrow"><div class="tx" data-act="brk" data-s="'+E(x[0])+'" style="cursor:pointer"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
+      h+='</div><button class="btn sec sm" style="margin:8px 0" data-act="vlp" data-id="'+l.id+'">Practicar esta lección</button></details>';
+    });
+  });
+  if(!any)h+='<p class="hint">Aún no hay lecciones abiertas.</p>';
+  return h;
 }
 function rPrac2(seg){
   var due=dueWords().length,h='<h2 class="sec-h">Estudio</h2>'+seg+'<p class="hint" style="margin-bottom:10px">Repasos, exámenes, lecturas, verbos y simulacros. La Aventura te avisa cuando toca repasar.</p>';
@@ -3095,17 +3237,19 @@ function partDone(l,k,np,acc){
 }
 function runPart(l,p){
   var np=npOf(l),last=p>=np-1;
-  startRun({q:mixReview(l,partQueue(l,p,np)),title:last?"¡Lección completada!":"¡Parte "+(p+1)+" de "+np+" hecha!",bonus:last?20:8,xpPer:10,onDone:function(acc){partDone(l,p,np,acc)}});
+  startRun({pre:true,q:mixReview(l,partQueue(l,p,np)),title:last?"¡Lección completada!":"¡Parte "+(p+1)+" de "+np+" hecha!",bonus:last?20:8,xpPer:10,onDone:function(acc){partDone(l,p,np,acc)}});
 }
 /* intro de lección */
 function startLesson(id,p){
   var l=LESSONS.find(function(x){return x.id===id});
   if(p>0){runPart(l,p);return}
   showStage();
+  snLesson(l);save();
   var h=topbar(null)+'<div class="ex"><div class="hello" style="margin:0">'+mascot(72)+'<div class="bubble">'+l.x+'</div></div><h2 class="q">'+l.t+'</h2><div class="card" style="padding:4px 12px">';
   l.w.forEach(function(x){h+='<div class="vrow"><div class="tx"><div class="eu">'+(x[2]?x[2]+" ":"")+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'});
   h+='</div>';
-  if(l.p&&l.p.length)h+='<div class="vh">Frases de la lección</div><div class="card" style="padding:4px 12px">'+l.p.map(function(x){return '<div class="vrow"><div class="tx"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'}).join("")+'</div>';
+  if(l.p&&l.p.length)h+='<div class="vh">Frases de la lección</div><p class="hint" style="margin:0 2px 6px">Toca una frase para ver su desglose.</p><div class="card" style="padding:4px 12px">'+l.p.map(function(x){return '<div class="vrow"><div class="tx" data-act="brk" data-s="'+E(x[0])+'" style="cursor:pointer"><div class="eu">'+E(x[0])+'</div><div class="es">'+E(x[1])+'</div></div>'+spk(x[0])+'</div>'}).join("")+'</div>';
+  var lgl=lgr(l);if(lgl.length)h+='<div class="vh">Gramática de esta lección</div>'+lgl.map(function(id){var g=GR.find(function(x){return x.id===id});return g?'<button class="btn sec sm" style="margin:0 6px 6px 0" data-act="gopen" data-id="'+id+'">'+E(g.t)+(gOk(id)?' ✓':'')+'</button>':''}).join("");
   h+='</div><div class="foot"><button class="btn" data-r="go">Empezar</button></div>';
   stage(h);R={intro:l,quitAsk:false};
 }
@@ -3113,13 +3257,23 @@ function startRun(cfg){
   R={cfg:cfg,q:cfg.q.slice(),done:0,total:cfg.q.length,ok:0,bad:0,again:{},quitAsk:false,xp0:S.xp,lv0:level(),t0:Date.now()};
   showStage();nextEx();
 }
-function nextEx(){
+function nextEx(){if(typeof RECO!=="undefined"&&RECO){try{RECO.abort()}catch(x){}RECO=null}
   animStage();
   if(!R.q.length)return finishRun();
   R.cur=R.q.shift();var st=R.st={sel:null,used:[],checked:false,ok:false,ans:"",val:"",cz:{},show:!VZ.ok,played:false};
   if(R.cur.t==="hang")st.h={g:[],bad:0};
   if(R.cur.t==="mt")st.m={L:shuffle(R.cur.pairs.map(function(p){return p.eu})),R:shuffle(R.cur.pairs.map(function(p){return p.es})),sl:null,sr:null,dl:[],dr:[],err:0,fl:null};
+  R.pre=0;if(preCard())return;
   drawEx();
+}
+function preCard(){
+  var e=R.cur;if(!R.cfg||!R.cfg.pre)return false;
+  var s=e.t==="dlg"?e.bot:e.t==="say"?e.eu:"";
+  if(!s||s.indexOf(" ")<0||snHas(s))return false;
+  snAdd(s);R.pre=1;
+  var pct=Math.round(R.done/R.total*100);
+  stage(topbar(pct)+'<div class="ex"><p class="q">Frase nueva</p><div class="card" style="padding:14px"><div class="big" style="font-size:24px">'+E(s)+spk(s)+'</div><p class="hint" style="margin-top:8px;font-size:17px">'+E(e.es||"")+'</p></div><div class="vh">Desglose, palabra por palabra</div><div class="brkbox">'+brkHtml(s)+'</div></div><div class="foot"><button class="btn" data-r="preok">Entendido</button></div>');
+  return true;
 }
 function drawEx(){
   var e=R.cur,st=R.st,pct=Math.round(R.done/R.total*100),b="",can=false;
@@ -3587,7 +3741,8 @@ document.addEventListener("click",function(ev){
       if(!S.open&&idx>curIdx()&&!S.done[id]){toast("Termina la lección anterior para abrir esta");return}
       if(S.urg&&!S.done[id]){toast("Primero el repaso urgente");V.lv="urg";render();return}
       var lu=UNITS.filter(function(u){return u.L.some(function(x){return x.id===id})})[0];
-      if(lu&&!studyDone(lu)&&!S.done[id]){toast("Antes toca el estudio previo de esta unidad");startGrammar(nextStudy(lu));return}
+      var lg=lessonGate(LESSONS[idx]);
+      if(lg){var gg=GR.find(function(x){return x.id===lg});toast("Antes toca estudiar: "+(gg?gg.t:"gramática"));startGrammar(lg);return}
       var ll=LESSONS[idx];if(!S.open&&!S.done[id]&&pp>ptOf(ll)){toast("Termina la parte anterior");return}
       startLesson(id,pp);
     }else if(act==="study"){
@@ -3600,6 +3755,7 @@ document.addEventListener("click",function(ev){
     else if(act==="theme"){S.theme=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="pal"){S.pal=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="exam"){startExam(+a.getAttribute("data-n"))}
+    else if(act==="vlp"){var vl=LESSONS.find(function(x){return x.id===a.getAttribute("data-id")});if(vl)startRun({q:spread(lessonQueue(vl),10),title:"¡Vocabulario practicado!",xpPer:8})}
     else if(act==="es"){V.es=a.getAttribute("data-v");V.vq=V.es==="d"?V.vq:V.vq;render();window.scrollTo(0,0)}
     else if(act==="lvl"){V.ll=a.getAttribute("data-l");render()}
     else if(act==="wrgo"){startWrg(a.getAttribute("data-id"))}
@@ -3609,6 +3765,7 @@ document.addEventListener("click",function(ev){
     else if(act==="habq"){startHabQ(a.getAttribute("data-l"))}
     else if(act==="habs"){startHabS(a.getAttribute("data-l"))}
     else if(act==="habr"){startHabR(+a.getAttribute("data-i"))}
+    else if(act==="brk"){var rw=a.closest(".exrow,.vrow"),nx=rw&&rw.nextElementSibling;if(nx&&nx.classList.contains("brkbox")){nx.remove()}else if(rw){var bx=document.createElement("div");bx.className="brkbox";bx.innerHTML=brkHtml(a.getAttribute("data-s"));rw.parentNode.insertBefore(bx,rw.nextSibling)}}
     else if(act==="pgoal"){S.plan=S.plan||{goal:"b1",date:""};S.plan.goal=a.getAttribute("data-v");save();render()}
     else if(act==="escu"){startEscu(a.getAttribute("data-id"))}
     else if(act==="lect"){startLect(a.getAttribute("data-id"))}
@@ -3658,14 +3815,15 @@ document.addEventListener("click",function(ev){
   }
   if(k==="stay"){R.quitAsk=false;drawEx();return}
   if(k==="leave"){leave();return}
+  if(k==="preok"){R.pre=0;drawEx();return}
   if(k==="go"){var l=R.intro;runPart(l,0);return}
   if(k==="glnext"&&GL){startGameLevel(GL.g,GL.n+1);return}
   if(k==="glagain"&&GL){startGameLevel(GL.g,GL.n);return}
   if(k==="again"){if(LAST==="mem")startMem();else if(LAST==="cross")startCross();else if(LAST==="ws")startWS();else startPairs();return}
   if(k==="lshow"){R.st.show=true;drawEx();return}
   if(k==="mic"){micStart();return}
-  if(k==="sayok"){R.ok++;R.done++;SS().say++;checkAch();nextEx();return}
-  if(k==="saybad"){var ky="say"+R.cur.eu;if(!R.again[ky]){R.again[ky]=1;R.q.push(R.cur);R.total++}R.done++;nextEx();return}
+  if(k==="sayok"){R.ok++;R.done++;SS().say++;checkAch();sayRec(R.cur,true);nextEx();return}
+  if(k==="saybad"){sayRec(R.cur,false);var ky="say"+R.cur.eu;if(!R.again[ky]){R.again[ky]=1;R.q.push(R.cur);R.total++}R.done++;nextEx();return}
   if(k==="opt"){if(R.st.checked)return;R.st.sel=+r.getAttribute("data-i");drawEx();return}
   if(k==="check"){check();return}
   if(k==="cont"){R.done++;nextEx();return}
