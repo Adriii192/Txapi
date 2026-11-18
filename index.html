@@ -310,7 +310,7 @@ select.inp{appearance:auto}
 .gi.hasimg{background:none!important;width:68px!important;height:68px!important;flex:none}
 .gi.hasimg svg{display:none}
 .gimg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
-.brk{background:var(--soft,#eef6f0);border-radius:12px;padding:8px 12px;margin:4px 0 8px;text-align:left}.brkbox{margin:0 0 6px}.mdet{margin:10px 0;text-align:left}.mdet summary{cursor:pointer;font-weight:700;color:var(--green);padding:6px 0}.brkr{padding:3px 0;font-size:15px}.brkr b{color:var(--green)}.brkr i{opacity:.6;font-size:13px}.brkd{margin:8px 0;text-align:left}.brkd summary{cursor:pointer;font-weight:700}
+.brk{background:linear-gradient(135deg,color-mix(in srgb,var(--green) 18%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--green) 35%,transparent);color:var(--ink);border-radius:14px;padding:8px 12px;margin:4px 0 8px;text-align:left}.brkr span{color:var(--ink)}.brkbox{margin:0 0 6px}.mdet{margin:10px 0;text-align:left}.mdet summary{cursor:pointer;font-weight:700;color:var(--green);padding:6px 0}.brkr{padding:3px 0;font-size:15px}.brkr b{color:var(--green)}.brkr i{color:var(--muted);font-size:13px}.brkd{margin:8px 0;text-align:left}.brkd summary{cursor:pointer;font-weight:700}
 .rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
 .rev svg{width:26px;height:26px;color:var(--blue);flex:none}
 .rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
@@ -2062,6 +2062,8 @@ function glossTok(t){
   var G=glossInit(),k=norm(t);if(!k)return null;
   if(/^\d+$/.test(k))return {g:k+" (número)"};
   if(G[k])return {g:G[k]};
+  var vm=k.match(/^(.+?)(tzen|ten)$/);
+  if(vm&&k.length>=5){var vb=vm[1],vc=[vb,vb+"n",vb+"i",vb+"ri",vb+"l",vb+"tu",vb+"du"];for(var vj=0;vj<vc.length;vj++){if(G[vc[vj]])return {g:G[vc[vj]]+" + «-"+vm[2]+"» (verbo en presente habitual)"}}}
   for(var i=0;i<SUFX.length;i++){
     var s=SUFX[i][0];if(k.length>s.length+2&&k.slice(-s.length)===s){
       var b=k.slice(0,-s.length);
