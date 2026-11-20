@@ -310,7 +310,7 @@ select.inp{appearance:auto}
 .gi.hasimg{background:none!important;width:68px!important;height:68px!important;flex:none}
 .gi.hasimg svg{display:none}
 .gimg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
-.brk{background:linear-gradient(135deg,color-mix(in srgb,var(--green) 18%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--green) 35%,transparent);color:var(--ink);border-radius:14px;padding:8px 12px;margin:4px 0 8px;text-align:left}.brkr span{color:var(--ink)}.brkbox{margin:0 0 6px}.mdet{margin:10px 0;text-align:left}.mdet summary{cursor:pointer;font-weight:700;color:var(--green);padding:6px 0}.brkr{padding:3px 0;font-size:15px}.brkr b{color:var(--green)}.brkr i{color:var(--muted);font-size:13px}.brkd{margin:8px 0;text-align:left}.brkd summary{cursor:pointer;font-weight:700}
+.brk{background:linear-gradient(135deg,color-mix(in srgb,var(--green) 18%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--green) 35%,transparent);color:var(--ink);border-radius:14px;padding:8px 12px;margin:4px 0 8px;text-align:left}.brkr span{color:var(--ink)}.brkbox{margin:0 0 6px}.fcard{background:linear-gradient(135deg,color-mix(in srgb,var(--green) 18%,var(--surface)),var(--surface));border:2px solid color-mix(in srgb,var(--green) 35%,transparent);border-radius:22px;min-height:240px;padding:22px 18px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;cursor:pointer;color:var(--ink)}.fcard .fe{font:800 32px var(--display)}.fcard .fb{font:700 24px var(--display);color:var(--green)}.mne{background:color-mix(in srgb,var(--sun,#f5b942) 18%,var(--surface));border-radius:12px;padding:8px 12px;margin:8px 0;text-align:left;color:var(--ink);font-size:15px}.mne small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.mne.none{color:var(--muted)}.mdet{margin:10px 0;text-align:left}.mdet summary{cursor:pointer;font-weight:700;color:var(--green);padding:6px 0}.brkr{padding:3px 0;font-size:15px}.brkr b{color:var(--green)}.brkr i{color:var(--muted);font-size:13px}.brkd{margin:8px 0;text-align:left}.brkd summary{cursor:pointer;font-weight:700}
 .rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
 .rev svg{width:26px;height:26px;color:var(--blue);flex:none}
 .rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
@@ -2302,9 +2302,9 @@ function drawBar(){
    +'<div class="chip gm" title="Gemas">'+IC.gem+(S.gems||0)+'</div>'
    +'<div class="chip lv" title="Nivel">Nv '+level()+'</div>';
   $("#lvfill").style.width=(S.xp%100)+"%";
-  $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games")||(n[0]==="prac"&&(V.tab==="rev"||V.tab==="sim"||V.tab==="verb"||V.tab==="lect"||V.tab==="escu"||V.tab==="wrg"||V.tab==="vtm"||V.tab==="hab"||V.tab==="plan")))+'">'+n[2]+n[1]+'</button>'}).join("");
+  $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games")||(n[0]==="prac"&&(V.tab==="rev"||V.tab==="sim"||V.tab==="verb"||V.tab==="lect"||V.tab==="escu"||V.tab==="wrg"||V.tab==="vtm"||V.tab==="cards"||V.tab==="bloc"||V.tab==="hab"||V.tab==="plan")))+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){if(V.tab==="gram"){V.tab="prac";V.es="g"}else if(V.tab==="vocab"){V.tab="prac";V.es="d"}drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb,lect:rLect,escu:rEscu,plan:rPlan,hab:rHab,vtm:rVtm,wrg:rWrg,prac:rPrac})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){if(V.tab==="gram"){V.tab="prac";V.es="g"}else if(V.tab==="vocab"){V.tab="prac";V.es="d"}drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb,lect:rLect,escu:rEscu,plan:rPlan,hab:rHab,vtm:rVtm,wrg:rWrg,cards:rCards,bloc:rBloc,prac:rPrac})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -3131,9 +3131,93 @@ function rPrac(){
   if(es==="d")return '<h2 class="sec-h">Estudio</h2>'+seg+rVocab().replace('<h2 class="sec-h">Diccionario</h2>',"");
   return rPrac2(seg);
 }
+var MNE={"kafea": ["p", "café"], "zopa": ["p", "sopa"], "tomatea": ["p", "tomate"], "patata": ["p", "patata"], "platanoa": ["p", "plátano"], "limoia": ["p", "limón"], "laranja": ["p", "naranja"], "letxuga": ["p", "lechuga"], "piperra": ["p", "pimiento / pimienta"], "txokolatea": ["p", "chocolate"], "tea": ["p", "té (igual que en español)"], "tortilla": ["p", "tortilla"], "plaza": ["p", "plaza"], "autobusa": ["p", "autobús"], "trena": ["p", "tren"], "metroa": ["p", "metro"], "taxia": ["p", "taxi"], "billetea": ["p", "billete"], "maleta": ["p", "maleta"], "erreserba": ["p", "reserva"], "garajea": ["p", "garaje"], "balkoia": ["p", "balcón"], "sofa": ["p", "sofá"], "musika": ["p", "música"], "familia": ["p", "familia"], "zero": ["p", "cero"], "medikua": ["p", "médico"], "ospitalea": ["p", "hospital"], "farmazia": ["p", "farmacia"], "telebista": ["p", "televisión"], "pelikula": ["p", "película"], "bufanda": ["p", "bufanda"], "kamiseta": ["p", "camiseta"], "zapata": ["p", "zapato"], "jertsea": ["p", "jersey"], "abokatua": ["p", "abogado"], "ingeniaria": ["p", "ingeniero"], "euroa": ["p", "euro"], "kolorea": ["p", "color"], "arroza": ["p", "arroz"], "azukrea": ["p", "azúcar"], "kotxea": ["p", "coche"], "bizikleta": ["p", "bicicleta"], "denda": ["p", "tienda"], "liburua": ["p", "libro"], "eskola": ["p", "escuela"], "mundua": ["p", "mundo"], "pixka bat": ["p", "una pizca"], "kontua": ["p", "cuenta"], "kontatu": ["p", "contar"], "mila": ["p", "mil"], "sei": ["p", "seis (¡igual!)"], "kalea": ["p", "calle"], "parkea": ["p", "parque"], "arrosa": ["p", "rosa"], "grisa": ["p", "gris"], "marroia": ["p", "marrón"], "berde": ["p", "verde (la b y la v suenan igual)"], "pentsatu": ["p", "pensar"], "dantzatzea": ["p", "danza (bailar)"], "kantatzea": ["p", "cantar"], "bidaia": ["p", "viaje"], "bidaiatu": ["p", "viajar (de «viaje»)"], "bidaiatzea": ["p", "viajar (de «viaje»)"], "triste": ["p", "triste"], "martxoa": ["p", "marzo"], "apirila": ["p", "abril"], "maiatza": ["p", "mayo"], "abuztua": ["p", "agosto"], "abendua": ["p", "adviento (diciembre)"], "mezua": ["p", "mensaje"], "gustatu": ["p", "gustar"], "zerbitzaria": ["p", "servidor / servicio"], "zenbat balio du?": ["p", "balio ≈ valer: «¿cuánto vale?»"], "zenbat balio du": ["p", "balio ≈ valer: «cuánto vale»"], "data": ["p", "fecha («data»: dato, datar)"], "aireportua": ["p", "aire + puerto: aeropuerto"], "ona": ["t", "suena a «buena»"], "merkea": ["t", "suena a «mercado»: lo barato"], "estua": ["t", "suena a «estrecho»"], "polita": ["t", "suena a «pulido, pulcro»: bonito"], "mesedez": ["t", "viene de «merced»: «por merced» = por favor"], "gabon": ["c", "gau (noche) + on (buena) = buenas noches"], "egun on": ["c", "egun (día) + on (buen)"], "arratsalde on": ["c", "arratsalde (tarde) + on (buena)"], "zorionak": ["c", "zori (suerte) + on (buena) = felicidades"], "ongi etorri": ["c", "ongi (bien) + etorri (venir) = bienvenido"], "laster arte": ["c", "arte = hasta: «hasta pronto»"], "bihar arte": ["c", "arte = hasta: «hasta mañana»"], "asteburua": ["c", "aste (semana) + buru (cabeza, final) = fin de semana"], "astelehena": ["c", "aste (semana) + lehen (primero) = el primero de la semana"], "asteartea": ["c", "aste (semana) + arte (entre) = entre semana"], "udaberria": ["c", "uda (verano) + berri (nuevo) = verano nuevo"], "udazkena": ["c", "uda (verano) + azken (último) = el último verano"], "eguerdia": ["c", "egun (día) + erdi (medio) = mediodía"], "gauerdia": ["c", "gau (noche) + erdi (medio) = medianoche"], "hamaika": ["c", "hamar (10) + bat (1) = once"], "hamabi": ["c", "hamar (10) + bi (2) = doce"], "hamahiru": ["c", "hamar (10) + hiru (3) = trece"], "hamalau": ["c", "hamar (10) + lau (4) = catorce"], "hamabost": ["c", "hamar (10) + bost (5) = quince"], "hamasei": ["c", "hamar (10) + sei (6) = dieciséis"], "hamazazpi": ["c", "hamar (10) + zazpi (7) = diecisiete"], "hogeita bat": ["c", "hogei (20) + eta (y) + bat (1) = veintiuno"], "euskalduna": ["c", "euskal (de euskera) + dun (que tiene) = el que tiene euskera"], "nongoa?": ["c", "non (dónde) + -ko (de) + -a = el de dónde"], "nongoa zara?": ["c", "non (dónde) + -ko (de) + -a: «¿de dónde (el/la) eres?»"], "hondartza": ["c", "hondar (arena) + -tza (lugar) = lugar de arena"], "sukaldea": ["c", "su (fuego) + alde (lado) = el lado del fuego"], "liburutegia": ["c", "liburu (libro) + -tegi (lugar de) = lugar de libros"], "itsasontzia": ["c", "itsaso (mar) + ontzi (recipiente) = barco"], "begiratu": ["c", "begi (ojo) + -ratu = mirar con el ojo"], "eskularruak": ["c", "esku (mano) + larru (piel) = guantes"], "galtzerdiak": ["c", "galtza (pantalón) + erdi (medio) = medias"], "eguraldia": ["c", "egun (día) + aldi (tiempo)"], "langilea": ["c", "lan (trabajo) + -le (el que) = trabajador"], "idazlea": ["c", "idatzi (escribir) + -le (el que) = escritor"], "laguntza": ["c", "lagun (amigo) + -tza = ayuda: lo que hace un amigo"], "lagundu": ["c", "lagun (amigo): ayudar es «hacer de amigo»"], "osasuna": ["c", "oso (entero) + -asun = salud: estar entero"], "hegaztia": ["c", "hegaz (volar) + -ti: lo que vuela"], "hegazkina": ["c", "hegaz (volar) + -kin: lo que vuela"], "dendan": ["c", "denda (tienda) + -n (en) = en la tienda"], "irakurtzea": ["c", "irakurri + -tzea: leer (como nombre)"], "ikastea": ["c", "ikasi + -tzea: estudiar (como nombre)"], "zergatik": ["c", "zer (qué) + gatik (por) = «por qué»"], "garagardoa": ["c", "garagar (cebada) + ardo (vino) = vino de cebada"], "soinekoa": ["c", "soin (cuerpo) + -eko = lo del cuerpo: el vestido"], "berokia": ["c", "bero (calor) + -ki = lo que da calor: el abrigo"], "amona": ["c", "ama (madre) + ona (buena): la «mamá buena»"], "aitona": ["c", "aita (padre) + ona (bueno): el «papá bueno»"], "non": ["t", "como los niños dicen «nonde» por «dónde»: quítale la «de» y queda non"], "nola": ["t", "rima con «hola»: «hola, ¿cómo?» = nola"], "orain": ["t", "suena a «ahora»"], "gero": ["t", "suena a «luego» (sin la l)"], "txikia": ["t", "suena a «chiquito»"], "gorri": ["t", "piensa en el «gorro» rojo de Papá Noel: gorri = rojo"], "ama": ["t", "suena a «mamá»"], "aita": ["t", "suena a «taita» (papá)"], "seme": ["t", "suena a «semilla»: el hijo es la semilla"], "aulkia": ["t", "suena a «aula»: la silla del aula"], "ogia": ["t", "suena a «hogaza»"], "arraina": ["t", "suena a «raya», el pez"], "jan": ["t", "suena a «yantar» (comer)"], "lo egin": ["t", "lo es el sueño: el «lo, lo, lo» de la nana"], "joan": ["t", "Joan se lee casi «Juan»: Juan se va"], "zu": ["t", "suena a «tú» (t → z)"], "hiru": ["t", "suena a «trío»: tres"], "atzo": ["t", "suena a «atrás»: ayer quedó atrás"], "atzean": ["t", "suena a «atrás»: detrás"], "haizea": ["t", "haize suena a «aire»"], "txakurra": ["t", "suena a «chucho»: el perro"], "behia": ["t", "suena a «bovino»: la vaca"], "begia": ["t", "suena a «vigía»: el que vigila con el ojo"], "ahoa": ["t", "«¡aaaah!»: abres la boca"], "ilea": ["t", "suena a «hilo»: el pelo"], "besoa": ["t", "suena a «abrazo»: el brazo abraza"], "hanka": ["t", "suena a «anca»: la pierna"], "praka": ["t", "suena a «braga»: la prenda de abajo"], "gona": ["t", "suena a «gonela»: falda"], "idatzi": ["t", "suena a «dictar»: escribir"], "saldu": ["t", "suena a «saldo»: vender"], "ederra": ["t", "suena a «Edén»: un lugar bonito"], "luzea": ["t", "suena a «luengo»: largo"], "txerria": ["t", "suena a «cerdo»"], "ardoa": ["t", "el vino que «arde» al beberlo"], "hori": ["t", "hori es amarillo: piensa en «oro»"], "urdin": ["t", "ur es agua: piensa en el agua azul"], "eskuinera": ["t", "esku es mano: la derecha es la mano buena"], "gosaria": ["t", "suena a «gose» (hambre): lo que quita el hambre de la mañana"], "sukarra": ["t", "su es fuego: la fiebre es fuego en el cuerpo"], "ezkerrera": ["t", "ezker suena a «izquierda»"], "bira egin": ["t", "suena a «virar»: girar"], "botsa": ["t", "suena a «bolsa»"], "poltsa": ["t", "suena a «bolsa»"], "pintxoa": ["t", "suena a «pincho»"], "zukua": ["t", "suena a «zumo»"], "katua": ["t", "suena a «gato» (g → k)"], "altuago": ["t", "altu suena a «alto»"], "altuena": ["t", "altu suena a «alto»"], "bi": ["t", "bi- como en «bicicleta» o «bilingüe»: dos"], "otsoa": ["t", "¡ojo!: suena a «oso» pero es el LOBO"], "laguna": ["f", "en español «laguna» es un lago pequeño, pero en euskera laguna = AMIGO"]};
+/* ---------- tarjetas y bloc de palabras ---------- */
+function stOf(eu){var m=S.ms["w:"+eu];return m?m.s:"n"}
+function mneOf(eu){return MNE[eu]||MNE[String(eu).toLowerCase()]||null}
+function mneHtml(eu){
+  var m=mneOf(eu),L={p:"Se parece a",c:"Se forma con",t:"Truco de sonido",f:"Ojo, falso amigo"};
+  if(!m)return '<div class="mne none">Sin parecido claro con el español. Si se te ocurre un truco, apúntalo en tus notas del bloc.</div>';
+  return '<div class="mne"><b>'+L[m[0]]+':</b> '+E(m[1])+'<small>Sugerencia por revisar. Puedes cambiarla en tus notas.</small></div>';
+}
+function blocWords(){
+  var seen={},out=[];
+  function add(eu,es,c){if(!eu||seen[eu])return;seen[eu]=1;out.push({eu:eu,es:es||"",c:!!c})}
+  learnedWords().forEach(function(w){add(w.eu,w.es)});
+  Object.keys(S.ms||{}).forEach(function(k){if(k.indexOf("w:")===0){var m=S.ms[k];add(m.eu||k.slice(2),m.es)}});
+  (S.cw||[]).forEach(function(w){add(w.eu,w.es,true)});
+  return out;
+}
+function rBloc(){
+  var h='<button class="backlink" data-tab="prac">← Estudio</button>';
+  if(V.bw){
+    var w=blocWords().filter(function(x){return x.eu===V.bw})[0]||{eu:V.bw,es:(wInfo(V.bw)||{}).es||""};
+    var st=stOf(w.eu),lb=st==="d"?"Dominada":st==="s"?"Sin dominar":"En aprendizaje";
+    var lw=w.eu.toLowerCase(),fr=PHR.filter(function(p){return (" "+p.eu.toLowerCase().replace(/[¿?¡!.,]/g,"")+" ").indexOf(" "+lw+" ")>=0}).slice(0,4);
+    h=h.replace('data-tab="prac">← Estudio','data-act="bwx">← Bloc');
+    h+='<h2 class="sec-h" style="margin-bottom:2px">'+E(w.eu)+' '+spk(w.eu)+'</h2><p class="hint" style="font-size:18px;margin:0 0 8px">'+E(w.es)+' · <b>'+lb+'</b></p>'+mneHtml(w.eu);
+    h+='<div class="vh">Mis notas</div><textarea id="bnote" class="ta" placeholder="Escribe aquí tu truco, un ejemplo o lo que quieras recordar" style="min-height:100px">'+E((S.nt||{})[w.eu]||"")+'</textarea>';
+    if(fr.length){h+='<div class="vh">Frases donde aparece</div><div class="card" style="padding:4px 12px">'+fr.map(function(p){return '<div class="vrow"><div class="tx" data-act="brk" data-s="'+E(p.eu)+'" style="cursor:pointer"><div class="eu">'+E(p.eu)+'</div><div class="es">'+E(p.es)+'</div></div>'+spk(p.eu)+'</div>'}).join("")+'</div>'}
+    if(w.c)h+='<button class="btn sec sm" style="margin-top:12px" data-act="cwdel" data-w="'+E(w.eu)+'">Quitar del bloc</button>';
+    return h;
+  }
+  var ws=blocWords(),q=norm(V.bq||"");
+  h+='<h2 class="sec-h">Bloc de palabras</h2><p class="hint" style="margin-bottom:10px">Se rellena solo con las palabras que vas viendo. Toca una para ver su truco y escribir tus notas.</p>';
+  h+='<input id="bq" class="inp" type="search" placeholder="Buscar en el bloc" value="'+E(V.bq||"")+'" autocomplete="off" autocapitalize="off">';
+  h+='<details class="mdet"><summary>Añadir una palabra mía</summary><input id="cwe" class="inp" placeholder="En euskera" autocapitalize="off" style="margin-bottom:6px"><input id="cws" class="inp" placeholder="En español" style="margin-bottom:6px"><button class="btn sm" data-act="cwadd">Añadir</button></details>';
+  h+='<div id="blist">'+blList(ws,q)+'</div>';
+  return h;
+}
+function blList(ws,q){
+  var f=ws.filter(function(x){return !q||norm(x.eu).indexOf(q)>=0||norm(x.es).indexOf(q)>=0});
+  if(!f.length)return '<p class="hint" style="margin-top:12px">'+(ws.length?'Nada coincide.':'Aún está vacío. Termina tu primera lección y las palabras aparecerán aquí.')+'</p>';
+  return '<p class="hint" style="margin:8px 2px">'+f.length+' palabras</p><div class="card" style="padding:4px 12px">'+f.map(function(x){var s=stOf(x.eu),c=s==="d"?"l3":s==="s"?"l1":"";return '<div class="vrow"><span class="dot '+c+'"></span><div class="tx" data-act="bw" data-w="'+E(x.eu)+'" style="cursor:pointer"><div class="eu">'+E(x.eu)+((S.nt||{})[x.eu]?' ✎':'')+(mneOf(x.eu)?' 💡':'')+'</div><div class="es">'+E(x.es)+'</div></div>'+spk(x.eu)+'</div>'}).join("")+'</div>';
+}
+function cardDeck(id){
+  var ws=blocWords();
+  if(id==="s")return ws.filter(function(x){return stOf(x.eu)==="s"});
+  if(id==="n")return ws.filter(function(x){return !(S.cb||{})[x.eu]});
+  if(id==="c")return ws.filter(function(x){return x.c});
+  if(id.indexOf("t:")===0){var t=VOCT.filter(function(x){return x.id===id.slice(2)})[0];return t?t.w.map(function(a){return {eu:a[0],es:a[1]}}):[]}
+  return ws;
+}
+function startCards(id){
+  var d=cardDeck(id);if(!d.length){toast("No hay tarjetas en este mazo");return}
+  var cb=S.cb||{};d=shuffle(d).sort(function(a,b){return (cb[a.eu]||0)-(cb[b.eu]||0)}).slice(0,20);
+  V.ck={q:d,i:0,flip:false,ok:0,bad:[],retry:{}};render();window.scrollTo(0,0);
+}
+function rCards(){
+  var h='<button class="backlink" data-tab="prac">← Estudio</button><h2 class="sec-h">Tarjetas</h2>',k=V.ck;
+  if(!k){
+    var ws=blocWords(),ns=ws.filter(function(x){return stOf(x.eu)==="s"}).length,nn=ws.filter(function(x){return !(S.cb||{})[x.eu]}).length,nc=ws.filter(function(x){return x.c}).length;
+    h+='<p class="hint" style="margin-bottom:10px">Voltea la tarjeta, mira si la sabías y las que fallas vuelven a salir antes. Cada sesión son hasta 20 tarjetas.</p>';
+    h+='<button class="rev due" data-act="cdeck" data-d="all"><div><b>Todas mis palabras</b><span>'+ws.length+' tarjetas</span></div></button>';
+    h+='<button class="rev" data-act="cdeck" data-d="s"><div><b>Solo las sin dominar</b><span>'+ns+' tarjetas</span></div></button>';
+    h+='<button class="rev" data-act="cdeck" data-d="n"><div><b>Las que aún no he repasado</b><span>'+nn+' tarjetas</span></div></button>';
+    if(nc)h+='<button class="rev" data-act="cdeck" data-d="c"><div><b>Mis palabras añadidas</b><span>'+nc+' tarjetas</span></div></button>';
+    h+='<details class="mdet"><summary>Por tema (B1-B2)</summary>'+VOCT.map(function(t){return '<button class="rev" data-act="cdeck" data-d="t:'+t.id+'"><span style="font-size:24px">'+t.em+'</span><div><b>'+E(t.ti)+'</b><span>'+t.w.length+' tarjetas</span></div></button>'}).join("")+'</details>';
+    h+='<button class="btn sec sm" style="margin-top:10px" data-act="cdir">Mostrar primero: '+(V.cdir==="es"?"español":"euskera")+' (cambiar)</button>';
+    return h;
+  }
+  if(k.i>=k.q.length){
+    h+='<div class="card" style="text-align:center;padding:20px"><h3>¡Sesión terminada!</h3><p class="hint" style="font-size:18px;margin:8px 0">'+k.ok+' sabidas · '+k.bad.length+' para repasar</p></div>';
+    if(k.bad.length)h+='<button class="btn" style="margin:12px 0 8px" data-act="cagain">Repasar las falladas</button>';
+    return h+'<button class="btn sec" data-act="cend">Volver a los mazos</button>';
+  }
+  var c=k.q[k.i],front=V.cdir==="es"?c.es:c.eu,back=V.cdir==="es"?c.eu:c.es;
+  h+='<div class="hint" style="margin-bottom:8px">'+(k.i+1)+' de '+k.q.length+'</div>';
+  h+='<div class="fcard" data-act="cflip"><div class="fe">'+E(front)+'</div>'+(V.cdir!=="es"||k.flip?spk(c.eu):"");
+  if(k.flip){h+='<div class="fb">'+E(back)+'</div>'+mneHtml(c.eu)+((S.nt||{})[c.eu]?'<div class="mne"><b>Mi nota:</b> '+E(S.nt[c.eu])+'</div>':"")}
+  else h+='<div class="hint">Toca para ver la respuesta</div>';
+  h+='</div>';
+  if(k.flip)h+='<div class="row2" style="margin-top:14px"><button class="btn sec" data-act="cno">No la sabía</button><button class="btn" data-act="cyes">La sabía</button></div>';
+  h+='<button class="btn sec sm" style="margin-top:12px" data-act="cend">Terminar</button>';
+  return h;
+}
 function rVoc(){
   var ci=Math.max(curIdx(),0),h='<p class="hint" style="margin-bottom:10px">Todo el vocabulario y las frases de las lecciones que ya tienes abiertas, ordenado por unidad. Toca el altavoz para oír cada palabra, o una frase para ver su desglose.</p>';
   h+='<button class="rev" data-tab="vtm">'+IC.list+'<div><b>Vocabulario por temas</b><span>Palabras B1-B2 agrupadas por tema, con práctica</span></div></button>';
+  h+='<button class="rev" data-tab="cards">'+IC.loop+'<div><b>Tarjetas</b><span>Voltea y estudia tus palabras</span></div></button><button class="rev" data-tab="bloc">'+IC.book+'<div><b>Bloc de palabras</b><span>Tus palabras, trucos y notas</span></div></button>';
   var any=0;
   UNITS.forEach(function(u){
     var ls=u.L.filter(function(l){return S.open||S.done[l.id]||LESSONS.indexOf(l)<=ci});
@@ -3159,6 +3243,8 @@ function rPrac2(seg){
   h+='<button class="rev" data-tab="lect">'+IC.book+'<div><b>Lecturas</b><span>Textos con preguntas, de A1 a B2</span></div></button>';
   h+='<button class="rev due" data-tab="plan">'+IC.check+'<div><b>Plan de estudio</b><span>Qué hacer cada día hasta el examen</span></div></button>';
   h+='<button class="rev" data-tab="hab">'+IC.mic+'<div><b>Habla</b><span>Entrevista, juegos de rol y repetir frases</span></div></button>';
+  h+='<button class="rev due" data-tab="cards">'+IC.loop+'<div><b>Tarjetas</b><span>Voltea y estudia tus palabras</span></div></button>';
+  h+='<button class="rev" data-tab="bloc">'+IC.book+'<div><b>Bloc de palabras</b><span>Tus palabras, trucos y notas</span></div></button>';
   h+='<button class="rev" data-tab="vtm">'+IC.list+'<div><b>Vocabulario por temas</b><span>'+VOCT.reduce(function(n,t){return n+t.w.length},0)+' palabras B1-B2 con práctica</span></div></button>';
   h+='<button class="rev" data-tab="wrg">'+IC.book+'<div><b>Guía de escritura</b><span>Estructuras, frases útiles y práctica con modelo</span></div></button>';
   h+='<button class="rev" data-tab="escu">'+IC.spk+'<div><b>Escuchas</b><span>Diálogos y avisos con preguntas, de A1 a B2</span></div></button>';
@@ -3757,6 +3843,16 @@ document.addEventListener("click",function(ev){
     else if(act==="theme"){S.theme=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="pal"){S.pal=a.getAttribute("data-v");save();applyTheme();render()}
     else if(act==="exam"){startExam(+a.getAttribute("data-n"))}
+    else if(act==="bw"){V.bw=a.getAttribute("data-w");render();window.scrollTo(0,0)}
+    else if(act==="bwx"){V.bw=null;render()}
+    else if(act==="cwadd"){var ce=$("#cwe"),cs2=$("#cws");if(ce&&cs2&&ce.value.trim()&&cs2.value.trim()){S.cw=S.cw||[];if(S.cw.length<300&&!S.cw.some(function(x){return x.eu===ce.value.trim()})){S.cw.push({eu:ce.value.trim(),es:cs2.value.trim()});save();toast("Palabra añadida")}render()}else toast("Escribe las dos palabras")}
+    else if(act==="cwdel"){var dw=a.getAttribute("data-w");S.cw=(S.cw||[]).filter(function(x){return x.eu!==dw});save();V.bw=null;render()}
+    else if(act==="cdeck"){startCards(a.getAttribute("data-d"))}
+    else if(act==="cdir"){V.cdir=V.cdir==="es"?"eu":"es";render()}
+    else if(act==="cflip"){if(V.ck){V.ck.flip=!V.ck.flip;render()}}
+    else if(act==="cyes"||act==="cno"){var ck=V.ck;if(ck){var cc=ck.q[ck.i];S.cb=S.cb||{};if(act==="cyes"){S.cb[cc.eu]=Math.min(4,(S.cb[cc.eu]||0)+1);ck.ok++}else{S.cb[cc.eu]=0;ck.bad.push(cc);if(!ck.retry[cc.eu]){ck.retry[cc.eu]=1;ck.q.push(cc)}}ck.i++;ck.flip=false;if(ck.i>=ck.q.length){touchDay()}save();render();window.scrollTo(0,0)}}
+    else if(act==="cagain"){var bd=V.ck.bad;V.ck={q:shuffle(bd),i:0,flip:false,ok:0,bad:[],retry:{}};render()}
+    else if(act==="cend"){V.ck=null;render()}
     else if(act==="vlp"){var vl=LESSONS.find(function(x){return x.id===a.getAttribute("data-id")});if(vl)startRun({q:spread(lessonQueue(vl),10),title:"¡Vocabulario practicado!",xpPer:8})}
     else if(act==="es"){V.es=a.getAttribute("data-v");V.vq=V.es==="d"?V.vq:V.vq;render();window.scrollTo(0,0)}
     else if(act==="lvl"){V.ll=a.getAttribute("data-l");render()}
@@ -3856,6 +3952,8 @@ document.addEventListener("click",function(ev){
 document.addEventListener("input",function(ev){
   if(ev.target.id==="wr"){var wc=$("#wc"),tv=ev.target.value.trim();if(wc){var nw2=tv?tv.split(/\s+/).length:0;wc.textContent=nw2+" palabras"+(R&&R.cur&&R.cur.min?" · mínimo "+R.cur.min:"")}}
   if(ev.target.id==="pdate"){S.plan=S.plan||{goal:"b1",date:""};S.plan.date=ev.target.value;save();var ce=ev.target.nextElementSibling;if(ce){var kk=planDays();ce.outerHTML=kk===null?'<p class="hint">Sin fecha: la rutina vale igual.</p>':(kk<0?'<p class="hint">Esa fecha ya ha pasado. Cámbiala.</p>':'<p class="q" style="margin:0"><b>'+kk+'</b> días · unas <b>'+Math.ceil(kk/7)+'</b> semanas</p>')}}
+  if(ev.target.id==="bnote"&&V.bw){S.nt=S.nt||{};if(ev.target.value.trim())S.nt[V.bw]=ev.target.value;else delete S.nt[V.bw]}
+  if(ev.target.id==="bq"){V.bq=ev.target.value;var bl=$("#blist");if(bl)bl.innerHTML=blList(blocWords(),norm(V.bq))}
   if(ev.target.id==="vq"){V.vq=ev.target.value;var l=$("#vlist");if(l)l.innerHTML=vlist()}
 });
 document.addEventListener("keydown",function(ev){
@@ -3880,6 +3978,7 @@ document.addEventListener("pointermove",function(ev){
 document.addEventListener("pointerup",wsUp);
 document.addEventListener("pointercancel",wsUp);
 document.addEventListener("change",function(ev){
+  if(ev.target.id==="bnote"){save();toast("Nota guardada");return}
   var cs=ev.target.closest?ev.target.closest('[data-r="czs"]'):null;
   if(cs&&R&&R.st&&R.st.cz){R.st.cz[cs.getAttribute("data-n")]=cs.value;drawEx();return}
   if(ev.target.id==="vsel"){
