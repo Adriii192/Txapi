@@ -127,7 +127,7 @@ nav.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surfa
 .best{font:600 13px var(--display);color:var(--sun-d)}
 .sec-h{font:700 22px var(--display);margin:6px 0 12px}
 .stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.stat div{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px}
+.stat div{background:linear-gradient(150deg,color-mix(in srgb,var(--sc,var(--green)) 26%,var(--surface)),var(--surface));border:1.5px solid color-mix(in srgb,var(--sc,var(--green)) 40%,transparent);border-radius:18px;padding:12px;animation:popin .45s both}.stat div:nth-child(1){--sc:#f0a020}.stat div:nth-child(2){--sc:#2f7fe0}.stat div:nth-child(3){--sc:#22a05a}.stat div:nth-child(4){--sc:#8b5cf6}
 .stat b{display:block;font:700 26px var(--display)}
 .stat span{font-size:13px;color:var(--muted)}
 .inp{width:100%;font:600 18px var(--body);padding:13px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
@@ -314,8 +314,8 @@ select.inp{appearance:auto}
 .rev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;margin-bottom:14px}
 .rev svg{width:26px;height:26px;color:var(--blue);flex:none}
 .rev b{display:block;font:600 17px var(--display);color:var(--ink)}.rev span{font:600 13px var(--body);color:var(--muted)}
-.lvt{display:flex;gap:6px;margin-bottom:16px}
-.lvt button{flex:1;border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:14px;padding:8px 4px;font:600 16px var(--display);color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.lvt{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;flex-wrap:nowrap;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}.lvt::-webkit-scrollbar{display:none}.lvt button{scroll-snap-align:center}
+.lvt button{flex:1 0 auto;min-width:92px;white-space:nowrap;border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:14px;padding:8px 4px;font:600 16px var(--display);color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
 .lvt button small{font:700 12px var(--body)}
 .lvt button[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-t);color:var(--blue)}
 .ctx{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px;font:600 18px/1.6 var(--display)}
@@ -457,6 +457,44 @@ main.anim>*:nth-child(2){animation-delay:.05s}main.anim>*:nth-child(3){animation
 .uin p{font-size:15px;margin:0 0 8px}
 .uin .ul{display:flex;flex-wrap:wrap;gap:8px}
 .uin .btn{width:auto;padding:6px 12px;font-size:13px}
+/* rediseño v2 */
+@keyframes popin{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes shine{0%{transform:translateX(-120%) skewX(-18deg)}60%,100%{transform:translateX(220%) skewX(-18deg)}}
+.xtg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.xt{--xc:var(--green);position:relative;overflow:hidden;text-align:left;border-radius:22px;padding:12px;min-height:108px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;color:var(--ink);background:linear-gradient(150deg,color-mix(in srgb,var(--xc) 30%,var(--surface)),color-mix(in srgb,var(--xc) 8%,var(--surface)));border:1.5px solid color-mix(in srgb,var(--xc) 42%,transparent);box-shadow:0 10px 20px -14px var(--xc);transition:transform .15s;animation:popin .45s both}
+.xt:active{transform:scale(.95)}
+.xt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shine 5s ease-in-out infinite;pointer-events:none}
+.xt .xe{position:absolute;top:8px;right:10px;font-size:40px;line-height:1;filter:drop-shadow(0 4px 4px rgba(0,0,0,.2));animation:floaty 3.6s ease-in-out infinite}
+.xt b{font:800 17px var(--display);line-height:1.1;padding-right:36px}
+.xt small{font:600 12.5px var(--body);color:var(--muted)}
+.xt.w2{grid-column:span 2;min-height:88px}
+.xt[disabled]{opacity:.55}.xt.done{filter:saturate(.55)}.xt.done b::after{content:" ✓"}
+.xc1{--xc:#22a05a}.xc2{--xc:#2f7fe0}.xc3{--xc:#f0a020}.xc4{--xc:#e0534a}.xc5{--xc:#8b5cf6}.xc6{--xc:#14a3a3}.xc7{--xc:#e0509a}
+.xtg>.xt:nth-child(2){animation-delay:.05s}.xtg>.xt:nth-child(3){animation-delay:.1s}.xtg>.xt:nth-child(4){animation-delay:.15s}.xtg>.xt:nth-child(5){animation-delay:.2s}.xtg>.xt:nth-child(6){animation-delay:.25s}.xtg>.xt:nth-child(n+7){animation-delay:.3s}
+.xsh{display:flex;align-items:center;gap:8px;font:800 19px var(--display);margin:20px 2px 10px}.xsh i{flex:1;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--green),transparent)}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.gt{--gc:var(--blue-t);--gk:var(--blue);position:relative;overflow:hidden;text-align:center;border-radius:22px;padding:12px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;background:linear-gradient(160deg,color-mix(in srgb,var(--gk) 22%,var(--surface)),var(--surface));border:1.5px solid color-mix(in srgb,var(--gk) 38%,transparent);box-shadow:0 10px 20px -14px var(--gk);color:var(--ink);transition:transform .15s;animation:popin .45s both}
+.gt:active{transform:scale(.95)}
+.gt .gi2{width:76px;height:76px;display:grid;place-items:center;color:var(--gk)}
+.gt .gi2 img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(0,0,0,.25));animation:floaty 4s ease-in-out infinite}
+.gt .gi2 svg{width:44px;height:44px}
+.gt b{font:800 16px var(--display);line-height:1.1}
+.gt small{font:600 12px var(--body);color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gt .best{font:700 11px var(--display);color:var(--gk)}
+.gg>.gt:nth-child(2){animation-delay:.05s}.gg>.gt:nth-child(3){animation-delay:.1s}.gg>.gt:nth-child(4){animation-delay:.15s}.gg>.gt:nth-child(n+5){animation-delay:.2s}
+.ag{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.at{border-radius:18px;padding:10px 4px 8px;text-align:center;background:linear-gradient(160deg,color-mix(in srgb,var(--sun,#f5b942) 24%,var(--surface)),var(--surface));border:1.5px solid color-mix(in srgb,var(--sun,#f5b942) 45%,transparent);display:flex;flex-direction:column;align-items:center;gap:3px;animation:popin .45s both;min-width:0}
+.at.lk{background:var(--surface);border:1.5px dashed var(--line);opacity:.8}
+.at b{font:800 12.5px var(--display);line-height:1.1;padding:0 2px}
+.at small{font:600 10.5px var(--body);color:var(--muted);padding:0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sec-h{position:relative;padding-bottom:6px}
+.sec-h::after{content:"";position:absolute;left:0;bottom:0;width:44px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--green),color-mix(in srgb,var(--green) 20%,transparent))}
+.card{box-shadow:0 8px 20px -16px rgba(20,40,30,.45)}
+.hero{position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;top:0;bottom:0;left:0;width:35%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);animation:shine 6s ease-in-out infinite;pointer-events:none}
+.cont,.dcard,.dayc{animation:popin .45s both}
+.cont .go{animation:okpulse 2.2s infinite}
+@media (prefers-reduced-motion:reduce){.xt,.gt,.at,.cont,.dcard,.dayc,.xt .xe,.gt .gi2 img,.xt::after,.hero::after{animation:none!important}}
 .chp.fin{cursor:pointer}
 .lsn.sub .node{width:62px;height:62px;font-size:24px}
 .lsn.sub .lt{font-size:13px}
@@ -2262,13 +2300,13 @@ function rAch(){
   return seg+rAchLogros();
 }
 function rAchLogros(){
-  var h='<h2 class="sec-h">Logros</h2><p class="hint" style="margin-bottom:12px">'+achCount()+' de '+(ACH.length*3)+' medallas. Cada logro es un secreto hasta que lo consigues.</p>';
+  var h='<h2 class="sec-h">Logros</h2><p class="hint" style="margin-bottom:12px">'+achCount()+' de '+(ACH.length*3)+' medallas. Cada logro es un secreto hasta que lo consigues.</p><div class="ag">';
   ACH.forEach(function(a){
     var t=(S.ach||{})[a.id]||0;
-    if(!t){h+='<div class="card ach lk"><div class="mdl">'+medal(0,58)+'</div><div><h3>???</h3><p>Logro secreto</p></div></div>';return}
-    h+='<div class="card ach"><div class="mdl">'+medal(t,58)+'</div><div style="min-width:0"><h3>'+a.n+' · '+TIERN[t]+'</h3><p>'+a.d.replace("{n}",a.t[t-1])+'</p><div class="slots">'+[1,2,3].map(function(i){return medal(i<=t?i:0,24)}).join("")+'</div></div></div>';
+    if(!t){h+='<div class="at lk">'+medal(0,52)+'<b>???</b><small>Secreto</small></div>';return}
+    h+='<div class="at">'+medal(t,52)+'<b>'+a.n+'</b><small>'+TIERN[t]+' · '+a.d.replace("{n}",a.t[t-1])+'</small></div>';
   });
-  return h;
+  return h+'</div>';
 }
 function rInicio(){
   var ci=curIdx(),cl=LESSONS[ci],t=lvTitle(),td=dayKey(new Date()),done=S.daily===td,dk=dgKey(),dgd=S.dg===td,s=dispStreak(),lw=learnedWords(),h="";
@@ -2279,18 +2317,16 @@ function rInicio(){
     h+='<button class="cont" data-act="lesson" data-id="'+cl.id+'"><div style="min-width:0"><small>Continuar</small><b>'+cl.t+'</b><span class="s">Nivel '+LVN[cl.lv]+' · lección '+pos+' de '+st.t+'</span></div><span class="go">'+IC.play+'</span></button>';
   }else h+='<div class="card"><h3>¡Has completado todas las lecciones!</h3><p class="hint">Sigue con el repaso, los juegos y los exámenes.</p></div>';
   h+=goalCard(true);
-  h+='<div class="duo"><button class="dcard'+(done?' done':'')+'" data-act="daily"><small>Repaso del día</small><b>Palabras y gramática</b><em>'+(done?'Hecho. Repetir':'+15 XP')+'</em></button>'
-   +'<button class="dcard'+(dgd?' done':'')+'" data-act="dgame"><small>Minijuego del día</small><b>'+GN[dk][0]+'</b><em>'+(dgd?'Cumplido. Jugar otra vez':'+'+DGXP+' XP')+'</em></button></div>';
-  var pool=lw.length?lw:WORDS.slice(0,10),w=pool[dayNum()%pool.length],g=GR[dayNum()%GR.length],tip=TIPS[dayNum()%TIPS.length];
+  h+='<div class="xtg">'+xt('data-act="daily"','📅','Repaso del día',done?'Hecho ✓ Repetir':'Palabras y gramática · +15 XP',1,0,done)+xt('data-act="dgame"','🎲','Minijuego del día',dgd?'Cumplido ✓ Otra vez':GN[dk][0]+' · +'+DGXP+' XP',3,0,dgd)+'</div>';  var pool=lw.length?lw:WORDS.slice(0,10),w=pool[dayNum()%pool.length],g=GR[dayNum()%GR.length],tip=TIPS[dayNum()%TIPS.length];
   h+='<div class="dayc"><h3>Hoy</h3><div class="vrow" style="padding:4px 0;border:0"><div class="tx"><div class="eu">Palabra del día: '+E(w.eu)+'</div><div class="es">'+E(w.es)+'</div></div>'+spk(w.eu)+'</div><p><b>Consejo:</b> '+tip[1]+'</p><button class="btn sec sm" data-act="gopen" data-id="'+g.id+'">Gramática del día: '+g.t+'</button></div>';
   var due=dueWords().length,xl=cl?cl.lv:3;
-  h+='<div class="tiles">'
-   +(lw.length?'<button class="tile" data-act="review">':'<button class="tile" disabled>')+IC.loop+'<div><b>Repaso</b><span>'+(lw.length?(due?due+' por repasar':'Todo al día'):'Tras tu 1ª lección')+'</span></div></button>'
-   +'<button class="tile" data-act="exam" data-n="'+xl+'">'+IC.check+'<div><b>Examen</b><span>Nivel '+LVN[xl]+'</span></div></button>'
-   +'<button class="tile" data-tab="games">'+IC.pad+'<div><b>Juegos</b><span>'+Object.keys(GN).length+' minijuegos</span></div></button>'
-   +'<button class="tile" data-tab="gram">'+IC.book+'<div><b>Gramática</b><span>'+GR.length+' temas</span></div></button>'
-   +'<button class="tile" data-tab="vocab">'+IC.list+'<div><b>Diccionario</b><span>'+(WORDS.length+DICT.length)+' palabras</span></div></button>'
-   +'<button class="tile" data-tab="ach">'+IC.trophy+'<div><b>Logros</b><span>'+achCount()+' / '+(ACH.length*3)+'</span></div></button></div>';
+  h+='<div class="xtg">'
+   +(lw.length?xt('data-act="review"','🔁','Repaso',due?due+' por repasar':'Todo al día',1):xt('disabled','🔁','Repaso','Tras tu 1ª lección',1))
+   +xt('data-act="exam" data-n="'+xl+'"','🎓','Examen','Nivel '+LVN[xl],4)
+   +xt('data-tab="games"','🎮','Juegos',Object.keys(GN).length+' minijuegos',2)
+   +xt('data-tab="gram"','📚','Gramática',GR.length+' temas',5)
+   +xt('data-tab="cards"','🃏','Tarjetas','Voltea y aprende',3)
+   +xt('data-tab="ach"','🏆','Logros',achCount()+' / '+(ACH.length*3),7)+'</div>';
   return h;
 }
 var V={tab:"inicio",vq:"",reset:false};
@@ -2304,7 +2340,7 @@ function drawBar(){
   $("#lvfill").style.width=(S.xp%100)+"%";
   $("#nav .nin").innerHTML=NAV.map(function(n){return '<button class="nb" data-tab="'+n[0]+'" aria-current="'+(V.tab===n[0]||(V.tab==="gl"&&n[0]==="games")||(n[0]==="prac"&&(V.tab==="rev"||V.tab==="sim"||V.tab==="verb"||V.tab==="lect"||V.tab==="escu"||V.tab==="wrg"||V.tab==="vtm"||V.tab==="cards"||V.tab==="bloc"||V.tab==="hab"||V.tab==="plan")))+'">'+n[2]+n[1]+'</button>'}).join("");
 }
-function render(){if(V.tab==="gram"){V.tab="prac";V.es="g"}else if(V.tab==="vocab"){V.tab="prac";V.es="d"}drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb,lect:rLect,escu:rEscu,plan:rPlan,hab:rHab,vtm:rVtm,wrg:rWrg,cards:rCards,bloc:rBloc,prac:rPrac})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false}
+function render(){if(V.tab==="gram"){V.tab="prac";V.es="g"}else if(V.tab==="vocab"){V.tab="prac";V.es="d"}drawBar();var m=$("#main");var body=({inicio:rInicio,learn:rLearn,games:rGames,gram:rGram,vocab:rVocab,me:rMe,ach:rAch,rev:rRev,gl:rGL,sim:rSim,verb:rVerb,lect:rLect,escu:rEscu,plan:rPlan,hab:rHab,vtm:rVtm,wrg:rWrg,cards:rCards,bloc:rBloc,prac:rPrac})[V.tab]();m.innerHTML=body;m.classList.toggle("anim",!!V.anim);V.anim=false;try{var lv=m.querySelector(".lvt"),pb=lv&&lv.querySelector("button[aria-pressed=true]");if(pb&&lv.scrollWidth>lv.clientWidth)lv.scrollLeft=pb.offsetLeft-(lv.clientWidth-pb.offsetWidth)/2}catch(e){}}
 function hello(){
   var ms=["Kaixo! Hoy toca un poco de euskera.","Pausoz pauso: paso a paso se llega lejos.","Una lección al día y la racha sube.","Euskara ez da zaila: el euskera no es tan difícil."];
   return ms[new Date().getDate()%ms.length];
@@ -2372,8 +2408,9 @@ function rGames(){
    ["tap","Escucha y toca","Oye la palabra en euskera y toca el dibujo correcto.",IC.spk,"var(--blue-t)","var(--blue)",""],
    ["pron","Pronunciación","Di en voz alta frases y palabras: la app te escucha y te dice cuánto se te entiende.",IC.mic,"var(--green-t)","var(--green)",""]
   ];
-  var h='<h2 class="sec-h">Juegos</h2><p class="hint" style="margin-bottom:12px">Usan las palabras de las lecciones que ya tienes desbloqueadas.</p>';
-  g.forEach(function(x){h+='<button class="card game" data-act="game" data-g="'+x[0]+'" style="--gc:'+x[4]+';--gk:'+x[5]+'"><span class="gi"><img class="gimg" src="j-'+x[0]+'.png" alt="" width="64" height="64" onload="this.parentNode.classList.add(\'hasimg\')" onerror="this.remove()">'+x[3]+'</span><span style="min-width:0"><h3>'+x[1]+'</h3><p>'+x[2]+'</p>'+x[6]+'</span></button>'});
+  var h='<h2 class="sec-h">Juegos</h2><p class="hint" style="margin-bottom:12px">Usan las palabras de las lecciones que ya tienes desbloqueadas.</p><div class="gg">';
+  g.forEach(function(x){h+='<button class="gt" data-act="game" data-g="'+x[0]+'" style="--gc:'+x[4]+';--gk:'+x[5]+'"><span class="gi2"><img src="j-'+x[0]+'.png" alt="" width="76" height="76" onerror="this.outerHTML=\''+x[3].replace(/'/g,"")+'\'"></span><b>'+x[1]+'</b><small>'+x[2]+'</small>'+x[6]+'</button>'});
+  h+='</div>';
   return h;
 }
 function rVocab(){
@@ -3233,23 +3270,20 @@ function rVoc(){
   if(!any)h+='<p class="hint">Aún no hay lecciones abiertas.</p>';
   return h;
 }
+function xt(a,em,t,s,c,w,d){return '<button class="xt xc'+c+(w?' w2':'')+(d?' done':'')+'" '+a+'><span class="xe">'+em+'</span><b>'+t+'</b><small>'+s+'</small></button>'}
+function xsh(t){return '<div class="xsh">'+t+'<i></i></div>'}
 function rPrac2(seg){
-  var due=dueWords().length,h='<h2 class="sec-h">Estudio</h2>'+seg+'<p class="hint" style="margin-bottom:10px">Repasos, exámenes, lecturas, verbos y simulacros. La Aventura te avisa cuando toca repasar.</p>';
-  if(learnedWords().length)h+='<button class="rev" data-act="review">'+IC.loop+'<div><b>Repaso inteligente</b><span>'+(due?due+' palabras que conviene repasar':'Todo al día. Practica igualmente')+'</span></div></button>';
-  else h+='<button class="rev" disabled>'+IC.loop+'<div><b>Repaso inteligente</b><span>Se activa al terminar tu primera lección</span></div></button>';
-  h+='<button class="rev" data-act="revpage">'+IC.list+'<div><b>Mis repasos</b><span>'+msCount("s")+' sin dominar · '+msCount("d")+' dominadas</span></div></button>';
-  h+='<h3 class="sec-h" style="font-size:18px;margin-top:14px">Exámenes de nivel</h3>'+examCard(1)+examCard(2)+examCard(3);
-  h+='<h3 class="sec-h" style="font-size:18px;margin-top:14px">Entrenamiento</h3>';
-  h+='<button class="rev" data-tab="lect">'+IC.book+'<div><b>Lecturas</b><span>Textos con preguntas, de A1 a B2</span></div></button>';
-  h+='<button class="rev due" data-tab="plan">'+IC.check+'<div><b>Plan de estudio</b><span>Qué hacer cada día hasta el examen</span></div></button>';
-  h+='<button class="rev" data-tab="hab">'+IC.mic+'<div><b>Habla</b><span>Entrevista, juegos de rol y repetir frases</span></div></button>';
-  h+='<button class="rev due" data-tab="cards">'+IC.loop+'<div><b>Tarjetas</b><span>Voltea y estudia tus palabras</span></div></button>';
-  h+='<button class="rev" data-tab="bloc">'+IC.book+'<div><b>Bloc de palabras</b><span>Tus palabras, trucos y notas</span></div></button>';
-  h+='<button class="rev" data-tab="vtm">'+IC.list+'<div><b>Vocabulario por temas</b><span>'+VOCT.reduce(function(n,t){return n+t.w.length},0)+' palabras B1-B2 con práctica</span></div></button>';
-  h+='<button class="rev" data-tab="wrg">'+IC.book+'<div><b>Guía de escritura</b><span>Estructuras, frases útiles y práctica con modelo</span></div></button>';
-  h+='<button class="rev" data-tab="escu">'+IC.spk+'<div><b>Escuchas</b><span>Diálogos y avisos con preguntas, de A1 a B2</span></div></button>';
-  h+='<button class="rev" data-tab="verb">'+IC.book+'<div><b>Entrenador de verbos</b><span>Presente, pasado y futuro con práctica</span></div></button>';
-  h+='<button class="rev" data-tab="sim">'+IC.check+'<div><b>Simulacros de examen A1 a B2</b><span>Lectura, escucha, escritura y habla</span></div></button>';
+  var due=dueWords().length,h='<h2 class="sec-h">Estudio</h2>'+seg,lw=learnedWords().length;
+  h+='<div class="xtg">'+(lw?xt('data-act="review"','🔁','Repaso inteligente',due?due+' palabras para repasar':'Todo al día',1,1):xt('disabled','🔁','Repaso inteligente','Tras tu 1ª lección',1,1))
+   +xt('data-act="revpage"','📋','Mis repasos',msCount("s")+' sin dominar',4)+xt('data-tab="plan"','🗓️','Plan de estudio','Qué hacer cada día',5)+'</div>';
+  h+=xsh('📘 Estudia')+'<div class="xtg">'
+   +xt('data-tab="cards"','🃏','Tarjetas','Voltea y aprende',2)+xt('data-tab="bloc"','📒','Bloc de palabras','Trucos y notas',3)
+   +xt('data-tab="vtm"','🗂️','Vocabulario por temas',VOCT.reduce(function(n,t){return n+t.w.length},0)+' palabras B1-B2',6)+xt('data-tab="verb"','⚡','Verbos','Presente, pasado, futuro',7)
+   +xt('data-tab="wrg"','✍️','Guía de escritura','Frases y modelos',4,1)+'</div>';
+  h+=xsh('🎯 Practica')+'<div class="xtg">'
+   +xt('data-tab="lect"','📖','Lecturas','De A1 a B2',2)+xt('data-tab="escu"','🎧','Escuchas','Diálogos y avisos',6)
+   +xt('data-tab="hab"','🎤','Habla','Entrevista y rol',7)+xt('data-tab="sim"','📝','Simulacros','Examen completo A1-B2',1)+'</div>';
+  h+=xsh('🎓 Exámenes de nivel')+examCard(1)+examCard(2)+examCard(3);
   return h;
 }
 /* ---------- escenario ---------- */
