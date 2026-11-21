@@ -495,6 +495,25 @@ main.anim>*:nth-child(2){animation-delay:.05s}main.anim>*:nth-child(3){animation
 .cont,.dcard,.dayc{animation:popin .45s both}
 .cont .go{animation:okpulse 2.2s infinite}
 @media (prefers-reduced-motion:reduce){.xt,.gt,.at,.cont,.dcard,.dayc,.xt .xe,.gt .gi2 img,.xt::after,.hero::after{animation:none!important}}
+/* aventura v2 */
+@keyframes ring{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--uc) 55%,transparent)}100%{box-shadow:0 0 0 22px transparent}}
+.uh{position:sticky;overflow:hidden}
+.uh .uem{position:absolute;right:14px;top:8px;font-size:48px;line-height:1;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25));animation:floaty 3.6s ease-in-out infinite}
+.uh h2,.uh p,.uh small{padding-right:58px}
+.uh .upb{height:7px;border-radius:6px;background:rgba(255,255,255,.28);overflow:hidden;margin:8px 0 3px}
+.uh .upb i{display:block;height:100%;background:#fff;border-radius:6px;transition:width .6s}
+.uh .upt{font:700 12px var(--display);font-style:normal;opacity:.9}
+.uin summary{cursor:pointer;font:800 15px var(--display);color:var(--uc);list-style:none}
+.uin summary::-webkit-details-marker{display:none}
+.uin[open] summary{margin-bottom:8px}
+.path{position:relative;padding:6px 0}.path .lsn{transform:translateX(calc(var(--x)*.55))}
+.path::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:12px;margin-left:-6px;border-radius:8px;background:repeating-linear-gradient(to bottom,color-mix(in srgb,var(--uc) 32%,transparent) 0 14px,transparent 14px 28px);z-index:0}
+.path .lsn{position:relative;z-index:1}
+.path .deco{position:absolute;font-size:34px;opacity:.6;z-index:0;pointer-events:none;animation:floaty 4.5s ease-in-out infinite;filter:saturate(1.1)}
+.lsn.cur .node{animation:ring 1.6s ease-out infinite}
+.lsn.cur .lt{color:var(--uc);font-weight:800}
+.lsn.cur .empieza{display:inline-block;background:var(--uc);color:var(--ucon);padding:2px 10px;border-radius:12px;animation:floaty 1.8s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.uh .uem,.path .deco,.lsn.cur .node,.lsn.cur .empieza{animation:none!important}}
 .chp.fin{cursor:pointer}
 .lsn.sub .node{width:62px;height:62px;font-size:24px}
 .lsn.sub .lt{font-size:13px}
@@ -1365,12 +1384,19 @@ function rRev(){
   else{h+='<div class="card" style="padding:4px 12px">';its.slice(0,120).forEach(function(it){h+='<div class="vrow"><span class="dot '+(t==="d"?"l3":"")+'"></span><div class="tx"><div class="eu">'+E(it.m.eu)+'</div><div class="es">'+E(it.m.es||"")+(it.k.charAt(0)==="w"?' · '+msReq(it.k).map(function(q){return {e:"Elegir",w:"Escribir",l:"Escuchar",h:"Hablar"}[q]+' '+Math.min(3,(it.m.kr&&it.m.kr[q])||0)+'/3'}).join(' · '):(t==="s"?' · racha '+it.m.sr+'/3':''))+'</div></div>'+spk(it.m.eu)+'</div>'});h+='</div>'}
   return h;
 }
+var UEM={u1:"👋",u2:"🏡",u3:"🚌",u4:"🧩",u5:"📅",u6:"🐶",u6c:"❓",u6d:"🍎",u6b:"🔢",u7:"⏳",u7b:"📍",u8:"⏰",u9:"🛍️",u8b:"⚖️",u8c:"👪",u8d:"🎸",u10:"💬",u11:"🎩",u12:"🏆"};
+var UDEC={green:["🌿","🍀","🌳","🦋"],blue:["🌊","⛵","🐟","🫧"],sun:["☀️","🌻","🍋","🐝"],red:["🌶️","🔥","🎈","🍓"]};
 function uintro(u){
   var x=UINTRO[u.id];if(!x)return "";
-  var b=x[1].map(function(id){var g=GR.filter(function(y){return y.id===id})[0];return g?'<button class="btn sec sm" data-act="gopen" data-id="'+id+'">Gramática: '+E(g.t)+'</button>':""}).join("");
-  return '<div class="uin"><p>'+x[0]+'</p>'+(b?'<div class="ul">'+b+'</div>':"")+'</div>';
+  var b=x[1].map(function(id){var g=GR.filter(function(y){return y.id===id})[0];return g?'<button class="btn sec sm" data-act="gopen" data-id="'+id+'">'+(gOk(id)?'✓ ':'📘 ')+E(g.t)+'</button>':""}).join("");
+  var op=!studyDone(u)&&!u.L.some(function(l){return S.done[l.id]});
+  return '<details class="uin"'+(op?' open':'')+'><summary>📖 Qué vas a aprender</summary><p>'+x[0]+'</p>'+(b?'<div class="ul">'+b+'</div>':"")+'</details>';
 }
-
+function udeco(u){
+  var tot=0;u.L.forEach(function(l){tot+=npOf(l)});var k=Math.max(2,Math.round(tot/3)),s=UDEC[u.c]||UDEC.green,o="";
+  for(var i=0;i<k;i++)o+='<span class="deco" style="top:'+Math.round((i+.5)*100/k)+'%;'+(i%2?'right':'left')+':2px;animation-delay:'+(i*.4)+'s">'+s[i%s.length]+'</span>';
+  return o;
+}
 /* ---------- chapas (puzzles), metas diarias, gemas y cofres ---------- */
 var CH=[
  ["Kontxa","La Concha (Donostia)","La bahía con la isla de Santa Clara","#f6b36b","#e9776a","#2f7fa3","#1d5a7e"],
@@ -2364,7 +2390,8 @@ function rLearn(){
   UNITS.forEach(function(u){
     if(u.lv!==V.lv)return;
     un++;
-    h+='<section class="unit u-'+u.c+'"><div class="uh"><small>Unidad '+un+'</small><h2>'+u.t+'</h2><p>'+u.d+'</p></div>'+uintro(u)+'<div class="path">';
+    var udn=u.L.filter(function(l){return S.done[l.id]}).length;
+    h+='<section class="unit u-'+u.c+'"><div class="uh"><span class="uem">'+(UEM[u.id]||"⭐")+'</span><small>Unidad '+un+'</small><h2>'+u.t+'</h2><p>'+u.d+'</p><div class="upb"><i style="width:'+Math.round(udn/u.L.length*100)+'%"></i></div><em class="upt">'+udn+' de '+u.L.length+' lecciones</em></div>'+uintro(u)+'<div class="path">'+udeco(u);
     var sdone=studyDone(u),sids=ugr(u);
     if(sids.length){
       var ng=sids.filter(gOk).length,reach=S.open||LESSONS.indexOf(u.L[0])<=ci||sdone;
